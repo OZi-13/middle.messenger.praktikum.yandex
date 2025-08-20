@@ -9,3 +9,5 @@
 
 /.idea/
 /.osp/
+/node_modules/
+/dist/
