@@ -7,7 +7,9 @@
 /dataSources/
 /dataSources.local.xml
 
+/.git/
 /.idea/
 /.osp/
+/.vite/
 /node_modules/
 /dist/
