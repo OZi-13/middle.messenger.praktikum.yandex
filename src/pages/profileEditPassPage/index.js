@@ -1,0 +1,1 @@
+export { default as ProfileEditPassPage } from './profileEditPassPage.hbs?raw';

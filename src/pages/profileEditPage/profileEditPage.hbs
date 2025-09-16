@@ -1,0 +1,23 @@
+{{> Header isProfilePage="active"}}
+
+<main>
+    <div id="main-box">
+        <div class="main-box_right">
+            {{> NavLine1 nav=1 name="Назад"  }}
+        </div>
+        <div class="main-box_left">
+            {{> NavLine2 name="Ваш профиль" avatar=1  }}
+        </div>
+    </div>
+
+    <div class="info-box info-box_400 info-box_white">
+        {{> BoxHeader header="Изменить данные" }}
+        <form class="info-box_content">
+            {{#each profileInfo}}
+                {{> Label forAttr=this.name text=this.header }}
+                {{> Input id=this.value name=this.name type="input" value=this.value }}
+            {{/each}}
+            {{> Button id="form-btn" text="Записать" }}
+        </form>
+    </div>
+</main>

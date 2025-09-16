@@ -1,0 +1,16 @@
+{{> Header isLoginPage="active" }}
+<main>
+    <div class="info-box info-box_400 info-box_white">
+        {{> BoxHeader header="Вход" }}
+        <form class="info-box_content">
+            {{> Label forAttr="form-login" text="Логин"}}
+            {{> Input id="form-login" name="login" type="text"}}
+
+            {{> Label forAttr="form-password" text="Пароль"}}
+            {{> Input id="form-password" name="password" type="password"}}
+
+            {{> Button id="form-btn" text="Авторизоваться" }}
+            {{> Link class="nav-btn" href="#" data-page="registrationPage" text="Нет аккаунта?"}}
+        </form>
+    </div>
+</main>
