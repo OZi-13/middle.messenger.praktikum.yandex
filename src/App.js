@@ -1,6 +1,6 @@
 import Handlebars from 'handlebars';
 import * as Pages from './pages';
-import mockImage from '/images/mock/message.jpg';
+import mockImage from '../static/mock/message.jpg';
 import { chatsListMock, chatMock, profileInfo } from './mockData.js';
 
 import Header from './components/Header.js';
