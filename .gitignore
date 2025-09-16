@@ -11,5 +11,5 @@
 /.idea/
 /.osp/
 /.vite/
-/node_modules/
-/dist/
+node_modules/
+dist/
