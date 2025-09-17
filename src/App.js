@@ -83,28 +83,12 @@ export default class App {
     }
 
     attachEventListeners() {
-        if (this.state.currentPage === 'loginPage') {
-        }
-        else if (this.state.currentPage === 'registrationPage') {
-        }
-        else if (this.state.currentPage === 'chatsPage') {
-        }
-        else if (this.state.currentPage === 'profilePage') {
+        if (this.state.currentPage === 'profilePage') {
             const modalBtn = document.getElementById('modal-btn');
             const modalBlack = document.getElementById('modal-back');
 
             modalBtn.addEventListener('click', () => this.modalBtn());
             modalBlack.addEventListener('click', (e) => this.modalBlackClose(e));
-        }
-        else if (this.state.currentPage === 'profileEditPage') {
-        }
-        else if (this.state.currentPage === 'profileEditPassPage') {
-        }
-        else if (this.state.currentPage === 'noPage') {
-        }
-        else if (this.state.currentPage === 'noServerPage') {
-        }
-        if (this.state.currentPage === 'noServerPage') {
         }
 
         const formBtn = document.getElementById('form-btn');
