@@ -1,5 +1,9 @@
 import express from 'express';
-import { resolve, join } from 'node:path';
+import path, { resolve, join } from 'node:path';
+import { urlToPath } from 'node:url';
+
+const __filename = urlToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const port = 3000;
