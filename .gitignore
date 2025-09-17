@@ -1,15 +1,9 @@
-# Default ignored files
-/shelf/
-/workspace.xml
-# Editor-based HTTP Client requests
-/httpRequests/
-# Datasource local storage ignored files
-/dataSources/
-/dataSources.local.xml
-
-/.git/
-/.idea/
-/.osp/
-/.vite/
+# Игнорируемые зависимости и файлы сборки
 node_modules/
 dist/
+
+# Игнорируемые файлы и папки IDE (среды разработки) и временные файлы
+.git/
+.idea/
+.osp/
+.vite/
