@@ -1,6 +1,5 @@
 import Handlebars from 'handlebars';
 import * as Pages from './pages';
-import mockImage from '/public/images/mock/message.jpg';
 import { chatsListMock, chatMock, profileInfo } from './mockData.js';
 
 import Header from './components/Header.js';
@@ -56,7 +55,6 @@ export default class App {
             pageDatas = {
                 chatsList: chatsListMock,
                 chatContent: chatMock,
-                messageImage: mockImage
             };
         }
         else if (this.state.currentPage === 'profilePage') {

@@ -8,7 +8,7 @@ export default `
                 {{#each this.messages}}
                     <div>
                     {{#if this.image}}
-                        <img src="{{ @root.messageImage }}"/>
+                        <img src="{{ this.image }}"/>
                         <div class="chat_message_time">{{this.time}}</div>
                     {{/if}}
                     {{#if this.text}}
