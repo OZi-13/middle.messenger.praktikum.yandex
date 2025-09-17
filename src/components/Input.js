@@ -3,4 +3,4 @@ export default `
 {{#if placeholder}} placeholder="{{placeholder}}" {{/if}}
 {{#if accept}} accept="{{accept}}" {{/if}}
 >
-`;
+`

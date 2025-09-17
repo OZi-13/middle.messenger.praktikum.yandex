@@ -7,4 +7,4 @@ export default `
     </div>
     {{/each}}
 </div>
-`;
+`

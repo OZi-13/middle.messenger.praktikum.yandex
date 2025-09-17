@@ -3,4 +3,4 @@ export default `
      {{#if class}} class="{{class}}" {{/if}}
      {{#if data-page}} data-page="{{data-page}}" {{/if}}
 >{{text}}</div>
-`;
+`

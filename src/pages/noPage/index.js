@@ -1,1 +1,1 @@
-export { default as NoPage } from './noPage.hbs?raw';
+export { default as NoPage } from './noPage.hbs?raw'
