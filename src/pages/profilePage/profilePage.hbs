@@ -1,0 +1,20 @@
+{{> Header isProfilePage="active"}}
+
+<main>
+    <div class="info-box info-box_600 info-box_white">
+        <div class="info-box_header">
+            <div id="modal-btn" class="profile-avatar"></div>
+            <h1>Ольга</h1>
+        </div>
+        <div class="info-box_content">
+            {{> ProfileList profileInfo=profileInfo}}
+            <div class="button-group button-group_2ps">
+                {{> ButtonDiv class="nav-btn btn" text="Изменить данные" data-page="profileEditPage" }}
+                {{> ButtonDiv class="nav-btn btn" text="Изменить пароль" data-page="profileEditPassPage" }}
+            </div>
+            {{> Link class="nav-btn" href="#" data-page="loginPage" text="Выйти"}}
+        </div>
+    </div>
+</main>
+<div id="modal-back" class="none"></div>
+<div id="modal" class="info-box info-box_400 info-box_white none">{{> ProfileAvatarEdit }}</div>

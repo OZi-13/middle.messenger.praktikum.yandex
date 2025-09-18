@@ -1,0 +1,1 @@
+export default `<label for="{{forAttr}}">{{text}}</label>`

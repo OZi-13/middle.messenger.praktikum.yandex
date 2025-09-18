@@ -1,0 +1,39 @@
+{
+  "name": "middle.messenger.praktikum.yandex",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "---",
+  "main": "index.js",
+  "engines": {
+    "node": "22.18.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "start": "vite build && node server.js",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OZi-13/middle.messenger.praktikum.yandex.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/OZi-13/middle.messenger.praktikum.yandex/issues"
+  },
+  "homepage": "https://github.com/OZi-13/middle.messenger.praktikum.yandex#readme",
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "postcss-preset-env": "^10.2.4",
+    "vite": "^7.1.5"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "vite-plugin-handlebars": "^2.0.0"
+  }
+}
