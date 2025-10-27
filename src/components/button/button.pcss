@@ -1,0 +1,20 @@
+button, .btn {
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 17px;
+    text-align: center;
+}
+
+button, .btn-red {
+    background-color: var(--color-red);
+
+    &:hover {
+        background-color: var(--color-red-dark);
+    }
+
+    &:disabled {
+        background-color: var(--color-blue-light);
+        cursor: not-allowed;
+    }
+}

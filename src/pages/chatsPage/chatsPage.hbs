@@ -1,30 +1,23 @@
-{{> Header isChatsPage="active"}}
-<main id="main-box">
-    <div class="main-box_right">
-        {{> NavLine1 name="Ольга" avatar=1 nav=1 }}
-        <div class="chats_content">
-            {{> Input id="search" name="search" type="input" placeholder="Поиск"}}
-            <div class="content_box">
-                {{#each chatsList}}
-                    {{> ChatsList chats=this}}
-                {{/each}}
+export default `
+<div class="app">
+    {{{ Header }}}
+    <main id="main-box">
+        <div class="main-box_right">
+            {{{ NavLine1 }}}
+            <div class="chats_content">
+                {{{ InputSearch }}}
+                <div class="content_box">
+                    {{{ ChatsList }}}
+                </div>
             </div>
         </div>
-    </div>
-    <div class="main-box_left">
-        {{> NavLine2 name="Собеседник" avatar=1 nav=1 }}
-        <div class="chats_content">
-
-            {{> Chat chat=chatContent}}
+        <div class="main-box_left">
+            {{{ NavLine2 }}}
+            <div class="chats_content">
+                {{{ Chat }}}
+            </div>
+            {{{ Form }}}
         </div>
-        <form class="chats_bottom">
-            <div class="add-file"></div>
-            <div>
-                {{> Input id="message" name="message" type="input" placeholder="Сообщение"}}
-            </div>
-            <div class="send-btn">
-                {{> Button id="form-btn" text=">" }}
-            </div>
-        </form>
-    </div>
-</main>
+    </main>
+</div>
+`

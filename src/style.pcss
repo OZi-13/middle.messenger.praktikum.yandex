@@ -132,33 +132,34 @@ input, select, button, label {
     box-sizing:border-box;
     display:inline-block;
     color: var(--color-blue-dark);
+
+    &:focus, &:focus-visible {
+        outline: 2px solid var(--color-blue-middle);
+    }
+
+    &.form-error_element {
+        outline: 2px solid var(--color-red);
+    }
 }
 
 input, select, button, .btn {
     border: none;
     padding: 10px 15px;
     border-radius: 20px;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
-button, .btn {
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 17px;
-    text-align: center;
-}
+.form-error_box {
+    position: relative;
 
-button, .btn-red {
-    background-color: var(--color-red);
-
-    &:hover {
-        background-color: var(--color-red-dark);
-    }
-
-    &:disabled {
-        background-color: var(--color-blue-light);
-        cursor: not-allowed;
+    & > div {
+        position: absolute;
+        top:-12px;
+        left:15px;
+        color: var(--color-red);
+        font-weight: bold;
+        font-size: 12px;
+        line-height: 10px;
     }
 }
 
@@ -197,13 +198,6 @@ input, select {
         font-size: 17px;
 }
 
-label {
-    font-size: 15px;
-    padding: 0 15px;
-    margin-bottom: 2px;
-    color: var(--color-blue-middle);
-}
-
 ul {
     list-style-type: none;
     padding: 0;
@@ -215,51 +209,6 @@ li {
     padding: 10px;
     border-radius: 3px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-}
-
-.error {
-    color: var(--color-red);
-    font-weight: bold;
-}
-
-header {
-    position: absolute;
-    width: 100%;
-    box-sizing: border-box;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: var(--color-blue-light);
-    padding: 5px 10px;
-}
-
-#logo {
-    width: 100px;
-    height: 30px;
-    background-image: url('/images/logo.png');
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
-}
-
-#nav-top {
-    display: flex;
-    grid-gap: 15px;
-
-    & a {
-        color: white;
-        font-weight: bold;
-        font-size: 16px;
-
-        &.active {
-            color: var(--color-blue-middle);
-        }
-
-        &:hover {
-            color: var(--color-blue-dark);
-        }
-
-    }
 }
 
 main {
@@ -283,13 +232,6 @@ main {
 
     &.info-box_600 {
         width: 600px;
-    }
-
-    & .info-box_header {
-        background-color: var(--color-blue-middle);
-        padding-top: 15px;
-        padding-bottom: 17px;
-
     }
 
     & .info-box_content {
@@ -341,23 +283,6 @@ main {
                     background-color: var(--color-light-light);
                     cursor: pointer;
                 }
-
-                & .chats_list_avatar {
-                    width: 60px;
-                    height: 60px;
-                    border-radius: 35px;
-                    background-color: var(--color-light);
-                }
-
-                & .chats_list_new-count {
-                    font-size: 12px;
-                    border-radius: 20px;
-                    background-color: var(--color-red);
-                    color: white;
-                    text-align: center;
-                    padding: 3px;
-
-                }
             }
         }
     }
@@ -390,92 +315,6 @@ main {
             box-sizing: border-box;
             height: calc(100vh - 175px);
             overflow-y: scroll;
-
-        & .chat_date-box  {
-            position: relative;
-            margin-top: 20px;
-            border-top: 1px solid var(--color-blue-light);
-        }
-
-            & .chat_date {
-                position: relative;
-                top: -11px;
-                text-align: center;
-                margin-bottom: 5px;
-
-                & span {
-                    background-color: var(--color-blue-light);
-                    color: var(--color-blue-dark);
-                    font-size: 12px;
-                    padding: 3px 10px;
-                    border-radius: 10px;
-                }
-            }
-
-            & .chat_message {
-                width: 55%;
-                margin-bottom: 7px;
-
-                & > div {
-                    position: relative;
-                    display: inline-block;
-                    box-sizing: border-box;
-                    overflow: hidden;
-                    border-width: 2px;
-                    border-style: solid;
-                    margin-bottom: 1px;
-                }
-
-                &.member-1 {
-                    color: var(--color-light);
-                    justify-content: flex-start;
-
-                    & > div {
-                        background-color: var(--color-blue-middle);
-                        border-color: var(--color-blue-middle);
-                        border-radius: 20px;
-
-                        &:first-child {
-                            border-top-left-radius: 0;
-                        }
-                    }
-                }
-
-                &.member-2 {
-                    color: var(--color-blue-middle);
-                    text-align: right;
-                    margin-left: auto;
-
-                    & > div {
-                        background-color: var(--color-light);
-                        border-color: var(--color-light);
-                        border-radius: 20px;
-
-                        &:first-child {
-                            border-top-right-radius: 0;
-                        }
-                    }
-                }
-
-                & .chat_message_text {
-                    padding: 5px 8px 9px ;
-                }
-
-                & img {
-                    max-width: 300px;
-                    height: auto;
-                    display: block
-                }
-
-                & .chat_message_time {
-                    position: absolute;
-                    bottom: -3px;
-                    right: 10px;
-                    color: var(--color-blue-light);
-                    font-size: 11px;
-                    line-height: 16px;
-                }
-            }
         }
 
         & .chats_bottom {
@@ -544,22 +383,6 @@ main {
 
 .nav-btn {
     cursor: pointer;
-}
-
-.info-list > div {
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--color-light);
-    padding: 4px 0;
-    margin-bottom: 8px;
-
-    & .info-list_header {
-        font-weight: bold;
-    }
-
-    & .info-list_value {
-        color: var(--color-blue-light);
-    }
 }
 
 .profile-avatar {
