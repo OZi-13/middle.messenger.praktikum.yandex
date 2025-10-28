@@ -248,7 +248,7 @@ export default class Block {
         return true;
       },
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      deleteProperty(target: BlockProps, prop: string): boolean {
+      deleteProperty(_target: BlockProps, _prop: string): boolean {
         throw new Error('Не разрешено');
       },
     } as ProxyHandler<BlockProps>);
