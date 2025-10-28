@@ -10,4 +10,4 @@ export default `
         {{{ LinkNoServerPage }}}
 </nav>
 </header>
-`
+`;

@@ -4,4 +4,4 @@ export default `
     class="{{class}}" 
     {{#if dataPage}} data-page="{{dataPage}}" {{/if}}
 >{{text}}</a>
-`
+`;

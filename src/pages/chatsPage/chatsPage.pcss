@@ -4,8 +4,8 @@
     height: 100%;
 
     & .main-box_left {
-        box-sizing: border-box;
         background-color: white;
+        box-sizing: border-box;
 
         & .chats_top {
             background-color: var(--color-light);
@@ -28,11 +28,11 @@
             padding: 20px;
 
             & .content_box > div {
+                align-items: center;
+                border-bottom: 2px solid var(--color-light-light);
                 display: grid;
                 grid-template-columns: 70px auto 25px;
-                align-items: center;
                 padding: 10px;
-                border-bottom: 2px solid var(--color-light-light);
 
                 &:hover {
                     background-color: var(--color-light-light);
@@ -40,19 +40,19 @@
                 }
 
                 & .chats_list_avatar {
-                    width: 60px;
-                    height: 60px;
-                    border-radius: 35px;
                     background-color: var(--color-light);
+                    border-radius: 35px;
+                    height: 60px;
+                    width: 60px;
                 }
 
                 & .chats_list_new-count {
-                    font-size: 12px;
-                    border-radius: 20px;
                     background-color: var(--color-red);
+                    border-radius: 20px;
                     color: white;
-                    text-align: center;
+                    font-size: 12px;
                     padding: 3px;
+                    text-align: center;
 
                 }
             }
@@ -60,17 +60,17 @@
     }
 
     & .main-box_right {
-        width: 100%;
         box-sizing: border-box;
-        position: relative;
         color: white;
         overflow: scroll;
+        position: relative;
+        width: 100%;
 
         & .chats_top {
             background-color: var(--color-blue-middle);
             color: var(--color-light);
-            z-index: 2;
             position: relative;
+            z-index: 2;
 
             & .top_avatar {
                 background-color: var(--color-light);
@@ -78,49 +78,49 @@
         }
 
         & .chats_content {
-            position: absolute;
             bottom: 70px;
-            width: 100%;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            padding: 0 80px;
-            box-sizing: border-box;
             height: calc(100vh - 175px);
             overflow-y: scroll;
+            padding: 0 80px;
+            position: absolute;
+            width: 100%;
 
             & .chat_date-box  {
-                position: relative;
-                margin-top: 20px;
                 border-top: 1px solid var(--color-blue-light);
+                margin-top: 20px;
+                position: relative;
             }
 
             & .chat_date {
-                position: relative;
-                top: -11px;
-                text-align: center;
                 margin-bottom: 5px;
+                position: relative;
+                text-align: center;
+                top: -11px;
 
                 & span {
                     background-color: var(--color-blue-light);
+                    border-radius: 10px;
                     color: var(--color-blue-dark);
                     font-size: 12px;
                     padding: 3px 10px;
-                    border-radius: 10px;
                 }
             }
 
             & .chat_message {
-                width: 55%;
                 margin-bottom: 7px;
+                width: 55%;
 
                 & > div {
-                    position: relative;
-                    display: inline-block;
-                    box-sizing: border-box;
-                    overflow: hidden;
-                    border-width: 2px;
                     border-style: solid;
+                    border-width: 2px;
+                    box-sizing: border-box;
+                    display: inline-block;
                     margin-bottom: 1px;
+                    overflow: hidden;
+                    position: relative;
                 }
 
                 &.member-1 {
@@ -140,8 +140,8 @@
 
                 &.member-2 {
                     color: var(--color-blue-middle);
-                    text-align: right;
                     margin-left: auto;
+                    text-align: right;
 
                     & > div {
                         background-color: var(--color-light);
@@ -159,33 +159,33 @@
                 }
 
                 & img {
-                    max-width: 300px;
+                    display: block;
                     height: auto;
-                    display: block
+                    max-width: 300px
                 }
 
                 & .chat_message_time {
-                    position: absolute;
                     bottom: -3px;
-                    right: 10px;
                     color: var(--color-blue-light);
                     font-size: 11px;
                     line-height: 16px;
+                    position: absolute;
+                    right: 10px;
                 }
             }
         }
 
         & .chats_bottom {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            display: grid;
             align-items: center;
+            background-color: var(--color-blue-middle);
+            bottom: 0;
+            box-sizing: border-box;
+            display: grid;
             gap: 20px;
             grid-template-columns: 40px auto 40px;
-            background-color: var(--color-blue-middle);
             padding: 15px 20px;
-            box-sizing: border-box;
+            position: absolute;
+            width: 100%;
 
             & input, button {
                 margin-bottom: 0;
@@ -196,25 +196,25 @@
             }
 
             & .add-file {
-                width: 40px;
-                height: 40px;
-                border-radius: 35px;
                 background-color: var(--color-blue-light);
+                border-radius: 35px;
+                height: 40px;
+                width: 40px;
             }
         }
     }
 }
 
 .chats_top {
+    align-items: center;
     display: flex;
     gap: 20px;
-    align-items: center;
     padding: 10px 20px;
 
     & .top_avatar {
-        width: 40px;
-        height: 40px;
         border-radius: 20px;
+        height: 40px;
+        width: 40px;
     }
 
     & .top_nav {

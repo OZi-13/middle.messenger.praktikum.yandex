@@ -2,34 +2,34 @@ import Block, { BlockProps } from '../../framework/Block';
 import template from './navLineLeft.hbs.ts';
 import { PageName } from '../../App';
 
-interface navLineLeftProps extends BlockProps {
-    nav?: boolean;
-    name: string;
-    avatar?: boolean;
-    changePage: (page: PageName) => void;
+interface NavLineLeftProps extends BlockProps {
+  nav?: boolean;
+  name: string;
+  avatar?: boolean;
+  changePage: (page: PageName) => void;
 }
 
 export class NavLineLeft extends Block {
-    constructor(props: navLineLeftProps) {
+  constructor(props: NavLineLeftProps) {
 
-        const eventObject = {
-            events: {
-                click: (event: Event) => {
-                    if (props.nav) {
-                        event.preventDefault()
-                        props.changePage('profilePage')
-                    }
-                },
-            },
-        };
+    const eventObject = {
+      events: {
+        click: (event: Event) => {
+          if (props.nav) {
+            event.preventDefault();
+            props.changePage('profilePage');
+          }
+        },
+      },
+    };
 
-        super({
-            ...props,
-            ...eventObject,
-        });
-    }
+    super({
+      ...props,
+      ...eventObject,
+    });
+  }
 
-    render(): string {
-        return template
-    }
+  render(): string {
+    return template;
+  }
 }

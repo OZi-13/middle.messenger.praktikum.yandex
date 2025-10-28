@@ -6,4 +6,4 @@ export default `
 {{#if value}} value="{{value}}" {{/if}}
 {{#if placeholder}} placeholder="{{placeholder}}" {{/if}}
 >
-`
+`;

@@ -1,1 +1,1 @@
-export default `<label for="{{forAttr}}">{{text}}</label>`
+export default '<label for="{{forAttr}}">{{text}}</label>';

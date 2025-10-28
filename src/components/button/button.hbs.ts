@@ -7,4 +7,4 @@ export default `
 {{#if disabled}} disabled {{/if}}>
     {{#if text}} {{text}} {{/if}}
 </{{tag}}>
-`
+`;

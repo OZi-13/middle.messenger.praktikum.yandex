@@ -4,20 +4,20 @@ import template from './modalModal.hbs.ts';
 import { ProfileAvatarEdit } from '../profileAvatarEdit';
 
 interface ModalModalProps extends BlockProps {
-    id?: string,
-    class?: string,
-    content: ProfileAvatarEdit;
+  id?: string,
+  class?: string,
+  content: ProfileAvatarEdit;
 }
 
 export class ModalModal extends Block {
-    constructor(props: ModalModalProps) {
+  constructor(props: ModalModalProps) {
 
-        super({
-            ...props,
-        });
-    }
+    super({
+      ...props,
+    });
+  }
 
-    override render(): string {
-        return template
-    }
+  override render(): string {
+    return template;
+  }
 }

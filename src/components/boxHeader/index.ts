@@ -1,19 +1,19 @@
 import Block, { BlockProps } from '../../framework/Block';
 import template from './boxHeader.hbs.ts';
-import './boxHeader.pcss'
+import './boxHeader.pcss';
 
 interface BoxHeaderProps extends BlockProps {
-    header: string;
+  header: string;
 }
 
 export class BoxHeader extends Block {
-    constructor(props: BoxHeaderProps) {
-        super({
-            ...props,
-        })
-    }
+  constructor(props: BoxHeaderProps) {
+    super({
+      ...props,
+    });
+  }
 
-    override render(): string {
-        return template
-    }
+  override render(): string {
+    return template;
+  }
 }

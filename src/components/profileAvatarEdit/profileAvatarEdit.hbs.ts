@@ -4,4 +4,4 @@ export default `
     {{{ Input }}}
     {{{ Button }}}
 </div>
-`
+`;

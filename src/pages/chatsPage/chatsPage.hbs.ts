@@ -20,4 +20,4 @@ export default `
         </div>
     </main>
 </div>
-`
+`;

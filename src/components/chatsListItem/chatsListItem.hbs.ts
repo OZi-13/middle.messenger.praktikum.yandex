@@ -7,4 +7,4 @@ export default `
     </div>
     {{#if newCount }}<div class="chats_list_new-count">{{ newCount }}</div>{{/if}}
 </div>
-`
+`;

@@ -6,28 +6,28 @@ import { Input } from '../input';
 import { Button } from '../button';
 
 export class ProfileAvatarEdit extends Block {
-    constructor() {
+  constructor() {
 
-        super({
-            Label: new Label({
-                forAttr: 'form-avatar',
-                text: 'Загрузить новый аватар'
-            }),
-            Input: new Input({
-                id: 'form-avatar',
-                name: 'avatar',
-                type: 'file',
-                accept: 'image/png, image/jpeg'
-            }),
-            Button: new Button({
-                id: 'form-btn',
-                text: 'Загрузить',
-                tag: 'div',
-            })
-        });
-    }
+    super({
+      Label: new Label({
+        forAttr: 'form-avatar',
+        text: 'Загрузить новый аватар',
+      }),
+      Input: new Input({
+        id: 'form-avatar',
+        name: 'avatar',
+        type: 'file',
+        accept: 'image/png, image/jpeg',
+      }),
+      Button: new Button({
+        id: 'form-btn',
+        text: 'Загрузить',
+        tag: 'div',
+      }),
+    });
+  }
 
-    render(): string {
-        return template
-    }
+  render(): string {
+    return template;
+  }
 }
