@@ -9,7 +9,7 @@ module.exports = {
     },
     overrides: [
         {
-            files: ['*.js', '*.cjs'],
+            files: ['*.js', '*.cjs','vite.config.js','server.js','postcss.config.js'],
             parserOptions: {
                 project: './tsconfig.node.json',
             },
@@ -38,7 +38,5 @@ module.exports = {
         '@typescript-eslint/no-unsafe-member-access': 'off',
         '@typescript-eslint/ban-ts-comment': 'off',
         '@typescript-eslint/no-unused-vars': 'off',
-        '@typescript-eslint/indent': 2,
-        '@typescript-eslint/naming-convention': 2,
     },
 };
