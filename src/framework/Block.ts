@@ -247,6 +247,7 @@ export default class Block {
         this.eventBus().emit(Block.EVENTS.FLOW_CDU, oldTarget, target);
         return true;
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       deleteProperty(target: BlockProps, prop: string): boolean {
         throw new Error('Не разрешено');
       },
