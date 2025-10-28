@@ -7,12 +7,11 @@ interface LinkProps extends BlockProps {
     href: string;
     text: string;
     onClick?: (e: Event) => void;
-    // attr и events уже есть в BlockProps
 }
 
 export class Link extends Block {
     constructor(props: LinkProps) {
-        //const { onClick, attr, ...restProps } = props;
+
         super({
             ...props,
             events: {

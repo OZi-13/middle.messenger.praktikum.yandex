@@ -3,7 +3,7 @@ export default `
 
 {{#if id}} id="{{id}}" {{/if}}
 {{#if class}} class="{{class}}" {{/if}}
-{{#if value}} type="{{value}}" {{/if}}
-{{#if placeholder}} type="{{placeholder}}" {{/if}}
+{{#if value}} value="{{value}}" {{/if}}
+{{#if placeholder}} placeholder="{{placeholder}}" {{/if}}
 >
 `

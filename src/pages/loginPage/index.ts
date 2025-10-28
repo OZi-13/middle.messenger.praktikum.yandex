@@ -1,14 +1,14 @@
-import Block, {BlockProps} from '../../framework/Block';
+import Block, { BlockProps } from '../../framework/Block';
 import {PageName} from '../../App';
 import template from './loginPage.hbs.ts';
 
-import {Header} from '../../components/header';
-import {BoxHeader} from '../../components/boxHeader';
-import {Label} from '../../components/label';
-import {Input} from '../../components/input';
-import {Button} from '../../components/button';
-import {Link} from '../../components/link';
-import {Form} from '../../components/form';
+import { Header } from '../../components/header';
+import { BoxHeader } from '../../components/boxHeader';
+import { Label } from '../../components/label';
+import { Input } from '../../components/input';
+import { Button } from '../../components/button';
+import { Link } from '../../components/link';
+import { Form } from '../../components/form';
 
 interface LoginPageProps extends BlockProps {
     changePage: (page: PageName) => void;
@@ -77,4 +77,3 @@ export class LoginPage extends Block {
         return template;
     }
 }
-

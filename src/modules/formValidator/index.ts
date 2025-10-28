@@ -8,7 +8,7 @@ class FormValidatorClass {
             const [regex, errorMessage] = formValidator[name];
             if(value && !regex.test(value)) return errorMessage;
 
-            if (mode === 'submit' && !value && name !== 'message') return 'Поле обязательно для заполнения';
+            if (mode === 'submit' && !value) return 'Поле обязательно для заполнения';
         }
         return null;
     }

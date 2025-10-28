@@ -1,8 +1,9 @@
 import Block, { BlockProps } from '../../framework/Block';
 import { PageName } from '../../App';
-import { Link } from '../link';
 import template from './header.hbs.ts';
 import './header.pcss'
+
+import { Link } from '../link';
 
 interface HeaderProps extends BlockProps {
     isLoginPage?: string;
@@ -26,7 +27,6 @@ export class Header extends Block {
                 onClick: (event: Event) => {
                     event.preventDefault();
                     event.stopPropagation();
-                    //const page = props.dataPage as PageName;
                     props.changePage('loginPage');
                 },
             }),
@@ -38,7 +38,6 @@ export class Header extends Block {
                 onClick: (event: Event) => {
                     event.preventDefault();
                     event.stopPropagation();
-                    //const page = props.dataPage as PageName;
                     props.changePage('registrationPage');
                 },
             }),
@@ -50,36 +49,40 @@ export class Header extends Block {
                 onClick: (event: Event) => {
                     event.preventDefault();
                     event.stopPropagation();
+                    props.changePage('chatsPage');
                 },
             }),
             LinkProfilePage: new Link({
                 href: '#',
                 class: props.isProfilePage ? 'nav-btn active' : 'nav-btn',
-                dataPage: '_profilePage',
+                dataPage: 'profilePage',
                 text: 'Профиль',
                 onClick: (event: Event) => {
                     event.preventDefault();
                     event.stopPropagation();
+                    props.changePage('profilePage');
                 },
             }),
             LinkNoPage: new Link({
                 href: '#',
                 class: props.isNoPage ? 'nav-btn active' : 'nav-btn',
-                dataPage: '_noPage',
+                dataPage: 'noPage',
                 text: '404',
                 onClick: (event: Event) => {
                     event.preventDefault();
                     event.stopPropagation();
+                    props.changePage('noPage');
                 },
             }),
             LinkNoServerPage: new Link({
                 href: '#',
                 class: props.isNoServerPage ? 'nav-btn active' : 'nav-btn',
-                dataPage: '_noServerPage',
+                dataPage: 'noServerPage',
                 text: '5**',
                 onClick: (event: Event) => {
                     event.preventDefault();
                     event.stopPropagation();
+                    props.changePage('noServerPage');
                 },
             }),
         });

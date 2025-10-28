@@ -165,7 +165,7 @@ export default class Block {
     }
 
     private _render(): void {
-        // console.log('Render'); // убрал, чтобы не спамило
+        //console.log('Render');
         const propsAndStubs = { ...this.props };
         const tmpId =  Math.floor(100000 + Math.random() * 900000);
 

@@ -1,5 +1,4 @@
 import * as Pages from './pages';
-import { chatsListMock, chatMock, profileInfo, ChatsListMockType, ChatMockType, ProfileInfoType } from './helpers/mockData';
 
 type Nullable<T> = T | null;
 
@@ -12,8 +11,6 @@ export type PageName =
     | 'profileEditPassPage'
     | 'noPage'
     | 'noServerPage';
-
-type PageDataValues = ChatsListMockType[] | ChatMockType[] | ProfileInfoType[];
 
 export default class App {
     private state: Record<string, PageName>;
@@ -46,6 +43,42 @@ export default class App {
                 changePage: this.changePage
             });
             newPageElement = registrationPage.getContent();
+
+        } else if (this.state.currentPage === 'chatsPage') {
+            const chatsPage = new Pages.ChatsPage({
+                changePage: this.changePage
+            });
+            newPageElement = chatsPage.getContent();
+
+        } else if (this.state.currentPage === 'profilePage') {
+            const profilePage = new Pages.ProfilePage({
+                changePage: this.changePage
+            });
+            newPageElement = profilePage.getContent();
+
+        } else if (this.state.currentPage === 'profileEditPage') {
+            const profileEditPage = new Pages.ProfileEditPage({
+                changePage: this.changePage
+            });
+            newPageElement = profileEditPage.getContent();
+
+        } else if (this.state.currentPage === 'profileEditPassPage') {
+            const profileEditPassPage = new Pages.ProfileEditPassPage({
+                changePage: this.changePage
+            });
+            newPageElement = profileEditPassPage.getContent();
+
+        } else if (this.state.currentPage === 'noServerPage') {
+            const noServerPage = new Pages.NoServerPage({
+                changePage: this.changePage
+            });
+            newPageElement = noServerPage.getContent();
+
+        } else if (this.state.currentPage === 'noPage') {
+            const noPage = new Pages.NoPage({
+                changePage: this.changePage
+            });
+            newPageElement = noPage.getContent();
         }
 
         if (newPageElement) {

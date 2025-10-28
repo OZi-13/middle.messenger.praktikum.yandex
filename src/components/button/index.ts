@@ -1,12 +1,15 @@
 import Block, {BlockProps} from '../../framework/Block';
 import template from './button.hbs.ts';
-import './button.pcss'
 
 interface ButtonProps extends BlockProps {
         tag: string,
         id?: string,
-        type: string,
-        text: string
+        class?: string,
+        type?: string,
+    dataPage?: string,
+    disabled?: boolean,
+        text?: string,
+    onClick?: (e: Event) => void;
 }
 
 export class Button extends Block {
@@ -22,9 +25,6 @@ export class Button extends Block {
         super({
             ...props,
             ...eventObject, // Объект events добавится ТОЛЬКО, если props.onClick есть
-            attr: {
-                class: props.attr?.class || 'btn',
-            }
         });
     }
 

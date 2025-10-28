@@ -1,11 +1,11 @@
 export default `
-            <form id="{{id}}" class="{{class}}">
+            <form id="{{ id }}" class="{{ class }}">
                 <div class="add-file"></div>
                 <div>
-                    {{{ FormMessage }}}
+                    {{{ message }}}
                 </div>
                 <div class="send-btn">
-                    {{{ Button }}}
+                    {{{ button }}}
                 </div>
             </form>
 `;

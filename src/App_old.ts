@@ -8,13 +8,13 @@ import Input from './components/input/input.hbs';
 import Button from './components/button/button.hbs';
 import Label from './components/label/label.hbs';
 import Link from './components/link';
-import ChatsList from './components/_chatsList/ChatsList.js';
-import Chat from './components/_chat/Chat.js';
-import ProfileList from './components/_profileList/ProfileList.js';
-import ProfileAvatarEdit from './components/ProfileAvatarEdit.js';
+import ChatsList from './components/chatsListItem/chatsListItem.hbs';
+import Chat from './components/chat/Chat.js';
+import ProfileList from './components/profileListItem/profileListItem.hbs';
+import ProfileAvatarEdit from './components/profileAvatarEdit/profileAvatarEdit.hbs';
 import BoxHeader from './components/boxHeader/boxHeader.hbs';
-import NavLine1 from './components/NavLine1.js';
-import NavLine2 from './components/NavLine2.js';
+import NavLine1 from './components/navLineLeft/navLineLeft.hbs';
+import NavLine2 from './components/navLineRight/NavLineRight.js';
 
 Handlebars.registerPartial('Header', Header);
 Handlebars.registerPartial('Input', Input);
@@ -99,12 +99,12 @@ export default class App {
     attachEventListeners(): void {
         if (this.state.currentPage === 'profilePage') {
 
-            const modalBtn: Nullable<HTMLElement> = document.getElementById('modal-btn');
+            const modalBtn: Nullable<HTMLElement> = document.getElementById('modalBox-btn');
             if(modalBtn) {
                 modalBtn.addEventListener('click', () => this.modal());
             }
 
-            const modalBack: Nullable<HTMLElement> = document.getElementById('modal-back');
+            const modalBack: Nullable<HTMLElement> = document.getElementById('modalModal-back');
             if(modalBack) {
                 modalBack.addEventListener('click', () => this.modal());
             }
@@ -225,8 +225,8 @@ export default class App {
     }
 
     modal(): void  {
-        const modalBack: Nullable<HTMLElement> = document.getElementById('modal-back');
-        const modal: Nullable<HTMLElement> = document.getElementById('modal');
+        const modalBack: Nullable<HTMLElement> = document.getElementById('modalModal-back');
+        const modal: Nullable<HTMLElement> = document.getElementById('modalModal');
 
         if(modalBack) {
             modalBack.classList.toggle('none');

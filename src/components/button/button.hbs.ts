@@ -1,9 +1,10 @@
 export default `
-<{{tag}} id="{{id}}"
+<{{tag}} 
+{{#if id}} id="{{id}}" {{/if}}
 {{#if type}} type="{{type}}" {{/if}}
 {{#if class}}  class="{{class}}" {{/if}}
-{{#if data-page}} data-page="{{data-page}}" {{/if}}
+{{#if dataPage}} data-page="{{dataPage}}" {{/if}}
 {{#if disabled}} disabled {{/if}}>
-    {{text}}
+    {{#if text}} {{text}} {{/if}}
 </{{tag}}>
 `

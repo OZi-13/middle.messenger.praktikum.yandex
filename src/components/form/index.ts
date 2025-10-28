@@ -7,7 +7,9 @@ interface FormProps extends BlockProps {
     id: string;
     class?: string;
     onFormSubmit?: (data: Record<string, string>) => void;
-    template?: string;
+    template?: 'templateForm' | 'templateMessage';
+    message?: Block;
+    button?: Block;
 }
 
 export class Form extends Block {
@@ -19,8 +21,7 @@ export class Form extends Block {
                 props.onFormSubmit(validationResult as Record<string, string>);
             }
         };
-
-        const templateName = props.template ?? templateForm;
+        const templateName = props.template == 'templateMessage' ? templateMessage : templateForm;
 
         super({
             ...props,
