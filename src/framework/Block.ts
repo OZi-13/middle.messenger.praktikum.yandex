@@ -41,6 +41,16 @@ export default class Block {
     eventBus.emit(Block.EVENTS.INIT);
   }
 
+  private _removeEvents(): void {
+    const { events = {} } = this.props as BlockProps & { events: Record<string, (e: Event) => void> };
+
+    if (this._element) {
+      Object.keys(events).forEach(eventName => {
+        this._element!.removeEventListener(eventName, events[eventName] as (e: Event) => void);
+      });
+    }
+  }
+
   private _addEvents(): void {
     const { events = {} } = this.props as BlockProps & { events: Record<string, (e: Event) => void> };
 
@@ -165,6 +175,10 @@ export default class Block {
   }
 
   private _render(): void {
+    if (this._element) {
+      this._removeEvents();
+    }
+
     //console.log('Render');
     const propsAndStubs = { ...this.props };
     const tmpId =  Math.floor(100000 + Math.random() * 900000);
@@ -184,7 +198,6 @@ export default class Block {
     const fragment = this._createDocumentElement('template') as HTMLTemplateElement;
     fragment.innerHTML = Handlebars.compile(this.render())(propsAndStubs);
 
-    // 3. Замена заглушек именованных children
     Object.values(this.children).forEach(child => {
       const stub = fragment.content.querySelector(`[data-id="${child._id}"]`);
       if (stub) {
@@ -219,6 +232,7 @@ export default class Block {
       this._element.replaceWith(newElement);
     }
     this._element = newElement;
+
     this._addEvents();
     this.addAttributes();
   }

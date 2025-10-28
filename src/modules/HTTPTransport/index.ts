@@ -31,14 +31,13 @@ function isPlainObject(data: unknown): data is Record<string, unknown> {
 }
 
 function queryStringify(data: Record<string, unknown>): string {
-  if (typeof data !== 'object' || data === null) {
-    throw new Error('Данные должны быть объектом');
+  if (!isPlainObject(data)) {
+    throw new Error('Данные должны быть простым объектом');
   }
 
-  const keys = Object.keys(data);
-  return keys.reduce((result, key, index) => {
-    return `${result}${key}=${String(data[key])}${index < keys.length - 1 ? '&' : ''}`;
-  }, '?');
+  const params = new URLSearchParams(data as Record<string, string>).toString();
+
+  return params ? `?${params}` : '';
 }
 
 export default class HTTPTransport {
