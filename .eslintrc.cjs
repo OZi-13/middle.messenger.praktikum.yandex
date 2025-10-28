@@ -9,9 +9,14 @@ module.exports = {
     },
     overrides: [
         {
-            files: ['*.js', '*.cjs'],
+            files: [
+                '*.config.js',
+                '*.cjs',
+                'server.js'
+            ],
             parserOptions: {
-                project: './tsconfig.node.json',
+                project: null,
+                tsconfigRootDir: null,
             },
         },
     ],
