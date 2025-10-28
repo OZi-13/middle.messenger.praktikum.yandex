@@ -75,6 +75,7 @@ module.exports = {
                 'no-console': 'off',
 
                 '@typescript-eslint/no-misused-promises': 'off',
+                '@typescript-eslint/no-base-to-string': 'off',
             },
         },
     ],
