@@ -9,7 +9,7 @@ export interface BlockProps {
   attr?: Record<string, string | number | boolean>;
 }
 
-export default abstract class Block<Props extends BlockProps = BlockProps> {
+export default class Block {
   static EVENTS = {
     INIT: 'init',
     FLOW_CDM: 'flow:component-did-mount',
@@ -19,9 +19,9 @@ export default abstract class Block<Props extends BlockProps = BlockProps> {
 
   protected _element: Nullable<HTMLElement> = null;
 
-  protected props: Props;
+  protected props: BlockProps;
 
-  protected children: Record<string, Block<BlockProps>>;
+  protected children: Record<string, Block>;
 
   protected lists: Record<string, unknown[]>;
 
@@ -29,10 +29,9 @@ export default abstract class Block<Props extends BlockProps = BlockProps> {
 
   protected _id: number = Math.floor(100000 + Math.random() * 900000);
 
-  constructor(propsWithChildren: Props = {} as Props) {
+  constructor(propsWithChildren: BlockProps = {}) {
     const eventBus = new EventBus();
-
-    const { props, children, lists } = this._getChildrenPropsAndProps(propsWithChildren as BlockProps);
+    const { props, children, lists } = this._getChildrenPropsAndProps(propsWithChildren);
 
     this.props = this._makePropsProxy({ ...props });
     this.children = children;
@@ -76,11 +75,11 @@ export default abstract class Block<Props extends BlockProps = BlockProps> {
 
   private _componentDidMount(): void {
     this.componentDidMount();
-    Object.values(this.children).forEach(child => {(child).dispatchComponentDidMount();});
+    Object.values(this.children).forEach(child => {child.dispatchComponentDidMount();});
     const universalChildren = this.lists.__children__;
     if (Array.isArray(universalChildren)) {
       universalChildren.filter(item => item instanceof Block).forEach(child => {
-        (child as Block<BlockProps>).dispatchComponentDidMount();
+        (child).dispatchComponentDidMount();
       });
     }
   }
@@ -92,7 +91,7 @@ export default abstract class Block<Props extends BlockProps = BlockProps> {
   }
 
   private _componentDidUpdate(oldProps: BlockProps, newProps: BlockProps): void {
-    const response = this.componentDidUpdate(oldProps as Props, newProps as Props);
+    const response = this.componentDidUpdate(oldProps, newProps);
     if (!response) {
       return;
     }
@@ -100,22 +99,23 @@ export default abstract class Block<Props extends BlockProps = BlockProps> {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected componentDidUpdate(_oldProps: Props, _newProps: Props): boolean {
+  protected componentDidUpdate(_oldProps: BlockProps, _newProps: BlockProps): boolean {
     return true;
   }
 
+  // Тут добавляем универсальный слот 'children' в lists
   private _getChildrenPropsAndProps(propsAndChildren: BlockProps): {
-    children: Record<string, Block<BlockProps>>,
+    children: Record<string, Block>,
     props: BlockProps,
     lists: Record<string, unknown[]>
   } {
-    const children: Record<string, Block<BlockProps>> = {};
-    const props: BlockProps = {};
-    const lists: Record<string, unknown[]> = {};
+    const children: Record<string, Block> = {}; // Именованные блоки
+    const props: BlockProps = {}; // Обычные пропсы
+    const lists: Record<string, unknown[]> = {}; // Списки (для коллекций)
 
     // Тут универсальный слот 'children'
     if (Array.isArray(propsAndChildren.children)) {
-      const universalChildren = propsAndChildren.children.filter(item => item instanceof Block) as Block<BlockProps>[];
+      const universalChildren = propsAndChildren.children.filter(item => item instanceof Block);
       if (universalChildren.length > 0) {
         lists.__children__ = universalChildren;
       }
@@ -124,9 +124,9 @@ export default abstract class Block<Props extends BlockProps = BlockProps> {
 
     Object.entries(propsAndChildren).forEach(([key, value]) => {
       if (value instanceof Block) {
-        children[key] = value as Block<BlockProps>;
+        children[key] = value; // Именованные дочерние блоки
       } else if (Array.isArray(value)) {
-        lists[key] = value as unknown[];
+        lists[key] = value as unknown[]; // Именованные списки
       } else {
         props[key] = value; // Обычные пропсы
       }
@@ -153,7 +153,7 @@ export default abstract class Block<Props extends BlockProps = BlockProps> {
     });
   }
 
-  public setProps = (nextProps: Partial<Props>): void => {
+  public setProps = (nextProps: BlockProps): void => {
     if (!nextProps) {
       return;
     }
@@ -201,7 +201,7 @@ export default abstract class Block<Props extends BlockProps = BlockProps> {
     Object.values(this.children).forEach(child => {
       const stub = fragment.content.querySelector(`[data-id="${child._id}"]`);
       if (stub) {
-        stub.replaceWith((child).getContent());
+        stub.replaceWith(child.getContent());
       }
     });
 
@@ -209,7 +209,7 @@ export default abstract class Block<Props extends BlockProps = BlockProps> {
       const listCont = this._createDocumentElement('template') as HTMLTemplateElement;
       child.forEach(item => {
         if (item instanceof Block) {
-          listCont.content.append((item as Block<BlockProps>).getContent());
+          listCont.content.append(item.getContent());
         } else {
           listCont.content.append(String(item));
         }
@@ -237,7 +237,9 @@ export default abstract class Block<Props extends BlockProps = BlockProps> {
     this.addAttributes();
   }
 
-  protected abstract render(): string;
+  protected render(): string {
+    return '';
+  }
 
   public getContent(): HTMLElement {
     if (!this._element) {
@@ -246,7 +248,7 @@ export default abstract class Block<Props extends BlockProps = BlockProps> {
     return this._element;
   }
 
-  private _makePropsProxy(props: BlockProps): Props {
+  private _makePropsProxy(props: BlockProps): BlockProps {
 
     return new Proxy(props, {
       get(target: BlockProps, prop: string): unknown {
@@ -263,7 +265,7 @@ export default abstract class Block<Props extends BlockProps = BlockProps> {
       deleteProperty(_target: BlockProps, _prop: string): boolean {
         throw new Error('Не разрешено');
       },
-    } as ProxyHandler<Props>) as Props;
+    } as ProxyHandler<BlockProps>);
   }
 
   protected _createDocumentElement(tagName: string): HTMLElement {
