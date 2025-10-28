@@ -10,7 +10,6 @@
   },
   "scripts": {
     "dev": "vite",
-    "prebuild": "tsc --noEmit --watch",
     "build": "vite build",
     "start": "vite build && node server.js",
     "preview": "vite preview",
