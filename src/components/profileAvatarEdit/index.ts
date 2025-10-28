@@ -1,4 +1,4 @@
-import Block, { BlockProps } from '../../framework/Block';
+import Block from '../../framework/Block';
 import template from './profileAvatarEdit.hbs.ts';
 
 import { Label } from '../label';

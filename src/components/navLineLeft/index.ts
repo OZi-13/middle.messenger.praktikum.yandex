@@ -16,7 +16,8 @@ export class NavLineLeft extends Block {
             events: {
                 click: (event: Event) => {
                     if (props.nav) {
-                        props.changePage('profilePage');
+                        event.preventDefault()
+                        props.changePage('profilePage')
                     }
                 },
             },

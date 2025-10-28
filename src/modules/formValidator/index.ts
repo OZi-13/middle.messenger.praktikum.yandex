@@ -1,11 +1,11 @@
-import { formValidator } from './formValidatorData.ts';
+import { FormValidatorData } from './formValidatorData.ts';
 type Nullable<T> = T | null;
 
 class FormValidatorClass {
 
     private validatePattern(value: Nullable<string>, name: string, mode: string): Nullable<string> {
-        if (formValidator[name]) {
-            const [regex, errorMessage] = formValidator[name];
+        if (FormValidatorData[name]) {
+            const [regex, errorMessage] = FormValidatorData[name];
             if(value && !regex.test(value)) return errorMessage;
 
             if (mode === 'submit' && !value) return 'Поле обязательно для заполнения';

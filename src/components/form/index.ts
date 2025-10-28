@@ -1,5 +1,5 @@
 import Block, { BlockProps } from '../../framework/Block';
-import { FormValidator } from '../../modules/FormValidator';
+import { FormValidator } from '../../modules/formValidator';
 import templateForm from './form.hbs.ts';
 import templateMessage from './formMessage.hbs.ts';
 

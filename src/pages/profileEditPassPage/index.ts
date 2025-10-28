@@ -10,7 +10,6 @@ import { BoxHeader } from '../../components/boxHeader';
 import { Form } from '../../components/form';
 import { NavLineLeft } from '../../components/navLineLeft';
 import { NavLineRight } from '../../components/navLineRight';
-import {Link} from "../../components/link";
 
 interface ProfileEditPassPageProps extends BlockProps {
     changePage: (page: PageName) => void;

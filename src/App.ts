@@ -24,7 +24,7 @@ export default class App {
     }
 
     render(): void {
-        const appContainer = document.getElementById('app');
+        const appContainer = this.appElement;
         if (!appContainer) {
             console.error('Корневой элемент #app не найден!');
             return;

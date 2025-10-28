@@ -1,7 +1,7 @@
 import Block, { BlockProps } from '../../framework/Block';
 import { PageName } from '../../App';
 import template from './chatsPage.hbs.ts';
-import { chatsListMock, chatMock, ChatsListMockType, ChatMockType } from '../../helpers/mockData';
+import { chatsListMock, ChatsListMockType } from '../../helpers/mockData';
 import './chatsPage.pcss'
 
 import { Header } from '../../components/header';

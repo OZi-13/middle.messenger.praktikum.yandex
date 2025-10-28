@@ -23,7 +23,7 @@ export class ProfilePage extends Block {
         });
 
         const ProfileList = profileInfo.map(
-            ({ header, name, value }: ProfileInfoType) => new ProfileListItem ({
+            ({ header, value }: ProfileInfoType) => new ProfileListItem ({
                 header,
                 value
             })

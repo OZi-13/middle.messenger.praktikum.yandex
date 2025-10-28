@@ -84,12 +84,8 @@ export default class Block {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    protected componentDidUpdate(oldProps: BlockProps, newProps: BlockProps): boolean {
+    protected componentDidUpdate(_oldProps: BlockProps, _newProps: BlockProps): boolean {
         return true;
-    }
-
-    private _makeListProxy(lists: Record<string, unknown[]>): Record<string, unknown[]> {
-        return lists as Record<string, unknown[]>;
     }
 
     // Тут добавляем универсальный слот 'children' в lists
@@ -248,7 +244,7 @@ export default class Block {
                 self.eventBus().emit(Block.EVENTS.FLOW_CDU, oldTarget, target);
                 return true;
             },
-            deleteProperty(target: BlockProps, prop: string): boolean {
+            deleteProperty(_target: BlockProps, _prop: string): boolean {
                 throw new Error('Не разрешено');
             },
         } as ProxyHandler<BlockProps>);
