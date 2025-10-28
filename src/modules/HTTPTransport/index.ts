@@ -1,24 +1,26 @@
-type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+type HTTPMethodType = 'GET' | 'POST' | 'PUT' | 'DELETE';
 type DataPayload = Record<string, unknown> | FormData | string | null;
 
-type Options = {
-  method?: HTTPMethod;
+type RequestOptions = {
+  method: HTTPMethodType;
+  data?: DataPayload;
+  headers?: Record<string, string>;
+};
+
+type UserOptions = {
   headers?: Record<string, string>;
   data?: DataPayload;
   timeout?: number;
 };
-type RequestOptions = {
-  method: HTTPMethod;
-  data?: DataPayload;
-  headers?: Record<string, string>;
-};
 
-const METHODS: Record<string, HTTPMethod> = {
+type MethodWrapper = <R = XMLHttpRequest>(url: string, options?: UserOptions) => Promise<R>;
+
+const METHODS: Record<string, HTTPMethodType> = {
   GET: 'GET',
   POST: 'POST',
   PUT: 'PUT',
   DELETE: 'DELETE',
-};
+} as const;
 
 function isPlainObject(data: unknown): data is Record<string, unknown> {
   if (data === null || typeof data !== 'object') {
@@ -43,40 +45,45 @@ function queryStringify(data: Record<string, unknown>): string {
 export default class HTTPTransport {
   private baseUrl: string;
 
+  public get: MethodWrapper;
+
+  public post: MethodWrapper;
+
+  public put: MethodWrapper;
+
+  public delete: MethodWrapper;
+
   constructor(baseUrl: string = '') {
     this.baseUrl = baseUrl;
+
+    this.get = this.createMethod(METHODS.GET);
+    this.post = this.createMethod(METHODS.POST);
+    this.put = this.createMethod(METHODS.PUT);
+    this.delete = this.createMethod(METHODS.DELETE);
   }
 
-  // --- Методы-обёртки ---
+  // --- Фабричный метод ---
 
-  get = (url: string, options: Options = {}) => {
-    const { timeout, ...restOptions } = options;
-    return this.request(this.baseUrl + url, { ...restOptions, method: METHODS.GET }, timeout);
-  };
+  private createMethod(method: HTTPMethodType): MethodWrapper {
+    return (url, options = {}) => {
+      const { timeout, ...restOptions } = options;
 
-  post = (url: string, options: Options = {}) => {
-    const { timeout, ...restOptions } = options;
-    return this.request(this.baseUrl + url, { ...restOptions, method: METHODS.POST }, timeout);
-  };
+      return this.request(
+        this.baseUrl + url,
+        { ...restOptions, method },
+        timeout,
+      );
+    };
+  }
 
-  put = (url: string, options: Options = {}) => {
-    const { timeout, ...restOptions } = options;
-    return this.request(this.baseUrl + url, { ...restOptions, method: METHODS.PUT }, timeout);
-  };
+  // --- Основной метод запроса (с дженериком) ---
 
-  delete = (url: string, options: Options = {}) => {
-    const { timeout, ...restOptions } = options;
-    return this.request(this.baseUrl + url, { ...restOptions, method: METHODS.DELETE }, timeout);
-  };
-
-  // --- Основной метод запроса ---
-
-  private request = (url: string, options: RequestOptions, timeout: number = 5000): Promise<XMLHttpRequest> => {
+  private request = <R = XMLHttpRequest>(url: string, options: RequestOptions, timeout: number = 5000): Promise<R> => {
     const { headers = {}, method, data } = options;
 
     return new Promise((resolve, reject) => {
       if (!method) {
-        return reject(new Error('No HTTP method specified'));
+        return reject(new Error('Не указан HTTP метод'));
       }
 
       const xhr = new XMLHttpRequest();
@@ -98,7 +105,7 @@ export default class HTTPTransport {
       });
 
       xhr.onload = function () {
-        resolve(xhr);
+        resolve(xhr as unknown as R);
       };
 
       xhr.onabort = () => reject(new Error('Request aborted'));
@@ -112,7 +119,6 @@ export default class HTTPTransport {
       } else if (data instanceof FormData) {
         xhr.send(data);
       } else {
-        // Для POST/PUT/DELETE отправляем JSON-строку
         xhr.send(JSON.stringify(data));
       }
     });
