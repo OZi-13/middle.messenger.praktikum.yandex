@@ -38,5 +38,7 @@ module.exports = {
         '@typescript-eslint/no-unsafe-member-access': 'off',
         '@typescript-eslint/ban-ts-comment': 'off',
         '@typescript-eslint/no-unused-vars': 'off',
+        '@typescript-eslint/indent': 2,
+        '@typescript-eslint/naming-convention': 2,
     },
 };
