@@ -1,0 +1,25 @@
+.profile-avatar {
+    background-color: var(--color-light);
+    border-radius: 75px;
+    cursor: pointer;
+    height: 150px;
+    margin: 0 auto 10px;
+    opacity: 1;
+    position: relative;
+    width: 150px;
+
+    &:hover {
+        opacity: 0.5;
+
+        &::before {
+            color: white;
+            content:"+";
+            font-size: 80px;
+            left: 58px;
+            position: absolute;
+            text-align: center;
+            top: 65px;
+            vertical-align: center;
+        }
+    }
+}

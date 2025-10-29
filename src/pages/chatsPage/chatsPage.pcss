@@ -1,0 +1,224 @@
+#main-box {
+    display: grid;
+    grid-template-columns: 350px auto;
+    height: 100%;
+
+    & .main-box_left {
+        background-color: white;
+        box-sizing: border-box;
+
+        & .chats_top {
+            background-color: var(--color-light);
+            justify-content: flex-end;
+
+            & .top_avatar {
+                background-color: var(--color-blue-light);
+            }
+
+            &.nav-btn:hover {
+                background-color: var(--color-light-light);
+
+                & .top_name {
+                    text-decoration: underline;
+                }
+            }
+        }
+
+        & .chats_content {
+            padding: 20px;
+
+            & .content_box > div {
+                align-items: center;
+                border-bottom: 2px solid var(--color-light-light);
+                display: grid;
+                grid-template-columns: 70px auto 25px;
+                padding: 10px;
+
+                &:hover {
+                    background-color: var(--color-light-light);
+                    cursor: pointer;
+                }
+
+                & .chats_list_avatar {
+                    background-color: var(--color-light);
+                    border-radius: 35px;
+                    height: 60px;
+                    width: 60px;
+                }
+
+                & .chats_list_new-count {
+                    background-color: var(--color-red);
+                    border-radius: 20px;
+                    color: white;
+                    font-size: 12px;
+                    padding: 3px;
+                    text-align: center;
+
+                }
+            }
+        }
+    }
+
+    & .main-box_right {
+        box-sizing: border-box;
+        color: white;
+        overflow: scroll;
+        position: relative;
+        width: 100%;
+
+        & .chats_top {
+            background-color: var(--color-blue-middle);
+            color: var(--color-light);
+            position: relative;
+            z-index: 2;
+
+            & .top_avatar {
+                background-color: var(--color-light);
+            }
+        }
+
+        & .chats_content {
+            bottom: 70px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 175px);
+            overflow-y: scroll;
+            padding: 0 80px;
+            position: absolute;
+            width: 100%;
+
+            & .chat_date-box  {
+                border-top: 1px solid var(--color-blue-light);
+                margin-top: 20px;
+                position: relative;
+            }
+
+            & .chat_date {
+                margin-bottom: 5px;
+                position: relative;
+                text-align: center;
+                top: -11px;
+
+                & span {
+                    background-color: var(--color-blue-light);
+                    border-radius: 10px;
+                    color: var(--color-blue-dark);
+                    font-size: 12px;
+                    padding: 3px 10px;
+                }
+            }
+
+            & .chat_message {
+                margin-bottom: 7px;
+                width: 55%;
+
+                & > div {
+                    border-style: solid;
+                    border-width: 2px;
+                    box-sizing: border-box;
+                    display: inline-block;
+                    margin-bottom: 1px;
+                    overflow: hidden;
+                    position: relative;
+                }
+
+                &.member-1 {
+                    color: var(--color-light);
+                    justify-content: flex-start;
+
+                    & > div {
+                        background-color: var(--color-blue-middle);
+                        border-color: var(--color-blue-middle);
+                        border-radius: 20px;
+
+                        &:first-child {
+                            border-top-left-radius: 0;
+                        }
+                    }
+                }
+
+                &.member-2 {
+                    color: var(--color-blue-middle);
+                    margin-left: auto;
+                    text-align: right;
+
+                    & > div {
+                        background-color: var(--color-light);
+                        border-color: var(--color-light);
+                        border-radius: 20px;
+
+                        &:first-child {
+                            border-top-right-radius: 0;
+                        }
+                    }
+                }
+
+                & .chat_message_text {
+                    padding: 5px 8px 9px ;
+                }
+
+                & img {
+                    display: block;
+                    height: auto;
+                    max-width: 300px
+                }
+
+                & .chat_message_time {
+                    bottom: -3px;
+                    color: var(--color-blue-light);
+                    font-size: 11px;
+                    line-height: 16px;
+                    position: absolute;
+                    right: 10px;
+                }
+            }
+        }
+
+        & .chats_bottom {
+            align-items: center;
+            background-color: var(--color-blue-middle);
+            bottom: 0;
+            box-sizing: border-box;
+            display: grid;
+            gap: 20px;
+            grid-template-columns: 40px auto 40px;
+            padding: 15px 20px;
+            position: absolute;
+            width: 100%;
+
+            & input, button {
+                margin-bottom: 0;
+            }
+
+            & .send-btn {
+                width: 40px;
+            }
+
+            & .add-file {
+                background-color: var(--color-blue-light);
+                border-radius: 35px;
+                height: 40px;
+                width: 40px;
+            }
+        }
+    }
+}
+
+.chats_top {
+    align-items: center;
+    display: flex;
+    gap: 20px;
+    padding: 10px 20px;
+
+    & .top_avatar {
+        border-radius: 20px;
+        height: 40px;
+        width: 40px;
+    }
+
+    & .top_nav {
+        font-size: 24px;
+        line-height: 40px;
+    }
+}

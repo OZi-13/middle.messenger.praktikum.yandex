@@ -1,0 +1,6 @@
+node_modules
+dist
+build
+vite.config.js
+server.js
+postcss.config.js
