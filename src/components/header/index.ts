@@ -1,9 +1,13 @@
 import Block, { BlockProps } from '../../framework/Block';
-import { PageName } from '../../App';
 import template from './header.hbs.ts';
 import './header.pcss';
 
+import Router from '../../framework/router';
+import { ROUTER } from '../../links';
+
 import { Link } from '../link';
+
+const router = new Router('');
 
 interface HeaderProps extends BlockProps {
   isLoginPage?: string;
@@ -12,7 +16,6 @@ interface HeaderProps extends BlockProps {
   isProfilePage?: string;
   isNoPage?: string;
   isNoServerPage?: string;
-  changePage: (page: PageName) => void;
 }
 
 export class Header extends Block {
@@ -27,7 +30,7 @@ export class Header extends Block {
         onClick: (event: Event) => {
           event.preventDefault();
           event.stopPropagation();
-          props.changePage('loginPage');
+          router.go(ROUTER.login);
         },
       }),
       LinkRegistrationPage: new Link({
@@ -38,7 +41,7 @@ export class Header extends Block {
         onClick: (event: Event) => {
           event.preventDefault();
           event.stopPropagation();
-          props.changePage('registrationPage');
+          router.go(ROUTER.registration);
         },
       }),
       LinkChatsPage: new Link({
@@ -49,7 +52,7 @@ export class Header extends Block {
         onClick: (event: Event) => {
           event.preventDefault();
           event.stopPropagation();
-          props.changePage('chatsPage');
+            router.go(ROUTER.chats);
         },
       }),
       LinkProfilePage: new Link({
@@ -60,7 +63,7 @@ export class Header extends Block {
         onClick: (event: Event) => {
           event.preventDefault();
           event.stopPropagation();
-          props.changePage('profilePage');
+            router.go(ROUTER.profile);
         },
       }),
       LinkNoPage: new Link({
@@ -71,7 +74,7 @@ export class Header extends Block {
         onClick: (event: Event) => {
           event.preventDefault();
           event.stopPropagation();
-          props.changePage('noPage');
+            router.go(ROUTER.noPage);
         },
       }),
       LinkNoServerPage: new Link({
@@ -82,7 +85,7 @@ export class Header extends Block {
         onClick: (event: Event) => {
           event.preventDefault();
           event.stopPropagation();
-          props.changePage('noServerPage');
+            router.go(ROUTER.noServer);
         },
       }),
     });
