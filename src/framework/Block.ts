@@ -7,6 +7,8 @@ export interface BlockProps {
   [key: string]: unknown;
   events?: Record<string, (e: Event) => void>;
   attr?: Record<string, string | number | boolean>;
+  changePage?: (page: string) => void;
+  routerLink?: string;
 }
 
 export default class Block {
@@ -15,6 +17,7 @@ export default class Block {
     FLOW_CDM: 'flow:component-did-mount',
     FLOW_CDU: 'flow:component-did-update',
     FLOW_RENDER: 'flow:render',
+    FLOW_CWU: 'flow:component-will-unmount',
   } as const;
 
   protected _element: Nullable<HTMLElement> = null;
@@ -67,6 +70,7 @@ export default class Block {
     eventBus.on(Block.EVENTS.FLOW_CDM, this._componentDidMount.bind(this) as EventCallback);
     eventBus.on(Block.EVENTS.FLOW_CDU, this._componentDidUpdate.bind(this) as EventCallback);
     eventBus.on(Block.EVENTS.FLOW_RENDER, this._render.bind(this) as EventCallback);
+    eventBus.on(Block.EVENTS.FLOW_CWU, this._componentWillUnmount.bind(this) as EventCallback);
   }
 
   protected init(): void {
@@ -88,6 +92,27 @@ export default class Block {
 
   public dispatchComponentDidMount(): void {
     this.eventBus().emit(Block.EVENTS.FLOW_CDM);
+  }
+
+  private _componentWillUnmount(): void {
+        this.componentWillUnmount();
+        this._removeEvents();
+
+        Object.values(this.children).forEach(child => {
+            child.dispatchComponentWillUnmount();
+        });
+        const universalChildren = this.lists.__children__;
+        if (Array.isArray(universalChildren)) {
+            universalChildren.filter(item => item instanceof Block).forEach(child => {
+                (child).dispatchComponentWillUnmount();
+            });
+        }
+  }
+
+  protected componentWillUnmount(): void {}
+
+  public dispatchComponentWillUnmount(): void {
+        this.eventBus().emit(Block.EVENTS.FLOW_CWU);
   }
 
   private _componentDidUpdate(oldProps: BlockProps, newProps: BlockProps): void {
@@ -153,13 +178,27 @@ export default class Block {
     });
   }
 
-  public setProps = (nextProps: BlockProps): void => {
-    if (!nextProps) {
-      return;
-    }
+    public setProps = (nextProps: BlockProps): void => {
+        if (!nextProps) {
+            return;
+        }
 
-    Object.assign(this.props, nextProps);
-  };
+        // --- Добавляем логику разбора дочерних компонентов ---
+        const { children: newChildren, props: newProps, lists: newLists } =
+            this._getChildrenPropsAndProps(nextProps);
+
+        // 1. Обновляем children и lists
+        Object.assign(this.children, newChildren);
+        Object.assign(this.lists, newLists);
+
+        // 2. Сравниваем и обновляем props
+        const oldProps = { ...this.props };
+        Object.assign(this.props, newProps);
+        // ----------------------------------------------------
+
+        // 3. Вызываем событие FLOW_CDU
+        this.eventBus().emit(Block.EVENTS.FLOW_CDU, oldProps, this.props);
+    };
 
   public setLists = (nextList: Record<string, unknown[]>): void => {
     if (!nextList) {

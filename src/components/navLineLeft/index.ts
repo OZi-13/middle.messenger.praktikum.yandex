@@ -1,15 +1,15 @@
 import Block, { BlockProps } from '../../framework/Block';
 import template from './navLineLeft.hbs.ts';
-import { PageName } from '../../App';
+
+import { wrapRouter } from "../../utils/wrapRouter.ts";
 
 interface NavLineLeftProps extends BlockProps {
   nav?: boolean;
   name: string;
   avatar?: boolean;
-  changePage: (page: PageName) => void;
 }
 
-export class NavLineLeft extends Block {
+class NavLineLeft extends Block {
   constructor(props: NavLineLeftProps) {
 
     const eventObject = {
@@ -17,7 +17,7 @@ export class NavLineLeft extends Block {
         click: (event: Event) => {
           if (props.nav) {
             event.preventDefault();
-            props.changePage('profilePage');
+            props.router.go(props.routerLink);
           }
         },
       },
@@ -33,3 +33,6 @@ export class NavLineLeft extends Block {
     return template;
   }
 }
+
+const NavLineLeftRouter = wrapRouter(NavLineLeft);
+export { NavLineLeftRouter as NavLineLeft };

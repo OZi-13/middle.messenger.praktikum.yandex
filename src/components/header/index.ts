@@ -2,12 +2,10 @@ import Block, { BlockProps } from '../../framework/Block';
 import template from './header.hbs.ts';
 import './header.pcss';
 
-import Router from '../../framework/router';
-import { ROUTER } from '../../links';
+import { ROUTER } from '../../utils/links.ts';
+import { wrapRouter } from "../../utils/wrapRouter";
 
 import { Link } from '../link';
-
-const router = new Router('');
 
 interface HeaderProps extends BlockProps {
   isLoginPage?: string;
@@ -18,74 +16,68 @@ interface HeaderProps extends BlockProps {
   isNoServerPage?: string;
 }
 
-export class Header extends Block {
+class Header extends Block {
   constructor(props: HeaderProps) {
     super({
       ...props,
       LinkLoginPage: new Link({
-        href: '#',
+        href: ROUTER.login,
         class: props.isLoginPage ? 'nav-btn active' : 'nav-btn',
-        dataPage: 'loginPage',
         text: 'Войти',
         onClick: (event: Event) => {
           event.preventDefault();
           event.stopPropagation();
-          router.go(ROUTER.login);
+          props.router.go(ROUTER.login);
         },
       }),
       LinkRegistrationPage: new Link({
-        href: '#',
+        href: ROUTER.registration,
         class: props.isRegistrationPage ? 'nav-btn active' : 'nav-btn',
-        dataPage: 'registrationPage',
         text: 'Регистрация',
         onClick: (event: Event) => {
           event.preventDefault();
           event.stopPropagation();
-          router.go(ROUTER.registration);
+          props.router.go(ROUTER.registration);
         },
       }),
       LinkChatsPage: new Link({
-        href: '#',
+        href: ROUTER.chats,
         class: props.isChatsPage ? 'nav-btn active' : 'nav-btn',
-        dataPage: 'chatsPage',
         text: 'Чаты',
         onClick: (event: Event) => {
           event.preventDefault();
           event.stopPropagation();
-            router.go(ROUTER.chats);
+          props.router.go(ROUTER.chats);
         },
       }),
       LinkProfilePage: new Link({
-        href: '#',
+        href: ROUTER.profile,
         class: props.isProfilePage ? 'nav-btn active' : 'nav-btn',
-        dataPage: 'profilePage',
         text: 'Профиль',
         onClick: (event: Event) => {
           event.preventDefault();
           event.stopPropagation();
-            router.go(ROUTER.profile);
+          props.router.go(ROUTER.profile);
         },
       }),
       LinkNoPage: new Link({
-        href: '#',
+        href: ROUTER.noPage,
         class: props.isNoPage ? 'nav-btn active' : 'nav-btn',
-        dataPage: 'noPage',
         text: '404',
         onClick: (event: Event) => {
           event.preventDefault();
           event.stopPropagation();
-            router.go(ROUTER.noPage);
+          props.router.go(ROUTER.noPage);
         },
       }),
       LinkNoServerPage: new Link({
-        href: '#',
+        href: ROUTER.noServer,
         class: props.isNoServerPage ? 'nav-btn active' : 'nav-btn',
-        dataPage: 'noServerPage',
         text: '5**',
         onClick: (event: Event) => {
           event.preventDefault();
           event.stopPropagation();
-            router.go(ROUTER.noServer);
+          props.router.go(ROUTER.noServer);
         },
       }),
     });
@@ -95,3 +87,6 @@ export class Header extends Block {
     return template;
   }
 }
+
+const HeaderRouter = wrapRouter(Header);
+export { HeaderRouter as Header };

@@ -3,10 +3,10 @@ import template from './modalBox.hbs.ts';
 
 import { Button } from '../button';
 import { ModalModal } from '../modalModal';
-import { ProfileAvatarEdit } from '../profileAvatarEdit';
+import { ProfileAvatarEditForm } from '../profileAvatarEditForm';
 
 interface ModalBoxProps extends BlockProps {
-  modalContent: ProfileAvatarEdit;
+  modalContent: ProfileAvatarEditForm;
 }
 
 export class ModalBox extends Block {

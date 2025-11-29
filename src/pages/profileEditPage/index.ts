@@ -1,7 +1,5 @@
 import Block, { BlockProps } from '../../framework/Block';
-import { PageName } from '../../App';
 import template from './profileEditPage.hbs';
-import { profileInfo, ProfileInfoType } from '../../helpers/mockDataProfile';
 
 import { Header } from '../../components/header';
 import { Label } from '../../components/label';
@@ -12,28 +10,49 @@ import { Form } from '../../components/form';
 import { NavLineLeft } from '../../components/navLineLeft';
 import { NavLineRight } from '../../components/navLineRight';
 
-interface ProfileEditPageProps extends BlockProps {
-  changePage: (page: PageName) => void;
+import { wrapProtected } from '../../utils/wrapProtected';
+import { wrapStore } from '../../utils/wrapStore';
+import { ROUTER } from '../../utils/links';
+
+import { AppStateType } from '../../types/appType';
+import { RouterPropsInterface } from '../../types/routerType';
+import UserService from '../../services/userService';
+import { UserDTO, UserEdit } from '../../types/authType';
+import { profileInfoConst, ProfileStoreInterface } from '../../types/userType';
+
+const UserProfileList = (user: UserDTO | null) => {
+    if (!user) {
+        return [];
+    }
+    const profileListAll =  profileInfoConst.map(({ header, name }): [Label, Input] => {
+        const value: string = user[name] ? String(user[name]) : '';
+        return [
+            new Label({ forAttr: name, text: header }),
+            new Input({ id: name, class: 'form-validate', name: name, type: 'input', value: value }),
+        ];
+    }).flat();
+    profileListAll.push(new Button({ tag:'button', type:'submit', id:'form-btn', text:'Записать' }));
+
+    return profileListAll;
 }
 
-export class ProfileEditPage extends Block {
+interface ProfileEditPageProps extends BlockProps, ProfileStoreInterface, RouterPropsInterface {}
+
+class ProfileEditPage extends Block {
   constructor(props: ProfileEditPageProps) {
 
-    const ProfileList = profileInfo.map(
-      ({ header, name, value }: ProfileInfoType) => {
-        return [
-          new Label({ forAttr:name, text:header }),
-          new Input({ id:value, class:'form-validate', name:name, type:'input', value:value }),
-        ];
-      },
-    ).flat();
-    ProfileList.push(new Button({ tag:'button', type:'submit', id:'form-btn', text:'Записать' }));
+      const userFromProps = props.user as UserDTO | null;
+      const ProfileList = UserProfileList(userFromProps);
+
+      const userServiceInit = new UserService({
+          store: window.store,
+          router: window.router,
+      });
 
     super({
       ...props,
       Header: new Header({
         isProfilePage: '1',
-        changePage: props.changePage,
       }),
       BoxHeader: new BoxHeader({
         header: 'Изменить данные',
@@ -41,7 +60,7 @@ export class ProfileEditPage extends Block {
       NavLineLeft: new NavLineLeft({
         name: 'Назад',
         nav: true,
-        changePage: props.changePage,
+        routerLink: ROUTER.profile,
       }),
       NavLineRight: new NavLineRight({
         nav: true,
@@ -52,6 +71,9 @@ export class ProfileEditPage extends Block {
         id: 'form',
         class: 'info-box_content',
         children: ProfileList,
+        onFormSubmit: (data: Record<string, string>) => {
+            userServiceInit.editUser(data as UserEdit);
+        },
       }),
     });
   }
@@ -60,3 +82,13 @@ export class ProfileEditPage extends Block {
     return template;
   }
 }
+
+const mapStateToProps = (state: AppStateType): ProfileStoreInterface => {
+    return {
+        user: state.user,
+        userName: state.user?.display_name || state.user?.login || '',
+    };
+};
+
+const LoginPageRouter = wrapProtected(wrapStore(mapStateToProps)(ProfileEditPage));
+export { LoginPageRouter as ProfileEditPage };

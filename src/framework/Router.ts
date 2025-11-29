@@ -1,4 +1,5 @@
-import Route from "./route";
+import Route from './route';
+import { ROUTER } from '../utils/links';
 
 export default class Router {
     static __instance: Router | null = null;
@@ -9,7 +10,13 @@ export default class Router {
 
     constructor(rootQuery: string) {
         if (Router.__instance) {
-            return Router.__instance;
+            const instance = Router.__instance;
+
+            if (!instance._rootQuery && rootQuery) {
+                instance._rootQuery = rootQuery;
+            }
+
+            return instance;
         }
 
         this.routes = [];
@@ -21,7 +28,6 @@ export default class Router {
     }
 
     use(pathname: string, block: any) {
-        // Создание нового экземпляра Route
         const route = new Route(pathname, block, { rootQuery: this._rootQuery });
 
         this.routes.push(route);
@@ -30,31 +36,23 @@ export default class Router {
     }
 
     start() {
-        // Слушаем событие popstate для навигации через кнопки "Назад"/"Вперед"
         window.onpopstate = (event) => {
-            // Используем event.state для получения pathname, если доступно,
-            // или текущий путь из window.location.pathname
             const state = event.state || {};
             this._onRoute(state.pathname || (event.currentTarget as Window).location.pathname);
         };
 
-        // Обрабатываем текущий URL при запуске (для поддержки обновления страницы)
         this._onRoute(window.location.pathname);
     }
 
     _onRoute(pathname: string) {
         const route = this.getRoute(pathname);
 
-        // Здесь должна быть логика для 404 страницы,
         if (!route) {
-            // Если роут не найден, перенаправляем на 404
-            const notFoundRoute = this.getRoute('/no-page');
+            const notFoundRoute = this.getRoute(ROUTER.noPage);
             if (notFoundRoute) {
                 this._processRouteChange(notFoundRoute);
                 return;
             }
-            // Если и 404 не найдена, просто завершаем
-            console.error(`Route ${pathname} not found and fallback /no-page is missing.`);
             return;
         }
 
@@ -62,20 +60,17 @@ export default class Router {
     }
 
     private _processRouteChange(route: Route) {
-        // 1. Скрываем (и удаляем) старую страницу, вызывая leave()
         if (this._currentRoute && this._currentRoute !== route) {
             this._currentRoute.leave();
         }
 
-        // 2. Устанавливаем новый активный роут и рендерим
         this._currentRoute = route;
         route.render();
     }
 
     go(pathname: string) {
-        // **Ключевое изменение:** Добавляем объект состояния { pathname }
+        window.store.set({ responseError: null });
         this.history.pushState({ pathname }, '', pathname);
-        // Запускаем обработчик маршрута
         this._onRoute(pathname);
     }
 

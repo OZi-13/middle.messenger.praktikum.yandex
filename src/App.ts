@@ -1,21 +1,44 @@
 import * as Pages from './pages';
-import Router from "./framework/router";
-import { ROUTER } from "./links";
+import { Store, StoreEvents } from './framework/Store';
+import Router from './framework/router';
+import { ROUTER } from './utils/links';
+import AuthService from './services/authService';
+
+declare global {
+    interface Window {
+        store: Store;
+        router: Router;
+    }
+}
 
 export default class App {
-    private readonly ROOT_QUERY = '#app';
+    private readonly ROOT_ELEMENT: string = '#app';
 
-  constructor() {
-      this.initRouter();
-  }
+    constructor() {
+    }
 
-    private initRouter(): void {
-        const router = new Router(this.ROOT_QUERY);
+    private initStore(): Store {
+        const store = Store.getInstance();
+        window.store = store;
+        console.log('Store готов.');
 
-        if (!document.querySelector(this.ROOT_QUERY)) {
-            console.error(`Корневой элемент ${this.ROOT_QUERY} не найден!`);
-            return;
+        window.store.on(StoreEvents.Updated, (prevState, nextState) => {
+            console.groupCollapsed('Store Updated');
+            console.log('Prev State:', prevState);
+            console.log('Next State:', nextState);
+            console.groupEnd();
+        });
+        return store;
+    }
+
+    private async initRouter(): Promise<Router> {
+        const router = new Router(this.ROOT_ELEMENT);
+
+        if (!document.querySelector(this.ROOT_ELEMENT)) {
+            console.error(`Элемент ${this.ROOT_ELEMENT} не найден!`);
+            throw new Error(`Элемент ${this.ROOT_ELEMENT} не найден!`);
         }
+        window.router = router;
 
         router
             .use(ROUTER.login, Pages.LoginPage)
@@ -27,13 +50,17 @@ export default class App {
             .use(ROUTER.noPage, Pages.NoPage)
             .use(ROUTER.noServer, Pages.NoServerPage)
 
-        router.start();
+        return router;
     }
 
-    public render(): void {
-        console.log('Router initialized and started.');
-        // Здесь можно добавить проверку аутентификации,
-        // чтобы перенаправить пользователя на /chats или /login
-        // Например: if (!isAuth) router.go(ROUTER.login);
+    public async render(): Promise<void> {
+        const store = this.initStore();
+        const router = await this.initRouter();
+
+        const authService = new AuthService({store, router});
+        await authService.checkLoginUser();
+
+        router.start();
+        console.log('Приложение запущено.');
     }
 }

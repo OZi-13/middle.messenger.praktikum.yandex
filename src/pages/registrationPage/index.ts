@@ -1,6 +1,5 @@
 import Block, { BlockProps } from '../../framework/Block';
-import { PageName } from '../../App';
-import template from './registrationPage.hbs.ts';
+import template from './registrationPage.hbs';
 
 import { Header } from '../../components/header';
 import { BoxHeader } from '../../components/boxHeader';
@@ -9,13 +8,27 @@ import { Input } from '../../components/input';
 import { Button } from '../../components/button';
 import { Link } from '../../components/link';
 import { Form } from '../../components/form';
+import {ErrorBox} from '../../components/ErrorBox';
 
-interface RegistrationPageProps extends BlockProps {
-  changePage: (page: PageName) => void;
-}
+import { ROUTER } from '../../utils/links.ts';
+import { wrapRouter } from '../../utils/wrapRouter';
+import { wrapStore } from '../../utils/wrapStore';
+import { wrapProtected } from '../../utils/wrapProtected';
+import AuthService from '../../services/authService';
 
-export class RegistrationPage extends Block {
+import { RegistrationType } from '../../types/authType';
+import { AppStateType } from '../../types/appType';
+import { RouterInterface, RouterPropsInterface } from '../../types/routerType';
+
+interface RegistrationPageProps extends BlockProps, RouterInterface, RouterPropsInterface {}
+
+class RegistrationPage extends Block {
   constructor(props: RegistrationPageProps) {
+
+      const authServiceInit = new AuthService({
+          store: window.store,
+          router: window.router,
+      });
 
     const formChildren = [
       new Label({
@@ -78,7 +91,6 @@ export class RegistrationPage extends Block {
         name: 'password',
         type: 'password',
       }),
-
       new Button({
         tag: 'button',
         type: 'submit',
@@ -87,12 +99,11 @@ export class RegistrationPage extends Block {
       }),
       new Link({
         class: 'nav-btn',
-        href: '#',
-        dataPage: 'loginPage',
+        href: ROUTER.login,
         text: 'Войти',
         onClick: (event: Event) => {
           event.preventDefault();
-          props.changePage('loginPage');
+          props.router.go(ROUTER.login);
         },
       }),
     ];
@@ -109,11 +120,40 @@ export class RegistrationPage extends Block {
         id: 'form',
         class: 'info-box_content',
         children: formChildren,
+
+          onFormSubmit: (data: Record<string, string>) => {
+              console.log('Данные формы:', data);
+              authServiceInit.registration(data as RegistrationType);
+          },
+
       }),
+        ErrorBox:  new ErrorBox({text: props.responseError as string | null}),
     });
   }
+
+    protected override componentDidUpdate(oldProps: RegistrationPageProps, newProps: RegistrationPageProps): boolean {
+
+        if (oldProps.responseError !== newProps.responseError && newProps.responseError !== null) {
+
+            (this as Block).setProps({
+                ErrorBox: new ErrorBox({text: newProps.responseError as string}),
+            } as Partial<RegistrationPageProps>);
+
+            return false;
+        }
+        return super.componentDidUpdate(oldProps, newProps);
+    }
 
   override render() {
     return template;
   }
 }
+
+const mapStateToProps = (state: AppStateType): RouterPropsInterface => {
+    return {
+        responseError: state.responseError,
+    };
+};
+
+const RegistrationPageRouter = wrapRouter(wrapProtected(wrapStore(mapStateToProps)(RegistrationPage)));
+export { RegistrationPageRouter as RegistrationPage };

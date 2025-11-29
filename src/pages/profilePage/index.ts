@@ -1,33 +1,51 @@
 import Block, { BlockProps } from '../../framework/Block';
-import { PageName } from '../../App';
 import template from './profilePage.hbs';
-import { profileInfo, ProfileInfoType } from '../../helpers/mockDataProfile';
 import './profilePage.pcss';
 
 import { Header } from '../../components/header';
 import { Button } from '../../components/button';
 import { Link } from '../../components/link';
 import { ProfileListItem } from '../../components/profileListItem';
-import { ProfileAvatarEdit } from '../../components/profileAvatarEdit';
+import { ProfileAvatarEditForm } from '../../components/profileAvatarEditForm';
 import { ModalBox } from '../../components/modalBox';
 
-interface ProfilePageProps extends BlockProps {
-  changePage: (page: PageName) => void;
+import { ROUTER } from '../../utils/links.ts';
+import { wrapRouter } from '../../utils/wrapRouter';
+import { wrapStore } from '../../utils/wrapStore';
+import AuthService from '../../services/authService';
+
+import { AppStateType } from '../../types/appType';
+import * as Type from '../../types/apiType';
+import { profileInfoConst, ProfileStoreInterface } from '../../types/userType';
+import { RouterPropsInterface } from '../../types/routerType';
+import { wrapProtected } from '../../utils/wrapProtected';
+
+interface ProfilePageProps extends BlockProps, RouterPropsInterface {}
+
+const UserProfileList = (user: UserDTO | null): ProfileListItem[] => {
+    if (!user) {
+        return [];
+    }
+    return profileInfoConst.map(({ header, name }) => {
+        const value = user[name] ? String(user[name]) : '';
+        return new ProfileListItem({ header, value });
+    });
 }
 
-export class ProfilePage extends Block {
+class ProfilePage extends Block {
   constructor(props: ProfilePageProps) {
 
+      const authServiceInit = new AuthService({
+          store: window.store,
+          router: window.router,
+      });
+
     const modalBoxInstance = new ModalBox({
-      modalContent: new ProfileAvatarEdit(),
+      modalContent: new ProfileAvatarEditForm(),
     });
 
-    const ProfileList = profileInfo.map(
-      ({ header, value }: ProfileInfoType) => new ProfileListItem({
-        header,
-        value,
-      }),
-    );
+    const userFromProps = props.user as UserDTO | null;
+    const ProfileList = UserProfileList(userFromProps);
 
     super({
       ...props,
@@ -39,30 +57,27 @@ export class ProfilePage extends Block {
         tag: 'div',
         class: 'nav-btn btn',
         text: 'Изменить данные',
-        dataPage: 'profileEditPage',
         onClick: (event: Event) => {
           event.preventDefault();
-          props.changePage('profileEditPage');
+          props.router.go(ROUTER.profileEdit);
         },
       }),
       ButtonPass: new Button({
         tag: 'div',
         class: 'nav-btn btn',
         text: 'Изменить пароль',
-        dataPage: 'profileEditPassPage',
         onClick: (event: Event) => {
           event.preventDefault();
-          props.changePage('profileEditPassPage');
+          props.router.go(ROUTER.profileEditPass);
         },
       }),
       Link: new Link({
         class: 'nav-btn',
-        href: '#',
-        dataPage: 'loginPage',
+        href: ROUTER.login,
         text: 'Выйти',
         onClick: (event: Event) => {
           event.preventDefault();
-          props.changePage('loginPage');
+            authServiceInit.logout();
         },
       }),
       ModalBtn: new Button({
@@ -75,8 +90,8 @@ export class ProfilePage extends Block {
         },
       }),
       ProfileList: ProfileList,
-
       ModalBox: modalBoxInstance,
+      UserName: props.user.display_name || props.user.login || '',
     });
   }
 
@@ -84,3 +99,14 @@ export class ProfilePage extends Block {
     return template;
   }
 }
+
+const mapStateToProps = (state: AppStateType): ProfileStoreInterface => {
+    return {
+        user: state.user,
+    };
+};
+
+const ConnectedProfilePage = wrapStore<ProfilePageProps>(mapStateToProps)(ProfilePage);
+const ProfilePageRouter = wrapRouter(wrapProtected(ConnectedProfilePage));
+
+export { ProfilePageRouter as ProfilePage };

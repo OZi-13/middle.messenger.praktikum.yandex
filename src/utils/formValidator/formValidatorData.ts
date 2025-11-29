@@ -1,5 +1,22 @@
 type FormValidatorPattern = [RegExp, string];
-type FormValidatorObject = Record<string, FormValidatorPattern>;
+
+type FileValidatorFunction = (value: FileList | null) => boolean;
+type FileValidatorPattern = [FileValidatorFunction, string];
+
+type ValidatorRule = FormValidatorPattern | FileValidatorPattern;
+type FormValidatorObject = Record<string, ValidatorRule>;
+
+export const validateAvatarFile = (value: FileList | null): boolean => {
+    if (!value || value.length === 0) return false;
+    const file = value[0];
+    const MAX_SIZE = 5 * 1024 * 1024;
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+    if (file.size > MAX_SIZE) return false;
+    if (!ALLOWED_TYPES.includes(file.type)) return false;
+
+    return true;
+};
 
 export const FormValidatorData: FormValidatorObject = {
   first_name: [/^[A-ZА-ЯЁ][a-zA-Zа-яёА-ЯЁ\-]+$/, 'Первая буква загл. Можно только буквы (лат/кир) и дефис.'],
@@ -9,6 +26,7 @@ export const FormValidatorData: FormValidatorObject = {
   email: [/^[a-zA-Z0-9\-_.]+@[a-zA-Z0-9]+\.[a-zA-Z]+$/, 'Должен содержать @ и доменное имя. Можно: лат. буквы, цифры, -, _.'],
   phone: [/^\+?\d{10,15}$/, 'От 10 до 15 цифр. Может начинаться с плюса "+".'],
   message: [/\S+/, 'Сообщение не должно быть пустым'],
+  avatar: [validateAvatarFile, 'Файл не выбран'],
 };
 
 export const FormValidatorKeys: string[] = Object.keys(FormValidatorData);

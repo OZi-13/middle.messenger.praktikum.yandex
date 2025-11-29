@@ -2,6 +2,7 @@ import Block, { BlockProps } from '../../framework/Block';
 import template from './chatsListItem.hbs.ts';
 
 interface ChatsListItemProps extends BlockProps {
+  id: number;
   name: string;
   last: string;
   newCount?: string;

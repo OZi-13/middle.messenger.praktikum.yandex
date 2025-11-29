@@ -1,12 +1,10 @@
 import Block, { BlockProps } from '../../framework/Block';
-import template from './modalModal.hbs.ts';
-
-import { ProfileAvatarEdit } from '../profileAvatarEdit';
+import template from './modalModal.hbs';
 
 interface ModalModalProps extends BlockProps {
   id?: string,
   class?: string,
-  content: ProfileAvatarEdit;
+  content: Block;
 }
 
 export class ModalModal extends Block {

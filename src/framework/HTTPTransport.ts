@@ -2,125 +2,168 @@ type HTTPMethodType = 'GET' | 'POST' | 'PUT' | 'DELETE';
 type DataPayload = Record<string, unknown> | FormData | string | null;
 
 type RequestOptions = {
-  method: HTTPMethodType;
-  data?: DataPayload;
-  headers?: Record<string, string>;
+    method: HTTPMethodType;
+    data?: DataPayload;
+    headers?: Record<string, string>;
 };
 
 type UserOptions = {
-  headers?: Record<string, string>;
-  data?: DataPayload;
-  timeout?: number;
+    headers?: Record<string, string>;
+    data?: DataPayload;
+    timeout?: number;
 };
 
-type MethodWrapper = <R = XMLHttpRequest>(url: string, options?: UserOptions) => Promise<R>;
+type MethodWrapper = <R = any>(url: string, options?: UserOptions) => Promise<R>;
 
 const METHODS: Record<string, HTTPMethodType> = {
-  GET: 'GET',
-  POST: 'POST',
-  PUT: 'PUT',
-  DELETE: 'DELETE',
+    GET: 'GET',
+    POST: 'POST',
+    PUT: 'PUT',
+    DELETE: 'DELETE',
 } as const;
 
-function isPlainObject(data: unknown): data is Record<string, unknown> {
-  if (data === null || typeof data !== 'object') {
-    return false;
-  }
-  if (data instanceof FormData) {
-    return false;
-  }
-  return Object.getPrototypeOf(data) === Object.prototype;
+type StringIndexed = Record<string, any>;
+
+function isArray(value: unknown): value is unknown[] {
+    return Array.isArray(value);
 }
 
-function queryStringify(data: Record<string, unknown>): string {
-  if (!isPlainObject(data)) {
-    throw new Error('Данные должны быть простым объектом');
-  }
+function isObject(value: unknown): value is StringIndexed {
+    return typeof value === 'object' && value !== null && !isArray(value);
+}
 
-  const params = new URLSearchParams(data as Record<string, string>).toString();
+function getParams(data: StringIndexed | unknown[], parentKey = ''): string[] {
+    const result: string[] = [];
 
-  return params ? `?${params}` : '';
+    for (const [key, value] of Object.entries(data)) {
+        let currentKey: string;
+
+        if (parentKey) {
+            currentKey = `${parentKey}[${key}]`;
+        } else {
+            currentKey = key;
+        }
+
+        if (isArray(value) || isObject(value)) {
+            result.push(...getParams(value, currentKey));
+        } else {
+            if (value !== undefined && typeof value !== 'symbol' && typeof value !== 'function') {
+                result.push(`${currentKey}=${encodeURIComponent(String(value))}`);
+            }
+        }
+    }
+
+    return result;
+}
+
+function advancedQueryStringify(data: StringIndexed): string | never {
+    if (!isObject(data)) {
+        throw new Error('Данные для GET-запроса должны быть объектом');
+    }
+
+    const params = getParams(data);
+
+    return params.length > 0 ? `?${params.join('&')}` : '';
 }
 
 export default class HTTPTransport {
-  private baseUrl: string;
+    private baseUrl: string;
+    public get: MethodWrapper;
+    public post: MethodWrapper;
+    public put: MethodWrapper;
+    public delete: MethodWrapper;
 
-  public get: MethodWrapper;
+    constructor(baseUrl: string = '') {
+        this.baseUrl = `https://ya-praktikum.tech/api/v2/${baseUrl}`;
 
-  public post: MethodWrapper;
+        this.get = this.createMethod(METHODS.GET);
+        this.post = this.createMethod(METHODS.POST);
+        this.put = this.createMethod(METHODS.PUT);
+        this.delete = this.createMethod(METHODS.DELETE);
+    }
 
-  public put: MethodWrapper;
+    private createMethod(method: HTTPMethodType): MethodWrapper {
+        return (url, options = {}) => {
+            const { timeout, ...restOptions } = options;
 
-  public delete: MethodWrapper;
+            return this.request(
+                this.baseUrl + url,
+                { ...restOptions, method },
+                timeout,
+            );
+        };
+    }
 
-  constructor(baseUrl: string = '') {
-    this.baseUrl = baseUrl;
+    private request = <R = any>(url: string, options: RequestOptions, timeout: number = 5000): Promise<R> => {
+        const { headers = {}, method, data } = options;
 
-    this.get = this.createMethod(METHODS.GET);
-    this.post = this.createMethod(METHODS.POST);
-    this.put = this.createMethod(METHODS.PUT);
-    this.delete = this.createMethod(METHODS.DELETE);
-  }
+        return new Promise((resolve, reject) => {
+            if (!method) {
+                return reject(new Error('Не указан HTTP метод'));
+            }
 
-  // --- Фабричный метод ---
+            const xhr = new XMLHttpRequest();
+            const isGet = method === METHODS.GET;
 
-  private createMethod(method: HTTPMethodType): MethodWrapper {
-    return (url, options = {}) => {
-      const { timeout, ...restOptions } = options;
+            const isDataObject = isObject(data);
 
-      return this.request(
-        this.baseUrl + url,
-        { ...restOptions, method },
-        timeout,
-      );
+            const finalUrl = isGet && data && isDataObject
+                ? `${url}${advancedQueryStringify(data as StringIndexed)}`
+                : url;
+
+            xhr.open(method, finalUrl);
+
+            // Установка заголовка Content-Type для JSON-запросов
+            if (data && !isGet && !(data instanceof FormData)) {
+                xhr.setRequestHeader('Content-Type', 'application/json');
+            }
+
+            Object.keys(headers).forEach(key => {
+                xhr.setRequestHeader(key, headers[key]);
+            });
+
+            // Важно для аутентификации: отправка куки
+            xhr.withCredentials = true;
+
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    try {
+                        if (xhr.responseText) {
+                            const responseData = JSON.parse(xhr.responseText);
+                            resolve(responseData as R);
+                        } else {
+                            resolve(undefined as R);
+                        }
+                    } catch (e) {
+                        resolve(xhr.responseText as R);
+                    }
+                }else {
+                    let errorData: any;
+                    try {
+                        errorData = JSON.parse(xhr.responseText);
+                    } catch (e) {
+                        errorData = { reason: `Ошибка HTTP: ${xhr.status} ${xhr.statusText || ''}` };
+                    }
+                    reject(errorData);
+
+                }
+            };
+
+            xhr.onabort = () => reject(new Error('Request aborted'));
+            xhr.onerror = () => reject(new Error('Network error')); // Ошибки сети
+
+            xhr.timeout = timeout;
+            xhr.ontimeout = () => reject(new Error(`Request timed out after ${timeout}ms`));
+
+            // Отправка данных
+            if (isGet || !data) {
+                xhr.send();
+            } else if (data instanceof FormData) {
+                xhr.send(data);
+            } else {
+                // Для POST/PUT/DELETE с телом отправляем JSON-строку
+                xhr.send(JSON.stringify(data));
+            }
+        });
     };
-  }
-
-  // --- Основной метод запроса (с дженериком) ---
-
-  private request = <R = XMLHttpRequest>(url: string, options: RequestOptions, timeout: number = 5000): Promise<R> => {
-    const { headers = {}, method, data } = options;
-
-    return new Promise((resolve, reject) => {
-      if (!method) {
-        return reject(new Error('Не указан HTTP метод'));
-      }
-
-      const xhr = new XMLHttpRequest();
-      const isGet = method === METHODS.GET;
-
-      const isObject = isPlainObject(data);
-
-      const finalUrl = isGet && data && isObject
-        ? `${url}${queryStringify(data)}`
-        : url;
-
-      xhr.open(method, finalUrl);
-
-      if (data && !isGet && !(data instanceof FormData)) {
-        xhr.setRequestHeader('Content-Type', 'application/json');
-      }
-      Object.keys(headers).forEach(key => {
-        xhr.setRequestHeader(key, headers[key]);
-      });
-
-      xhr.onload = function () {
-        resolve(xhr as unknown as R);
-      };
-
-      xhr.onabort = () => reject(new Error('Request aborted'));
-      xhr.onerror = () => reject(new Error('Network error'));
-
-      xhr.timeout = timeout;
-      xhr.ontimeout = () => reject(new Error(`Request timed out after ${timeout}ms`));
-
-      if (isGet || !data) {
-        xhr.send();
-      } else if (data instanceof FormData) {
-        xhr.send(data);
-      } else {
-        xhr.send(JSON.stringify(data));
-      }
-    });
-  };
 }
