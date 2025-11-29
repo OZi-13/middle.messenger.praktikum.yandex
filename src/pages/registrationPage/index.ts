@@ -18,9 +18,10 @@ import AuthService from '../../services/authService';
 
 import { RegistrationType } from '../../types/authType';
 import { AppStateType } from '../../types/appType';
-import { RouterInterface, RouterPropsInterface } from '../../types/routerType';
+import { RouterInterface } from '../../types/routerType';
 
-interface RegistrationPageProps extends BlockProps, RouterInterface, RouterPropsInterface {}
+type StoreType = Pick<AppStateType, 'responseError'>;
+interface RegistrationPageProps extends BlockProps, RouterInterface, StoreType {}
 
 class RegistrationPage extends Block {
   constructor(props: RegistrationPageProps) {
@@ -149,7 +150,7 @@ class RegistrationPage extends Block {
   }
 }
 
-const mapStateToProps = (state: AppStateType): RouterPropsInterface => {
+const mapStateToProps = (state: AppStateType): StoreType => {
     return {
         responseError: state.responseError,
     };

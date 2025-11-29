@@ -15,10 +15,10 @@ import { wrapStore } from '../../utils/wrapStore';
 import { ROUTER } from '../../utils/links';
 
 import { AppStateType } from '../../types/appType';
-import { RouterPropsInterface } from '../../types/routerType';
 import UserService from '../../services/userService';
-import { UserDTO, UserEdit } from '../../types/authType';
-import { profileInfoConst, ProfileStoreInterface } from '../../types/userType';
+import { UserDTO } from '../../types/apiType';
+import { UserEditType } from '../../types/userType';
+import { profileInfoConst } from '../../types/userType';
 
 const UserProfileList = (user: UserDTO | null) => {
     if (!user) {
@@ -36,7 +36,8 @@ const UserProfileList = (user: UserDTO | null) => {
     return profileListAll;
 }
 
-interface ProfileEditPageProps extends BlockProps, ProfileStoreInterface, RouterPropsInterface {}
+type StoreType = Pick<AppStateType, 'user'>;
+interface ProfileEditPageProps extends BlockProps, StoreType {}
 
 class ProfileEditPage extends Block {
   constructor(props: ProfileEditPageProps) {
@@ -48,6 +49,8 @@ class ProfileEditPage extends Block {
           store: window.store,
           router: window.router,
       });
+
+      const UserName: string = props.user.display_name || props.user.login || '';
 
     super({
       ...props,
@@ -63,16 +66,15 @@ class ProfileEditPage extends Block {
         routerLink: ROUTER.profile,
       }),
       NavLineRight: new NavLineRight({
-        nav: true,
         avatar: true,
-        name: 'Ваш профиль',
+        name: UserName,
       }),
       Form: new Form({
         id: 'form',
         class: 'info-box_content',
         children: ProfileList,
         onFormSubmit: (data: Record<string, string>) => {
-            userServiceInit.editUser(data as UserEdit);
+            userServiceInit.userEdit(data as UserEditType);
         },
       }),
     });
@@ -83,10 +85,9 @@ class ProfileEditPage extends Block {
   }
 }
 
-const mapStateToProps = (state: AppStateType): ProfileStoreInterface => {
+const mapStateToProps = (state: AppStateType): StoreType => {
     return {
         user: state.user,
-        userName: state.user?.display_name || state.user?.login || '',
     };
 };
 

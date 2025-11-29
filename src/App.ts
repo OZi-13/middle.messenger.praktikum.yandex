@@ -1,8 +1,9 @@
+import { rootElement } from './config';
 import * as Pages from './pages';
 import { Store, StoreEvents } from './framework/Store';
 import Router from './framework/router';
 import { ROUTER } from './utils/links';
-import AuthService from './services/authService';
+import { services } from './framework/ServiceLocator';
 
 declare global {
     interface Window {
@@ -12,7 +13,7 @@ declare global {
 }
 
 export default class App {
-    private readonly ROOT_ELEMENT: string = '#app';
+    private readonly ROOT_ELEMENT: string = rootElement;
 
     constructor() {
     }
@@ -57,8 +58,8 @@ export default class App {
         const store = this.initStore();
         const router = await this.initRouter();
 
-        const authService = new AuthService({store, router});
-        await authService.checkLoginUser();
+        services.init(store, router);
+        await services.get('AuthService').checkLoginUser();
 
         router.start();
         console.log('Приложение запущено.');

@@ -12,15 +12,16 @@ import { ModalBox } from '../../components/modalBox';
 import { ROUTER } from '../../utils/links.ts';
 import { wrapRouter } from '../../utils/wrapRouter';
 import { wrapStore } from '../../utils/wrapStore';
-import AuthService from '../../services/authService';
+
+import { services, AuthServiceType, UserServiceType } from '../../framework/ServiceLocator';
 
 import { AppStateType } from '../../types/appType';
-import * as Type from '../../types/apiType';
-import { profileInfoConst, ProfileStoreInterface } from '../../types/userType';
-import { RouterPropsInterface } from '../../types/routerType';
+import { UserDTO } from '../../types/apiType';
+import { profileInfoConst } from '../../types/userType';
 import { wrapProtected } from '../../utils/wrapProtected';
 
-interface ProfilePageProps extends BlockProps, RouterPropsInterface {}
+type StoreType = Pick<AppStateType, 'user'>;
+interface ProfilePageProps extends BlockProps, StoreType {}
 
 const UserProfileList = (user: UserDTO | null): ProfileListItem[] => {
     if (!user) {
@@ -32,20 +33,32 @@ const UserProfileList = (user: UserDTO | null): ProfileListItem[] => {
     });
 }
 
+const modalBoxInstance: ModalBox = new ModalBox({
+    modalContent: new ProfileAvatarEditForm(),
+});
+
+const createModalBtn = (propsUserAvatar: string | null): Button | null => {
+    return propsUserAvatar !== null ?
+        new Button({
+            tag: 'div',
+            id: 'modal-btn',
+            class: 'profile-avatar',
+            background: userService.userAvatar(propsUserAvatar),
+            onClick: (event: Event) => {
+                event.preventDefault();
+                modalBoxInstance.modal();
+            },
+        }) : null;
+}
+
 class ProfilePage extends Block {
+
   constructor(props: ProfilePageProps) {
 
-      const authServiceInit = new AuthService({
-          store: window.store,
-          router: window.router,
-      });
-
-    const modalBoxInstance = new ModalBox({
-      modalContent: new ProfileAvatarEditForm(),
-    });
-
-    const userFromProps = props.user as UserDTO | null;
-    const ProfileList = UserProfileList(userFromProps);
+      const userFromProps = props.user as UserDTO | null;
+      const ProfileList = UserProfileList(userFromProps);
+      const authService = services.get('AuthService');
+      //const userService = services.get('UserService');
 
     super({
       ...props,
@@ -77,30 +90,39 @@ class ProfilePage extends Block {
         text: 'Выйти',
         onClick: (event: Event) => {
           event.preventDefault();
-            authServiceInit.logout();
+          authService.logout();
         },
       }),
-      ModalBtn: new Button({
-        tag: 'div',
-        id: 'modal-btn',
-        class: 'profile-avatar',
-        onClick: (event: Event) => {
-          event.preventDefault();
-          modalBoxInstance.modal();
-        },
-      }),
+      ModalBtn: createModalBtn(props.user.avatar as string | null),
       ProfileList: ProfileList,
       ModalBox: modalBoxInstance,
       UserName: props.user.display_name || props.user.login || '',
     });
   }
 
+
+    protected override componentDidUpdate(oldProps: ProfilePageProps, newProps: ProfilePageProps): boolean {
+
+        if (oldProps.user.avatar !== newProps.user.avatar) {
+
+            const newModalBtn = createModalBtn(newProps.user.avatar as string | null);
+
+            (this as Block).setProps({
+                ModalBtn: newModalBtn,
+            } as Partial<ProfilePageProps>);
+
+            return false;
+        }
+
+        return super.componentDidUpdate(oldProps, newProps);
+    }
+
   override render() {
     return template;
   }
 }
 
-const mapStateToProps = (state: AppStateType): ProfileStoreInterface => {
+const mapStateToProps = (state: AppStateType): StoreType => {
     return {
         user: state.user,
     };

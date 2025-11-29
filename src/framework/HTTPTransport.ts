@@ -1,3 +1,5 @@
+import { apiUrl } from '../config';
+
 type HTTPMethodType = 'GET' | 'POST' | 'PUT' | 'DELETE';
 type DataPayload = Record<string, unknown> | FormData | string | null;
 
@@ -74,7 +76,7 @@ export default class HTTPTransport {
     public delete: MethodWrapper;
 
     constructor(baseUrl: string = '') {
-        this.baseUrl = `https://ya-praktikum.tech/api/v2/${baseUrl}`;
+        this.baseUrl = `${apiUrl}${baseUrl}`;
 
         this.get = this.createMethod(METHODS.GET);
         this.post = this.createMethod(METHODS.POST);

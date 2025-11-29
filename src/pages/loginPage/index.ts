@@ -16,16 +16,12 @@ import { wrapStore } from '../../utils/wrapStore';
 import { wrapProtected } from '../../utils/wrapProtected';
 import AuthService from '../../services/authService';
 
-import {LoginRequestData } from '../../types/authType.ts';
+import { LoginType } from '../../types/authType';
 import { AppStateType } from '../../types/appType';
-import { RouterInterface, RouterPropsInterface } from '../../types/routerType';
-import {Chat} from "../../components/chat";
+import { RouterInterface } from '../../types/routerType';
 
-const createChatComponent = (responseError: number | null): Chat | null => {
-    return responseError !== null ? new Chat() : null;
-};
-
-interface LoginPageProps extends BlockProps, RouterInterface, RouterPropsInterface {}
+type StoreType = Pick<AppStateType, 'responseError'>;
+interface LoginPageProps extends BlockProps, RouterInterface, StoreType {}
 
 class LoginPage extends Block {
   constructor(props: LoginPageProps) {
@@ -88,7 +84,7 @@ class LoginPage extends Block {
         class: 'info-box_content',
         children: formChildren,
         onFormSubmit: (data: Record<string, string>) => {
-            authServiceInit.login(data as LoginRequestData);
+            authServiceInit.login(data as LoginType);
         },
       }),
         ErrorBox:  new ErrorBox({text: props.responseError as string | null}),
@@ -113,7 +109,7 @@ class LoginPage extends Block {
   }
 }
 
-const mapStateToProps = (state: AppStateType): RouterPropsInterface =>  {
+const mapStateToProps = (state: AppStateType): StoreType =>  {
     return {
         responseError: state.responseError,
     };

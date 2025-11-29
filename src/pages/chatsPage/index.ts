@@ -19,19 +19,20 @@ import { wrapProtected } from '../../utils/wrapProtected';
 import ChatService from '../../services/chatService';
 
 import { AppStateType } from '../../types/appType';
-import { RouterInterface, RouterPropsInterface } from '../../types/routerType';
-import {ProfileStoreInterface} from '../../types/userType.ts';
+import { RouterInterface } from '../../types/routerType';
 import {ModalBox} from '../../components/modalBox';
 import { ChatAddForm } from '../../components/chatAddForm';
 
-interface ChatsProps {
-    selectedChatId: number | null;
-}
-interface ChatsPageProps extends BlockProps, RouterInterface, ProfileStoreInterface, ChatsProps {}
-
-const createChatComponent = (selectedChatId: number | null): Chat | null => {
+const createChat = (selectedChatId: number | null): Chat | null => {
     return selectedChatId !== null ? new Chat() : null;
 };
+
+const createNavLineRight = (chatName: string | null): NavLineRight | null => {
+    return chatName !== null ? new NavLineRight({avatar: true, name: chatName}) : null;
+};
+
+type StoreType = Pick<AppStateType, 'user' | 'selectedChatId'>;
+interface ChatsPageProps extends BlockProps, RouterInterface, StoreType {}
 
 class ChatsPage extends Block {
   constructor(props: ChatsPageProps) {
@@ -71,22 +72,21 @@ class ChatsPage extends Block {
       }),
     );
 
+    const UserName: string = props.user.display_name || props.user.login || '';
+    const ChatTitle: string | null = null; // TODO пока задаём жестко, потом надо из пропсов доставать имя выбранного чата
+
     super({
       ...props,
       Header: new Header({
         isChatsPage: '1',
       }),
       NavLineLeft: new NavLineLeft({
-        name: props.userName,
+        name: UserName,
         avatar: true,
         nav: true,
         routerLink: ROUTER.profile,
       }),
-      NavLineRight: new NavLineRight({
-        nav: true,
-        avatar: true,
-        name: 'Собеседник',
-      }),
+      NavLineRight: createNavLineRight(ChatTitle),
         ModalBtn: new Button({
           tag: 'div',
           id: 'modal-btn',
@@ -107,7 +107,7 @@ class ChatsPage extends Block {
         message: message,
         button: button,
       }),
-      Chat: createChatComponent(props.selectedChatId as number | null)
+      Chat: createChat(props.selectedChatId as number | null)
     });
   }
 
@@ -115,10 +115,14 @@ class ChatsPage extends Block {
 
         if (oldProps.selectedChatId !== newProps.selectedChatId) {
 
-            const newChatComponent = createChatComponent(newProps.selectedChatId as number | null);
+            const ChatTitle: string | null = 'Тест чата'; // TODO пока задаём жестко, потом надо из пропсов доставать имя выбранного чата
+
+            const newChat = createChat(newProps.selectedChatId as number | null);
+            const newNavLineRight = createNavLineRight(ChatTitle as string | null);
 
             (this as Block).setProps({
-                Chat: newChatComponent,
+                Chat: newChat,
+                NavLineRight: newNavLineRight,
             } as Partial<ChatsPageProps>);
 
             // можно вернуть true, чтобы перерисовать ChatsPage полностью
@@ -133,11 +137,9 @@ class ChatsPage extends Block {
   }
 }
 
-interface ChatsStoreProps extends ProfileStoreInterface, ChatsProps {}
-const mapStateToProps = (state: AppStateType): ChatsStoreProps =>  {
+const mapStateToProps = (state: AppStateType): StoreType =>  {
     return {
         user: state.user,
-        userName: state.user?.display_name || state.user?.login || '',
         selectedChatId: state.selectedChatId || null,
     };
 };

@@ -15,12 +15,11 @@ import { wrapStore } from '../../utils/wrapStore';
 import { ROUTER } from '../../utils/links';
 
 import { AppStateType } from '../../types/appType';
-import { RouterPropsInterface } from '../../types/routerType';
 import UserService from '../../services/userService';
-import { UserEditPass } from '../../types/authType.ts';
-import {ProfileStoreInterface} from "../../types/userType.ts";
+import { UserEditPassType } from '../../types/userType.ts';
 
-interface ProfileEditPassPageProps extends BlockProps, ProfileStoreInterface, RouterPropsInterface {}
+type StoreType = Pick<AppStateType, 'user'>;
+interface ProfileEditPassPageProps extends BlockProps, StoreType {}
 
 class ProfileEditPassPage extends Block {
   constructor(props: ProfileEditPassPageProps) {
@@ -29,6 +28,8 @@ class ProfileEditPassPage extends Block {
           store: window.store,
           router: window.router,
       });
+
+    const UserName: string = props.user.display_name || props.user.login || '';
 
     const formChildren = [
       new Label({
@@ -73,18 +74,18 @@ class ProfileEditPassPage extends Block {
         routerLink: ROUTER.profile,
       }),
       NavLineRight: new NavLineRight({
-        nav: true,
         avatar: true,
-        name: 'Ваш профиль',
+        name: UserName,
       }),
       Form: new Form({
         id: 'form',
         class: 'info-box_content',
         children: formChildren,
         onFormSubmit: (data: Record<string, string>) => {
-            userServiceInit.editUserPassword(data as UserEditPass);
+            userServiceInit.userEditPassword(data as UserEditPassType);
         },
       }),
+
     });
   }
 
@@ -93,10 +94,9 @@ class ProfileEditPassPage extends Block {
   }
 }
 
-const mapStateToProps = (state: AppStateType): ProfileStoreInterface => {
+const mapStateToProps = (state: AppStateType): StoreType => {
     return {
         user: state.user,
-        userName: state.user?.display_name || state.user?.login || '',
     };
 };
 
