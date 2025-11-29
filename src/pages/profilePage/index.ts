@@ -84,7 +84,7 @@ class ProfilePage extends Block {
         },
       }),
       Avatar: new ProfileAvatar({
-          avatar: getSourceLink(props.user.avatar)
+          avatar: props.user?.avatar ? getSourceLink(props.user?.avatar) : ''
       }),
       ProfileList: ProfileList,
       ModalBox: modalBoxInstance,
@@ -94,11 +94,11 @@ class ProfilePage extends Block {
 
     protected override componentDidUpdate(oldProps: ProfilePageProps, newProps: ProfilePageProps): boolean {
 
-        if (oldProps.user.avatar !== newProps.user.avatar) {
+        if (oldProps.user?.avatar !== newProps.user?.avatar) {
 
             (this as Block).setProps({
                 Avatar: new ProfileAvatar({
-                    avatar: getSourceLink(newProps.user.avatar)
+                    avatar: getSourceLink(newProps.user?.avatar as string)
                 }),
             } as Partial<ProfilePageProps>);
 

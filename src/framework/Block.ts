@@ -123,19 +123,22 @@ export default class Block {
         this._render();
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected componentDidUpdate(_oldProps: BlockProps, _newProps: BlockProps): boolean {
         return true;
     }
 
+    // Тут добавляем универсальный слот 'children' в lists
     private _getChildrenPropsAndProps(propsAndChildren: BlockProps): {
         children: Record<string, Block>,
         props: BlockProps,
         lists: Record<string, unknown[]>
     } {
-        const children: Record<string, Block> = {};
-        const props: BlockProps = {};
-        const lists: Record<string, unknown[]> = {};
+        const children: Record<string, Block> = {}; // Именованные блоки
+        const props: BlockProps = {}; // Обычные пропсы
+        const lists: Record<string, unknown[]> = {}; // Списки (для коллекций)
 
+        // Тут универсальный слот 'children'
         if (Array.isArray(propsAndChildren.children)) {
             const universalChildren = propsAndChildren.children.filter(item => item instanceof Block);
             if (universalChildren.length > 0) {
@@ -146,11 +149,11 @@ export default class Block {
 
         Object.entries(propsAndChildren).forEach(([key, value]) => {
             if (value instanceof Block) {
-                children[key] = value;
+                children[key] = value; // Именованные дочерние блоки
             } else if (Array.isArray(value)) {
-                lists[key] = value as unknown[];
+                lists[key] = value as unknown[]; // Именованные списки
             } else {
-                props[key] = value;
+                props[key] = value; // Обычные пропсы
             }
         });
 
@@ -180,15 +183,20 @@ export default class Block {
             return;
         }
 
+        // --- Добавляем логику разбора дочерних компонентов ---
         const { children: newChildren, props: newProps, lists: newLists } =
             this._getChildrenPropsAndProps(nextProps);
 
+        // 1. Обновляем children и lists
         Object.assign(this.children, newChildren);
         Object.assign(this.lists, newLists);
 
+        // 2. Сравниваем и обновляем props
         const oldProps = { ...this.props };
         Object.assign(this.props, newProps);
+        // ----------------------------------------------------
 
+        // 3. Вызываем событие FLOW_CDU
         this.eventBus().emit(Block.EVENTS.FLOW_CDU, oldProps, this.props);
     };
 
@@ -210,6 +218,7 @@ export default class Block {
             this._removeEvents();
         }
 
+        //console.log('Render');
         const propsAndStubs = { ...this.props };
         const tmpId =  Math.floor(100000 + Math.random() * 900000);
 
@@ -288,10 +297,10 @@ export default class Block {
             set: (target: BlockProps, prop: string, value: unknown): boolean => {
                 const oldTarget = { ...target };
                 target[prop] = value;
-                // !!! ИСПРАВЛЕНИЕ: УДАЛЕН ВЫЗОВ FLOW_CDU ИЗ СЕТТЕРА !!!
-                // this.eventBus().emit(Block.EVENTS.FLOW_CDU, oldTarget, target);
+                this.eventBus().emit(Block.EVENTS.FLOW_CDU, oldTarget, target);
                 return true;
             },
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             deleteProperty(_target: BlockProps, _prop: string): boolean {
                 throw new Error('Не разрешено');
             },
