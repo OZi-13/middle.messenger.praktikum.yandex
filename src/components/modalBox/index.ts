@@ -1,5 +1,5 @@
 import Block, { BlockProps } from '../../framework/Block';
-import template from './modalBox.hbs.ts';
+import template from './modalBox.hbs';
 
 import { Button } from '../button';
 import { ModalModal } from '../modalModal';
@@ -18,6 +18,7 @@ export class ModalBox extends Block {
 
     const modalBack = new Button({
       tag: 'div',
+      id: 'modal-back',
       class: 'modal-back none',
       onClick: (event: Event) => {
         event.preventDefault();

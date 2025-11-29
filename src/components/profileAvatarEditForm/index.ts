@@ -6,7 +6,7 @@ import { Input } from '../input';
 import { Button } from '../button';
 import { Form } from '../form';
 import UserService from '../../services/userService';
-import * as Type from '../../types/authType.ts';
+import * as Type from '../../types/userType';
 
 export class ProfileAvatarEditForm extends Block {
   constructor() {

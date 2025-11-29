@@ -75,7 +75,14 @@ export default class UserService {
             const updatedUser: ApiType.UserDTO = await this.api.editAvatar(formData as UserType.UserEditAvatarType);
             console.log('Обновили аватар', updatedUser);
             this.store.set({ user: updatedUser });
-            this.router.go(ROUTER.profile); //<---- Вот тут роутер не сработает, поскольку страница не изменится
+            const modalBackElement = document.getElementById('modal-back');
+            const modalElement = document.getElementById('modal-avatar');
+            if (modalBackElement) {
+                modalBackElement.classList.add('none');
+            }
+            if (modalElement) {
+                modalElement.classList.add('none');
+            }
 
         } catch (error) {
             const reason = (error as ApiType.ResponseError)?.reason || 'Неизвестная ошибка обновления аватара';

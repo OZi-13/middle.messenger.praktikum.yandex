@@ -49,15 +49,11 @@ export class Store extends EventBus {
         } else {
             return;
         }
-        console.log('Store set1', prevState);
-        console.log('Store set2', nextState);
         if (isEqual(prevState, nextState)) {
-            console.log('isEqual - одинаковые');
             return;
         }
 
         this.state = nextState;
-        console.log('Обновляем стор');
         this.emit(StoreEvents.Updated, prevState, nextState);
     }
 }

@@ -1,12 +1,10 @@
 import Block, { BlockProps } from '../../framework/Block';
 import template from './button.hbs.ts';
-import './button.pcss';
 
 interface ButtonProps extends BlockProps {
   tag: string,
   id?: string,
   class?: string,
-  background?: string,
   type?: string,
   dataPage?: string,
   disabled?: boolean,
@@ -22,10 +20,6 @@ export class Button extends Block {
           props.onClick!(e);
         },
       },
-        attr: {
-            style: props.background ? `background-image: url('${props.background}')` : '',
-            class: props.background ? `${props.class} with-image` : props.class,
-        }
     } : {};
 
     super({

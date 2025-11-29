@@ -6,9 +6,11 @@ import { Header } from '../../components/header';
 import { Button } from '../../components/button';
 import { Link } from '../../components/link';
 import { ProfileListItem } from '../../components/profileListItem';
-import { ProfileAvatar } from '../../components/profileAvatar';
+import { ProfileAvatarEditForm } from '../../components/profileAvatarEditForm';
+import { ModalBox } from '../../components/modalBox';
+import getSourceLink from '../../utils/getSourceLink';
 
-import { ROUTER } from '../../utils/links';
+import { ROUTER } from '../../utils/links.ts';
 import { wrapRouter } from '../../utils/wrapRouter';
 import { wrapStore } from '../../utils/wrapStore';
 import AuthService from '../../services/authService';
@@ -17,9 +19,6 @@ import { AppStateType } from '../../types/appType';
 import { UserDTO } from '../../types/apiType';
 import { profileInfoConst } from '../../types/userType';
 import { wrapProtected } from '../../utils/wrapProtected';
-import {ModalBox} from "../../components/modalBox";
-import {ProfileAvatarEditForm} from "../../components/profileAvatarEditForm";
-import getSourceLink from "../../utils/getSourceLink.ts";
 
 type StoreType = Pick<AppStateType, 'user'>;
 interface ProfilePageProps extends BlockProps, StoreType {}
@@ -42,9 +41,20 @@ class ProfilePage extends Block {
           router: window.router,
       });
 
-      const modalBoxInstance: ModalBox = new ModalBox({
+      const modalBoxInstance = new ModalBox({
           modalContent: new ProfileAvatarEditForm(),
       });
+
+      const ModalBtnConst = new Button({
+          tag: 'div',
+          id: 'modal-btn',
+          class: 'profile-avatar',
+          background: getSourceLink(props.user.avatar),
+          onClick: (event: Event) => {
+              event.preventDefault();
+              modalBoxInstance.modal();
+          },
+      })
 
     const userFromProps = props.user as UserDTO | null;
     const ProfileList = UserProfileList(userFromProps);
@@ -83,9 +93,7 @@ class ProfilePage extends Block {
             authServiceInit.logout();
         },
       }),
-      Avatar: new ProfileAvatar({
-          avatar: getSourceLink(props.user.avatar)
-      }),
+      ModalBtn: ModalBtnConst,
       ProfileList: ProfileList,
       ModalBox: modalBoxInstance,
       UserName: UserName,
@@ -96,10 +104,26 @@ class ProfilePage extends Block {
 
         if (oldProps.user.avatar !== newProps.user.avatar) {
 
+            const modalBoxInstance = new ModalBox({
+                modalContent: new ProfileAvatarEditForm(),
+            });
+            const createModalBtn = (propsUserAvatar: string | null): Button | null => {
+                return propsUserAvatar !== null ?
+                    new Button({
+                        tag: 'div',
+                        id: 'modal-btn',
+                        class: 'profile-avatar',
+                        background: getSourceLink(propsUserAvatar),
+                        onClick: (event: Event) => {
+                            event.preventDefault();
+                            modalBoxInstance.modal();
+                        },
+                    }) : null;
+            }
+            const newModalBtn = createModalBtn(newProps.user.avatar as string | null);
+
             (this as Block).setProps({
-                Avatar: new ProfileAvatar({
-                    avatar: getSourceLink(newProps.user.avatar)
-                }),
+                ModalBtn: newModalBtn,
             } as Partial<ProfilePageProps>);
 
             return false;
@@ -108,7 +132,7 @@ class ProfilePage extends Block {
         return super.componentDidUpdate(oldProps, newProps);
     }
 
-    override render() {
+  override render() {
     return template;
   }
 }
