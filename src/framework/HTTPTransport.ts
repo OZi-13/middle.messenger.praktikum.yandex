@@ -76,6 +76,7 @@ export default class HTTPTransport {
     public delete: MethodWrapper;
 
     constructor(baseUrl: string = '') {
+        //this.baseUrl = `https://ya-praktikum.tech/api/v2/${baseUrl}`;
         this.baseUrl = `${apiUrl}${baseUrl}`;
 
         this.get = this.createMethod(METHODS.GET);

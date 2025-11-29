@@ -72,7 +72,7 @@ class ChatsPage extends Block {
       }),
     );
 
-    const UserName: string = props.user.display_name || props.user.login || '';
+    const UserName: string = props.user?.display_name || props.user?.login || '';
     const ChatTitle: string | null = null; // TODO пока задаём жестко, потом надо из пропсов доставать имя выбранного чата
 
     super({

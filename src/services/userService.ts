@@ -1,4 +1,3 @@
-import { apiUrl } from '../config';
 import UserApi from '../api/userApi';
 import * as ApiType from '../types/apiType';
 import * as UserType from '../types/userType';
@@ -75,8 +74,8 @@ export default class UserService {
         try {
             const updatedUser: ApiType.UserDTO = await this.api.editAvatar(formData as UserType.UserEditAvatarType);
             console.log('Обновили аватар', updatedUser);
-
-            this.router.go(ROUTER.profile);
+            this.store.set({ user: updatedUser });
+            this.router.go(ROUTER.profile); //<---- Вот тут роутер не сработает, поскольку страница не изменится
 
         } catch (error) {
             const reason = (error as ApiType.ResponseError)?.reason || 'Неизвестная ошибка обновления аватара';
@@ -84,10 +83,5 @@ export default class UserService {
                 responseError: reason,
             });
         }
-    }
-
-    public userAvatar(path: string | null): string {
-        if(path) return `${apiUrl}resources${path}`
-        return '/public/images/no-avatar.jpg';
     }
 }

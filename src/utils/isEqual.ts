@@ -1,61 +1,37 @@
-type Indexed<T = unknown> = {
-    [key in string]: T;
+type PlainObject<T = any> = {
+    [k in string]: T;
 };
 
-function isPlainObject(value: unknown): value is Indexed {
-    if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-        return false;
-    }
-    const proto = Object.getPrototypeOf(value);
-    return proto === null || Object.getPrototypeOf(value) === Object.prototype;
+function isPlainObject(value: unknown): value is PlainObject {
+    return typeof value === 'object'
+        && value !== null
+        && value.constructor === Object
+        && Object.prototype.toString.call(value) === '[object Object]';
 }
 
-function isEqual(a: unknown, b: unknown): boolean {
-    if (a === b) {
-        return true;
-    }
+function isArray(value: unknown): value is [] {
+    return Array.isArray(value);
+}
 
-    const isAArray = Array.isArray(a);
-    const isBArray = Array.isArray(b);
+function isArrayOrObject(value: unknown): value is [] | PlainObject {
+    return isPlainObject(value) || isArray(value);
+}
 
-    if (isAArray || isBArray) {
-        if (isAArray !== isBArray) {
-            return false;
-        }
-    }
-
-    const isAObject = isPlainObject(a);
-    const isBObject = isPlainObject(b);
-
-    if (isAObject || isBObject) {
-        if (isAObject !== isBObject) {
-            return false;
-        }
-    }
-
-    if (!isAArray && !isBArray && !isAObject && !isBObject) {
+function isEqual(lhs: PlainObject, rhs: PlainObject) {
+    if (Object.keys(lhs).length !== Object.keys(rhs).length) {
         return false;
     }
 
-    const objA = a as Indexed;
-    const objB = b as Indexed;
-
-    const keysA = Object.keys(objA);
-    const keysB = Object.keys(objB);
-
-    if (keysA.length !== keysB.length) {
-        return false;
-    }
-
-    for (const key of keysA) {
-        if (!Object.prototype.hasOwnProperty.call(objB, key)) {
+    for (const [key, value] of Object.entries(lhs)) {
+        const rightValue = rhs[key];
+        if (isArrayOrObject(value) && isArrayOrObject(rightValue)) {
+            if (isEqual(value, rightValue)) {
+                continue;
+            }
             return false;
         }
 
-        const valueA = objA[key];
-        const valueB = objB[key];
-
-        if (!isEqual(valueA, valueB)) {
+        if (value !== rightValue) {
             return false;
         }
     }

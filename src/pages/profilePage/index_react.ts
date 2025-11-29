@@ -13,8 +13,8 @@ import getSourceLink from '../../utils/getSourceLink';
 import { ROUTER } from '../../utils/links.ts';
 import { wrapRouter } from '../../utils/wrapRouter';
 import { wrapStore } from '../../utils/wrapStore';
-import AuthService from '../../services/authService';
-import UserService from '../../services/userService';
+
+import { services, AuthServiceType, UserServiceType } from '../../framework/___ServiceLocator.ts';
 
 import { AppStateType } from '../../types/appType';
 import { UserDTO } from '../../types/apiType';
@@ -34,26 +34,31 @@ const UserProfileList = (user: UserDTO | null): ProfileListItem[] => {
     });
 }
 
+const modalBoxInstance: ModalBox = new ModalBox({
+    modalContent: new ProfileAvatarEditForm(),
+});
+
+const createModalBtn = (propsUserAvatar: string | null): Button | null => {
+    return propsUserAvatar !== null ?
+        new Button({
+            tag: 'div',
+            id: 'modal-btn',
+            class: 'profile-avatar',
+            //background: getSourceLink(propsUserAvatar),
+            onClick: (event: Event) => {
+                event.preventDefault();
+                modalBoxInstance.modal();
+            },
+        }) : null;
+}
+
 class ProfilePage extends Block {
+
   constructor(props: ProfilePageProps) {
 
-      const authServiceInit = new AuthService({
-          store: window.store,
-          router: window.router,
-      });
-
-      const userServiceInit = new UserService({
-          store: window.store,
-          router: window.router,
-      });
-
-    const modalBoxInstance = new ModalBox({
-      modalContent: new ProfileAvatarEditForm(),
-    });
-
-    const userFromProps = props.user as UserDTO | null;
-    const ProfileList = UserProfileList(userFromProps);
-    const UserName: string = props.user?.display_name || props.user?.login || '';
+      const userFromProps = props.user as UserDTO | null;
+      const ProfileList = UserProfileList(userFromProps);
+      //const userService = services.get('UserService');
 
     super({
       ...props,
@@ -85,24 +90,33 @@ class ProfilePage extends Block {
         text: 'Выйти',
         onClick: (event: Event) => {
           event.preventDefault();
-            authServiceInit.logout();
+          const authService = services.get('AuthService');
+          authService.logout();
         },
       }),
-      ModalBtn: new Button({
-        tag: 'div',
-        id: 'modal-btn',
-        class: 'profile-avatar',
-        background: getSourceLink(props.user.avatar),
-        onClick: (event: Event) => {
-          event.preventDefault();
-          modalBoxInstance.modal();
-        },
-      }),
+      ModalBtn: createModalBtn(props.user.avatar as string | null),
       ProfileList: ProfileList,
       ModalBox: modalBoxInstance,
-      UserName: UserName,
+      UserName: props.user.display_name || props.user.login || '',
     });
   }
+
+
+    protected override componentDidUpdate(oldProps: ProfilePageProps, newProps: ProfilePageProps): boolean {
+
+        if (oldProps.user.avatar !== newProps.user.avatar) {
+
+            const newModalBtn = createModalBtn(newProps.user.avatar as string | null);
+
+            (this as Block).setProps({
+                ModalBtn: newModalBtn,
+            } as Partial<ProfilePageProps>);
+
+            return false;
+        }
+
+        return super.componentDidUpdate(oldProps, newProps);
+    }
 
   override render() {
     return template;

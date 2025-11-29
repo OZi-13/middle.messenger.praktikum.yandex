@@ -5,7 +5,6 @@ import cloneDeep from '../utils/cloneDeep'
 import isPlainObject from '../utils/isPlainObject';
 import isEqual from '../utils/isEqual';
 import setByPath from '../utils/set';
-import {UserDTO} from "../types/apiType.ts";
 
 export enum StoreEvents {
     Updated = 'Updated',
@@ -50,13 +49,15 @@ export class Store extends EventBus {
         } else {
             return;
         }
-
+        console.log('Store set1', prevState);
+        console.log('Store set2', nextState);
         if (isEqual(prevState, nextState)) {
+            console.log('isEqual - одинаковые');
             return;
         }
 
         this.state = nextState;
-
+        console.log('Обновляем стор');
         this.emit(StoreEvents.Updated, prevState, nextState);
     }
 }

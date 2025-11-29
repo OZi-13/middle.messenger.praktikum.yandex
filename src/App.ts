@@ -3,7 +3,7 @@ import * as Pages from './pages';
 import { Store, StoreEvents } from './framework/Store';
 import Router from './framework/router';
 import { ROUTER } from './utils/links';
-import { services } from './framework/ServiceLocator';
+import AuthService from './services/authService';
 
 declare global {
     interface Window {
@@ -58,8 +58,8 @@ export default class App {
         const store = this.initStore();
         const router = await this.initRouter();
 
-        services.init(store, router);
-        await services.get('AuthService').checkLoginUser();
+        const authService = new AuthService({store, router});
+        await authService.checkLoginUser();
 
         router.start();
         console.log('Приложение запущено.');
