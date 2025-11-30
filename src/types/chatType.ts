@@ -1,3 +1,5 @@
+import ChatApi from "../api/chatApi.ts";
+
 type LastMessageUserType = {
     first_name: string;
     second_name: string;
@@ -13,13 +15,13 @@ type LastMessageType = {
     content: string;
 };
 
-type ChatItemType = {
+export type ChatItemType = {
     id: number;
     title: string;
     avatar: string | null;
     unread_count: number | null;
     created_by: number;
-    last_message: LastMessageType;
+    last_message: LastMessageType | null;
 };
 
 export type ChatListResponseType = ChatItemType[];
@@ -47,3 +49,24 @@ export type ChatDeleteResponseType = {
     userId: number,
     result: ChatDeleteResultType
 };
+
+export type ChatsListMockType = {
+    name: string;
+    last: string;
+    newCount?: string;
+};
+
+export type ChatsItemType = {
+    id: number,
+    title: string,
+    last_message_user_name: string,
+    time: string,
+    unread_count: number,
+    content: string,
+    events: {
+        click: (event: Event) => void;
+    };
+}
+
+export type ChatsListType = Record<number, ChatsItemType>
+

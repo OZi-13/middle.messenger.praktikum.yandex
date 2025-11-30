@@ -11,6 +11,8 @@ import { Chat } from '../../components/chat';
 import { Form } from '../../components/form';
 import { Input } from '../../components/input';
 import { Button } from '../../components/button';
+import { ChatAddForm } from '../../components/chatAddForm';
+import {ModalBox} from '../../components/modalBox';
 
 import { ROUTER } from '../../utils/links';
 import { wrapRouter } from '../../utils/wrapRouter';
@@ -19,9 +21,9 @@ import { wrapProtected } from '../../utils/wrapProtected';
 import ChatService from '../../services/chatService';
 
 import { AppStateType } from '../../types/appType';
+import * as Type from '../../types/chatType';
 import { RouterInterface } from '../../types/routerType';
-import {ModalBox} from '../../components/modalBox';
-import { ChatAddForm } from '../../components/chatAddForm';
+import {ChatsItemType} from "../../types/chatType";
 
 const createChat = (selectedChatId: number | null): Chat | null => {
     return selectedChatId !== null ? new Chat() : null;
@@ -31,7 +33,7 @@ const createNavLineRight = (chatName: string | null): NavLineRight | null => {
     return chatName !== null ? new NavLineRight({avatar: true, name: chatName}) : null;
 };
 
-type StoreType = Pick<AppStateType, 'user' | 'selectedChatId'>;
+type StoreType = Pick<AppStateType, 'user' | 'selectedChatId' | 'chats'>;
 interface ChatsPageProps extends BlockProps, RouterInterface, StoreType {}
 
 class ChatsPage extends Block {
@@ -60,20 +62,16 @@ class ChatsPage extends Block {
       text: '>',
     });
 
-    const ChatsListItems = chatsListMock.map(
-      ({ name, last, newCount }: ChatsListMockType) => new ChatsListItem({
-          id: 1,
-        name,
-        last,
-        newCount,
-        events: {
-            click: () => chatServiceInit.chatSelect(1)
-        }
-      }),
+    chatServiceInit.chatList(); // получаем в стор объект с чатами
+    const ChatsListItems = Object.values(props.chats as Type.ChatsListType).map(
+      (chat: Type.ChatsItemType) => new ChatsListItem(chat),
     );
 
     const UserName: string = props.user?.display_name || props.user?.login || '';
-    const ChatTitle: string | null = null; // TODO пока задаём жестко, потом надо из пропсов доставать имя выбранного чата
+    const ChatTitle: string | null =  props.selectedChatId ? props.chats[props.selectedChatId]?.title || null : null;
+
+    console.log('ChatsListItems');
+    console.log(ChatsListItems);
 
     super({
       ...props,
@@ -113,10 +111,21 @@ class ChatsPage extends Block {
 
     protected override componentDidUpdate(oldProps: ChatsPageProps, newProps: ChatsPageProps): boolean {
 
+        if (oldProps.chats !== newProps.chats) {
+
+            const ChatsListItems = Object.values(newProps.chats as Type.ChatsListType).map(
+                (chat: Type.ChatsItemType) => new ChatsListItem(chat),
+            );
+
+            (this as Block).setProps({
+                ChatsListItem: ChatsListItems
+            } as Partial<ChatsPageProps>);
+
+            return false;
+        }
+
         if (oldProps.selectedChatId !== newProps.selectedChatId) {
-
-            const ChatTitle: string | null = 'Тест чата'; // TODO пока задаём жестко, потом надо из пропсов доставать имя выбранного чата
-
+            const ChatTitle: string | null =  newProps.selectedChatId ? newProps.chats[newProps.selectedChatId]?.title || null : null;
             const newChat = createChat(newProps.selectedChatId as number | null);
             const newNavLineRight = createNavLineRight(ChatTitle as string | null);
 
@@ -125,7 +134,6 @@ class ChatsPage extends Block {
                 NavLineRight: newNavLineRight,
             } as Partial<ChatsPageProps>);
 
-            // можно вернуть true, чтобы перерисовать ChatsPage полностью
             return false;
         }
 
@@ -140,6 +148,7 @@ class ChatsPage extends Block {
 const mapStateToProps = (state: AppStateType): StoreType =>  {
     return {
         user: state.user,
+        chats: state.chats,
         selectedChatId: state.selectedChatId || null,
     };
 };
