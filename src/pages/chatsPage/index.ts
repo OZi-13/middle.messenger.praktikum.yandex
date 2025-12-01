@@ -26,15 +26,15 @@ import { RouterInterface } from '../../types/routerType';
 import {Label} from "../../components/label";
 import * as ChatType from "../../types/chatType.ts";
 
-const createChat = (selectedChatId: number | null): Chat | null => {
-    return selectedChatId !== null ? new Chat() : null;
+const createChat = (selectedChatId: number | null): Chat | null | '' => {
+    return selectedChatId !== null ? new Chat() : '';
 };
 
-const createNavLineRight = (selectedChatHeader: string | null): NavLineRight | null => {
+const createNavLineRight = (selectedChatHeader: string | null): NavLineRight | null | '' => {
 
     return selectedChatHeader !== null ?
         new NavLineRight({avatar: true, name: selectedChatHeader, chatNav: true}) :
-        null;
+        '';
 };
 
 type StoreType = Pick<AppStateType, 'user' | 'chats' | 'selectedChat'>;
@@ -198,7 +198,7 @@ class ChatsPage extends Block {
 
         if (oldProps.selectedChat !== newProps.selectedChat) {
 
-            const newChat = createChat(newProps.selectedChat?.id || null as number | null);
+            const newChat = createChat(newProps.selectedChat?.id || 0 as number);
             const newNavLineRight = createNavLineRight(newProps.selectedChat?.header || null as string);
             console.log('Обновили newChat ' + newChat);
             console.log('Обновили newNavLineRight ' + newNavLineRight);

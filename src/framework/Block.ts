@@ -183,18 +183,40 @@ export default class Block {
             return;
         }
 
-        // --- Добавляем логику разбора дочерних компонентов ---
+        const oldProps = { ...this.props };
+
+        // --- 1. ОЧИСТКА: Удаление дочерних компонентов и вызов жизненного цикла ---
+        Object.keys(this.children).forEach(key => {
+            // Проверяем, если ключ присутствует в nextProps,
+            // И его новое значение НЕ является экземпляром Block (то есть null, undefined, строка и т.д.)
+
+            const nextValue = nextProps[key];
+
+            // ВАЖНО: Мы удаляем, если в nextProps есть ключ, и он не является Блоком.
+            if (nextValue !== undefined && !(nextValue instanceof Block)) {
+
+                // Вызываем жизненный цикл уничтожения (Component Will Unmount)
+                this.children[key].dispatchComponentWillUnmount();
+
+                // Удаляем ссылку из хранилища дочерних элементов
+                delete this.children[key];
+            }
+        });
+
+        // --- 2. ОБНОВЛЕНИЕ: Парсинг и назначение новых/оставшихся компонентов ---
+
+        // Получаем корректные новые Children, Props и Lists.
+        // Здесь newChildren уже не содержит удаленных компонентов.
         const { children: newChildren, props: newProps, lists: newLists } =
             this._getChildrenPropsAndProps(nextProps);
 
-        // 1. Обновляем children и lists
+        // Добавляем новые/оставшиеся children и lists
         Object.assign(this.children, newChildren);
         Object.assign(this.lists, newLists);
 
-        // 2. Сравниваем и обновляем props
-        const oldProps = { ...this.props };
+        // Обновляем props, включая Chat: null или NavLineRight: null,
+        // что понадобится для Handlebars, чтобы не рендерить стабы.
         Object.assign(this.props, newProps);
-        // ----------------------------------------------------
 
         // 3. Вызываем событие FLOW_CDU
         this.eventBus().emit(Block.EVENTS.FLOW_CDU, oldProps, this.props);
