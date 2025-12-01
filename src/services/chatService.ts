@@ -29,13 +29,12 @@ export default class ChatService {
             const users: ChatType.ChatsUsersListResponseType = await this.api.chatUsersList(chatId);
 
             //const chatsMapped: ChatType.ChatsListType = this.chatsMapping(chats as ChatType.ChatListResponseType);
-            this.store.set({ chatUsers: users, selectedChatId: chatId });
+            this.store.set({ selectedChatId: chatId, chatUsers: users });
 
         } catch (error) {
             const reason = (error as ResponseError).reason || 'Неизвестная ошибка';
             this.store.set({ responseError: reason });
         }
-        this.store.set({ selectedChatId: chatId });
     }
 
     private chatsMapping(chats: ChatType.ChatListResponseType): ChatType.ChatsListType {

@@ -207,21 +207,7 @@ class ChatsPage extends Block {
 
             return false;
         }
-
-        if (oldProps.chatUsers !== newProps.chatUsers) {
-            const ChatTitle: string | null =  newProps.selectedChatId ? newProps.chats[newProps.selectedChatId]?.title || null : 'Новый чат';
-            const newChat = createChat(newProps.selectedChatId as number | null);
-
-            const newNavLineRight = createNavLineRight(ChatTitle as string | null, newProps.chatUsers as ChatType.ChatUserResponseType[] | null);
-
-            (this as Block).setProps({
-                Chat: newChat,
-                NavLineRight: newNavLineRight,
-            } as Partial<ChatsPageProps>);
-
-            return false;
-        }
-
+/*
         if (oldProps.selectedChatId !== newProps.selectedChatId) {
             const ChatTitle: string | null =  newProps.selectedChatId ? newProps.chats[newProps.selectedChatId]?.title || null : null;
             const newChat = createChat(newProps.selectedChatId as number | null);
@@ -235,6 +221,25 @@ class ChatsPage extends Block {
 
             return false;
         }
+*/
+        if (oldProps.chatUsers !== newProps.chatUsers) {
+            const ChatTitle: string | null =  newProps.selectedChatId
+                ? newProps.chats[newProps.selectedChatId]?.title || null
+                : 'Чат';
+
+            const newChat = createChat(newProps.selectedChatId as number | null);
+
+            const newNavLineRight = createNavLineRight(
+                ChatTitle, newProps.chatUsers as ChatType.ChatUserResponseType[] | null);
+
+            (this as Block).setProps({
+                Chat: newChat,
+                NavLineRight: newNavLineRight,
+            } as Partial<ChatsPageProps>);
+
+            return false;
+        }
+
 
         return super.componentDidUpdate(oldProps, newProps);
     }
