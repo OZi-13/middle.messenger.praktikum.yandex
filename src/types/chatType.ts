@@ -1,4 +1,5 @@
 import ChatApi from "../api/chatApi.ts";
+import * as apiType from "./apiType.ts";
 
 type LastMessageUserType = {
     first_name: string;
@@ -50,12 +51,6 @@ export type ChatDeleteResponseType = {
     result: ChatDeleteResultType
 };
 
-export type ChatsListMockType = {
-    name: string;
-    last: string;
-    newCount?: string;
-};
-
 export type ChatsItemType = {
     id: number,
     title: string,
@@ -70,7 +65,7 @@ export type ChatsItemType = {
 
 export type ChatsListType = Record<number, ChatsItemType>
 
-export type ChatsUsersListResponseType = [{
+export type ChatsUsersListResponseType = {
     id: number
     first_name: string
     second_name: string
@@ -78,7 +73,7 @@ export type ChatsUsersListResponseType = [{
     login: string
     avatar: string
     role: string
-}]
+}[]
 
 export type ChatsUsersToggleType = {
     users: [number]
@@ -88,3 +83,7 @@ export type ChatsUsersToggleType = {
 export type ChatTokenResponseType = [
     {"token": "string"}
 ]
+
+export type ChatUserResponseType = Omit<apiType.UserDTO, 'phone' | 'email'>  & {
+    role: string
+}

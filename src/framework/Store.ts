@@ -30,6 +30,10 @@ export class Store extends EventBus {
         return cloneDeep(this.state);
     }
 
+    public get<T extends keyof AppStateType>(key: T): AppStateType[T] {
+        return cloneDeep(this.state[key]);
+    }
+
     /**
      * Обновление вложенных свойств по пути: set('user.firstName', 'Ivan')
      * * @param nextStateOrPath

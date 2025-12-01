@@ -7,13 +7,17 @@ interface NavLineRightProps extends BlockProps {
   chatNav?: boolean;
   name: string;
   avatar?: boolean;
+  users?: string;
 }
 
 export class NavLineRight extends Block {
   constructor(props: NavLineRightProps) {
     super({
       ...props,
-        ChatNavBtn: new ChatNavBtn(),
+        ChatNavBtnAdd: new ChatNavBtn({chatMenuId: 'chat_user_add', btnSymbol: '+'}),
+        ChatNavBtnDel: new ChatNavBtn({chatMenuId: 'chat_user_del', btnSymbol: '−'}),
+        ChatNavBtnDelChat: new ChatNavBtn({chatMenuId: 'chat_delete', btnSymbol: 'x'}),
+        Users: 'Пользователи: ' + props.users,
     });
   }
 

@@ -1,5 +1,5 @@
 export default `
-<div id="{{ id }}" class="profile-avatar with-image">
+<div>
     {{{ Form1 }}}
     {{{ Form2 }}}
     {{{ Form3 }}}

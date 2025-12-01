@@ -1,6 +1,5 @@
 import HTTPTransport from '../framework/httpTransport';
 import * as Type from '../types/chatType.ts';
-import {ChatsUsersResponseType, ChatsUsersToggleType, ChatTokenResponseType} from "../types/chatType.ts";
 
 const chatApi = new HTTPTransport('chats');
 
@@ -22,8 +21,8 @@ export default class ChatApi {
 
     //// Chat Users ////
 
-    async chatUsersList(): Promise<Type.ChatsUsersListResponseType> {
-        return chatApi.get<Type.ChatsUsersListResponseType>('/users');
+    async chatUsersList(id: number): Promise<Type.ChatsUsersListResponseType> {
+        return chatApi.get<Type.ChatsUsersListResponseType>(`/${id}/users`);
     }
 
     async chatUsersAdd(data: Type.ChatsUsersToggleType)  {
@@ -35,6 +34,6 @@ export default class ChatApi {
     }
 
     async chatToken(id: string): Promise<Type.ChatTokenResponseType> {
-        return chatApi.post<Type.ChatTokenResponseType>('/token/{$id}');
+        return chatApi.post<Type.ChatTokenResponseType>(`/token/${id}`);
     }
 }

@@ -3,14 +3,19 @@ import template from './chatNavBtn.hbs';
 
 import modal from '../../utils/Modal';
 
+interface ChatNavBtnProps extends BlockProps {
+    chatMenuId: string,
+    btnSymbol: string,
+}
 export class ChatNavBtn extends Block {
-  constructor() {
+  constructor(props: ChatNavBtnProps) {
 
     super({
+        ...props,
         events: {
             click: (event: Event) => {
                 event.preventDefault();
-                modal.open('chat_menu');
+                modal.open(props.chatMenuId);
             },
         },
     });

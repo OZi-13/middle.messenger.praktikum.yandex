@@ -23,18 +23,32 @@ import ChatService from '../../services/chatService';
 import { AppStateType } from '../../types/appType';
 import * as Type from '../../types/chatType';
 import { RouterInterface } from '../../types/routerType';
-import {ChatsItemType} from "../../types/chatType";
+import {ChatDeleteType, ChatsItemType, ChatUserResponseType} from "../../types/chatType";
 import {ChatNavMenu} from "../../components/chatNavMenu";
+import {Label} from "../../components/label";
+import * as ChatType from "../../types/chatType.ts";
 
 const createChat = (selectedChatId: number | null): Chat | null => {
     return selectedChatId !== null ? new Chat() : null;
 };
 
-const createNavLineRight = (chatName: string | null): NavLineRight | null => {
-    return chatName !== null ? new NavLineRight({avatar: true, name: chatName, chatNav: true}) : null;
+const createNavLineRight = (chatName: string | null, propsUsersName: ChatType.ChatUserResponseType[] | null): NavLineRight | null => {
+    let usersNameString = '';
+
+    if (propsUsersName) {
+        const chatUsers = propsUsersName;
+
+        if (Array.isArray(chatUsers) && chatUsers.length > 0) {
+            const namesArray = chatUsers.map(user => user.first_name);
+            usersNameString = namesArray.join(', ');
+        }
+    }
+    console.log('usersNameString (в функции):', usersNameString);
+
+    return chatName !== null ? new NavLineRight({avatar: true, name: chatName, chatNav: true, users: usersNameString}) : null;
 };
 
-type StoreType = Pick<AppStateType, 'user' | 'selectedChatId' | 'chats'>;
+type StoreType = Pick<AppStateType, 'user' | 'selectedChatId' | 'chats' | 'chatUsers'>;
 interface ChatsPageProps extends BlockProps, RouterInterface, StoreType {}
 
 class ChatsPage extends Block {
@@ -45,11 +59,80 @@ class ChatsPage extends Block {
           router: window.router,
       });
 
+      const formAddUserCld = [
+          new Label({
+              forAttr: 'form_newuser_id',
+              text: 'Добавить пользователя по ID',
+          }),
+          new Input({
+              id: 'form_newuser_id',
+              class: 'form-validate',
+              name: 'users[]',
+              type: 'text'
+          }),
+          new Button({
+              tag: 'button',
+              type: 'submit',
+              text: 'Добавить'
+          })
+      ];
+
+      const formDelUserCld = [
+          new Label({
+              forAttr: 'form_olduser_id',
+              text: 'Удалить пользователя по ID',
+          }),
+          new Input({
+              id: 'form_olduser_id',
+              class: 'form-validate',
+              name: 'users[]',
+              type: 'text',
+          }),
+          new Button({
+              tag: 'button',
+              type: 'submit',
+              text: 'Удалить',
+          })
+      ];
+
+      const formDeleteCld = [
+          new Button({
+              tag: 'button',
+              type: 'submit',
+              text: 'Удалить чат',
+          })
+      ];
+
       const modalBoxInstance = new ModalBox({
           id1: 'add_chat',
-          id2: 'chat_menu',
+          id2: 'chat_user_add',
+          id3: 'chat_user_del',
+          id4: 'chat_delete',
           modalContent1: new ChatAddForm(),
-          modalContent2: new ChatNavMenu(),
+          modalContent2: new Form({
+              id: 'form-adduser',
+              class: 'info-box_content',
+              children: formAddUserCld,
+              onFormSubmit: (data: Record<string, string>) => {
+                  chatServiceInit.chatUserAdd(data as ChatType.ChatsUsersToggleType);
+              },
+          }),
+          modalContent3: new Form({
+              id: 'form-deluser',
+              class: 'info-box_content',
+              children: formDelUserCld,
+              onFormSubmit: (data: Record<string, string>) => {
+                  chatServiceInit.chatUserDelete(data as ChatType.ChatsUsersToggleType);
+              },
+          }),
+          modalContent4: new Form({
+              id: 'form-chat_delete',
+              class: 'info-box_content',
+              children: formDeleteCld,
+              onFormSubmit: (data: Record<string, string>) => {
+                  chatServiceInit.chatDelete(data as ChatType.ChatDeleteType);
+              },
+          })
       });
 
     const message = new Input({
@@ -85,7 +168,7 @@ class ChatsPage extends Block {
         nav: true,
         routerLink: ROUTER.profile,
       }),
-      NavLineRight: createNavLineRight(ChatTitle),
+      NavLineRight: createNavLineRight(ChatTitle as string, props.chatUsers as ChatType.ChatUserResponseType[]),
       AddChatBtn: new Button({
           tag: 'div',
           id: 'modal-btn',
@@ -125,10 +208,25 @@ class ChatsPage extends Block {
             return false;
         }
 
+        if (oldProps.chatUsers !== newProps.chatUsers) {
+            const ChatTitle: string | null =  newProps.selectedChatId ? newProps.chats[newProps.selectedChatId]?.title || null : 'Новый чат';
+            const newChat = createChat(newProps.selectedChatId as number | null);
+
+            const newNavLineRight = createNavLineRight(ChatTitle as string | null, newProps.chatUsers as ChatType.ChatUserResponseType[] | null);
+
+            (this as Block).setProps({
+                Chat: newChat,
+                NavLineRight: newNavLineRight,
+            } as Partial<ChatsPageProps>);
+
+            return false;
+        }
+
         if (oldProps.selectedChatId !== newProps.selectedChatId) {
             const ChatTitle: string | null =  newProps.selectedChatId ? newProps.chats[newProps.selectedChatId]?.title || null : null;
             const newChat = createChat(newProps.selectedChatId as number | null);
-            const newNavLineRight = createNavLineRight(ChatTitle as string | null);
+
+            const newNavLineRight = createNavLineRight(ChatTitle as string | null, newProps.chatUsers as ChatType.ChatUserResponseType[] | null);
 
             (this as Block).setProps({
                 Chat: newChat,
@@ -151,6 +249,7 @@ const mapStateToProps = (state: AppStateType): StoreType =>  {
         user: state.user,
         chats: state.chats,
         selectedChatId: state.selectedChatId || null,
+        chatUsers: state.chatUsers || null,
     };
 };
 

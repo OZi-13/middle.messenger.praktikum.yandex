@@ -7,10 +7,6 @@ import {Form} from "../form";
 import ChatService from "../../services/chatService.ts";
 import * as ChatType from "../../types/chatType.ts";
 
-interface ChatNavMenuProps extends BlockProps {
-    chatId?: string,
-}
-
 export class ChatNavMenu extends Block {
     constructor() {
 
@@ -18,8 +14,6 @@ export class ChatNavMenu extends Block {
           store: window.store,
           router: window.router,
       });
-
-      //chatServiceInit.chatUsers();
 
       const formChildren1 = [
           new Label({
