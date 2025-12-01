@@ -1,6 +1,5 @@
 import Block, { BlockProps } from '../../framework/Block';
 import template from './chatsPage.hbs';
-import { chatsListMock, ChatsListMockType } from '../../helpers/mockData';
 import './chatsPage.pcss';
 
 import { Header } from '../../components/header';
@@ -13,6 +12,7 @@ import { Input } from '../../components/input';
 import { Button } from '../../components/button';
 import { ChatAddForm } from '../../components/chatAddForm';
 import {ModalBox} from '../../components/modalBox';
+import modal from '../../utils/modal';
 
 import { ROUTER } from '../../utils/links';
 import { wrapRouter } from '../../utils/wrapRouter';
@@ -24,13 +24,14 @@ import { AppStateType } from '../../types/appType';
 import * as Type from '../../types/chatType';
 import { RouterInterface } from '../../types/routerType';
 import {ChatsItemType} from "../../types/chatType";
+import {ChatNavMenu} from "../../components/chatNavMenu";
 
 const createChat = (selectedChatId: number | null): Chat | null => {
     return selectedChatId !== null ? new Chat() : null;
 };
 
 const createNavLineRight = (chatName: string | null): NavLineRight | null => {
-    return chatName !== null ? new NavLineRight({avatar: true, name: chatName}) : null;
+    return chatName !== null ? new NavLineRight({avatar: true, name: chatName, chatNav: true}) : null;
 };
 
 type StoreType = Pick<AppStateType, 'user' | 'selectedChatId' | 'chats'>;
@@ -45,7 +46,10 @@ class ChatsPage extends Block {
       });
 
       const modalBoxInstance = new ModalBox({
-          modalContent: new ChatAddForm(),
+          id1: 'add_chat',
+          id2: 'chat_menu',
+          modalContent1: new ChatAddForm(),
+          modalContent2: new ChatNavMenu(),
       });
 
     const message = new Input({
@@ -70,9 +74,6 @@ class ChatsPage extends Block {
     const UserName: string = props.user?.display_name || props.user?.login || '';
     const ChatTitle: string | null =  props.selectedChatId ? props.chats[props.selectedChatId]?.title || null : null;
 
-    console.log('ChatsListItems');
-    console.log(ChatsListItems);
-
     super({
       ...props,
       Header: new Header({
@@ -85,18 +86,18 @@ class ChatsPage extends Block {
         routerLink: ROUTER.profile,
       }),
       NavLineRight: createNavLineRight(ChatTitle),
-        ModalBtn: new Button({
+      AddChatBtn: new Button({
           tag: 'div',
           id: 'modal-btn',
           class: 'btn btn-blue',
           text: 'Добавить чат',
           onClick: (event: Event) => {
               event.preventDefault();
-              modalBoxInstance.modal();
+              modal.open('add_chat');
           },
       }),
       ChatsListItem: ChatsListItems,
-        ModalBox: modalBoxInstance,
+      ModalBox: modalBoxInstance,
 
       Form: new Form({
         id: 'form',

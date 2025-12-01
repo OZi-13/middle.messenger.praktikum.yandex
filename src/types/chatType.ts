@@ -70,3 +70,21 @@ export type ChatsItemType = {
 
 export type ChatsListType = Record<number, ChatsItemType>
 
+export type ChatsUsersListResponseType = [{
+    id: number
+    first_name: string
+    second_name: string
+    display_name: string
+    login: string
+    avatar: string
+    role: string
+}]
+
+export type ChatsUsersToggleType = {
+    users: [number]
+    chatId: number
+}
+
+export type ChatTokenResponseType = [
+    {"token": "string"}
+]

@@ -2,6 +2,8 @@ import Block, { BlockProps } from '../../framework/Block';
 import template from './profileAvatar.hbs';
 import './profileAvatar.pcss';
 
+import modal from '../../utils/Modal';
+
 interface ProfileAvatarProps extends BlockProps {
     avatar: string,
 }
@@ -13,24 +15,12 @@ export class ProfileAvatar extends Block {
         events: {
             click: (event: Event) => {
                 event.preventDefault();
-                this.modalBnt();
+                modal.open('avatar_edit');
             },
         },
         Avatar: `style = "background-image: url('${props.avatar}')"`,
     });
   }
-
-    modalBnt(): void  {
-        const modalBackElement = document.getElementById('modal-back');
-        const modalElement = document.getElementById('modal-avatar');
-
-        if (modalBackElement) {
-            modalBackElement.classList.toggle('none');
-        }
-        if (modalElement) {
-            modalElement.classList.toggle('none');
-        }
-    }
 
   override render() {
     return template;

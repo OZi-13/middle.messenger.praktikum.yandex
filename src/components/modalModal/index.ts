@@ -2,9 +2,13 @@ import Block, { BlockProps } from '../../framework/Block';
 import template from './modalModal.hbs';
 
 interface ModalModalProps extends BlockProps {
-  id?: string,
-  class?: string,
-  content: Block;
+    classBox: string,
+    id1: string,
+    id2: string | null,
+    id3: string | null,
+    content1: Block;
+    content2: Block | null;
+    content3: Block | null;
 }
 
 export class ModalModal extends Block {

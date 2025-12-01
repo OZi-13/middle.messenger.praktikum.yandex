@@ -4,7 +4,7 @@ import * as UserType from '../types/userType';
 import { ROUTER } from '../utils/links';
 import { Store } from '../framework/Store';
 import Router from '../framework/Router';
-import modalClose from '../utils/modalClose';
+import modal from '../utils/Modal';
 
 interface UserServiceDependencies {
     store: Store;
@@ -76,7 +76,7 @@ export default class UserService {
             const updatedUser: ApiType.UserDTO = await this.api.editAvatar(formData as UserType.UserEditAvatarType);
             console.log('Обновили аватар', updatedUser);
             this.store.set({ user: updatedUser });
-            modalClose();
+            modal.close();
 
         } catch (error) {
             const reason = (error as ApiType.ResponseError)?.reason || 'Неизвестная ошибка обновления аватара';

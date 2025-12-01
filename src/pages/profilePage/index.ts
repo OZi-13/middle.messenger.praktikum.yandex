@@ -43,7 +43,8 @@ class ProfilePage extends Block {
       });
 
       const modalBoxInstance: ModalBox = new ModalBox({
-          modalContent: new ProfileAvatarEditForm(),
+          id1: 'avatar_edit',
+          modalContent1: new ProfileAvatarEditForm(),
       });
 
     const userFromProps = props.user as UserDTO | null;

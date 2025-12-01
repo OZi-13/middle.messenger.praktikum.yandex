@@ -3,10 +3,16 @@ import template from './modalBox.hbs';
 
 import { Button } from '../button';
 import { ModalModal } from '../modalModal';
-import { ProfileAvatarEditForm } from '../profileAvatarEditForm';
+
+import modal from '../../utils/Modal';
 
 interface ModalBoxProps extends BlockProps {
-  modalContent: ProfileAvatarEditForm;
+  id1: string,
+  id2?: string,
+  id3?: string,
+  modalContent1: Block;
+  modalContent2?: Block;
+  modalContent3?: Block;
 }
 
 export class ModalBox extends Block {
@@ -22,13 +28,17 @@ export class ModalBox extends Block {
       class: 'modal-back none',
       onClick: (event: Event) => {
         event.preventDefault();
-        this.modal();
+          modal.close();
       },
     });
     const modalMain = new ModalModal({
-      id: 'modal-avatar',
-      class: 'modal info-box info-box_400 info-box_white none',
-      content: props.modalContent,
+      id1: props.id1,
+      id2: props.id2 || null,
+      id3: props.id3 || null,
+      classBox: 'info-box info-box_400 info-box_white',
+      content1: props.modalContent1,
+      content2: props.modalContent2 || null,
+      content3: props.modalContent3 || null
     });
 
     super({
@@ -39,18 +49,6 @@ export class ModalBox extends Block {
 
     this._modalBack = modalBack;
     this._modalMain = modalMain;
-  }
-
-  modal(): void  {
-    const modalBackElement = this._modalBack.getContent();
-    const modalElement = this._modalMain.getContent();
-
-    if (modalBackElement) {
-      modalBackElement.classList.toggle('none');
-    }
-    if (modalElement) {
-      modalElement.classList.toggle('none');
-    }
   }
 
   override render(): string {

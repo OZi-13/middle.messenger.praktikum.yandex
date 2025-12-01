@@ -3,10 +3,10 @@ import { ResponseError } from "../types/apiType.ts";
 import {ROUTER} from '../utils/links.ts';
 import  * as ChatType from '../types/chatType.ts';
 import * as ApiType from '../types/apiType.ts';
-import modalClose from '../utils/modalClose.ts';
-import {chatsListMock, ChatsListMockType} from '../helpers/mockData.ts';
+import modal from '../utils/Modal';
 import {ChatsListItem} from "../components/chatsListItem";
 import {ChatItemType} from "../types/chatType.ts";
+import * as Type from "../types/chatType.ts";
 
 interface ChatServiceDependencies {
     store: typeof window.store;
@@ -51,7 +51,6 @@ export default class ChatService {
         }, {} as ChatType.ChatsListType);
     }
 
-
     public async chatCreate(data: ChatType.ChatCreateType): Promise<void> {
         this.store.set({
             responseError: null,
@@ -64,7 +63,7 @@ export default class ChatService {
             const chatsMapped: ChatType.ChatsListType = this.chatsMapping(chats as ChatType.ChatListResponseType);
 
             this.store.set({ chats: chatsMapped });
-            modalClose();
+            modal.close();
 
         } catch (error) {
             const reason = (error as ResponseError).reason || 'Неизвестная ошибка';
@@ -82,6 +81,71 @@ export default class ChatService {
             const chatsMapped: ChatType.ChatsListType = this.chatsMapping(chats as ChatType.ChatListResponseType);
             console.log('Отмапили чат ', chatsMapped);
             this.store.set({ chats: chatsMapped });
+
+        } catch (error) {
+            const reason = (error as ResponseError).reason || 'Неизвестная ошибка';
+            this.store.set({ responseError: reason });
+        }
+    }
+
+    public async chatUsers(): Promise<void> {
+        this.store.set({
+            responseError: null,
+        });
+
+        try {
+            const users: ChatType.ChatsUsersListResponseType = await this.api.chatUsersList();
+            console.log('Пользователи: ', users);
+
+
+            //const chatsMapped: ChatType.ChatsListType = this.chatsMapping(chats as ChatType.ChatListResponseType);
+            //console.log('Отмапили чат ', chatsMapped);
+            //this.store.set({ chats: chatsMapped });
+
+        } catch (error) {
+            const reason = (error as ResponseError).reason || 'Неизвестная ошибка';
+            this.store.set({ responseError: reason });
+        }
+    }
+
+    public async chatUserAdd(data: ChatType.ChatsUsersToggleType): Promise<void> {
+        this.store.set({
+            responseError: null,
+        });
+
+        try {
+            const chatSelectId = this.store.get('chatSelectId');
+            await this.api.chatUsersAdd(data);
+            modal.close();
+
+        } catch (error) {
+            const reason = (error as ResponseError).reason || 'Неизвестная ошибка';
+            this.store.set({ responseError: reason });
+        }
+    }
+
+    public async chatUserDelete(data: ChatType.ChatsUsersToggleType): Promise<void> {
+        this.store.set({
+            responseError: null,
+        });
+
+        try {
+            await this.api.chatUsersDelete(data);
+            modal.close();
+
+        } catch (error) {
+            const reason = (error as ResponseError).reason || 'Неизвестная ошибка';
+            this.store.set({ responseError: reason });
+        }
+    }
+
+    public async chatUserToken(data: string): Promise<void> {
+        this.store.set({
+            responseError: null,
+        });
+
+        try {
+            const userToken: ChatType.ChatTokenResponseType = await this.api.chatToken(data as string);
 
         } catch (error) {
             const reason = (error as ResponseError).reason || 'Неизвестная ошибка';
