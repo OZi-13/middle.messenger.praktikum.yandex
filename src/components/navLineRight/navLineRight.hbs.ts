@@ -3,6 +3,6 @@ export default `
             {{#if avatar}}<div class="top_avatar"></div>{{/if}}
             {{#if name}}<div class="top_name">{{ name }}</div>{{/if}}
             {{#if nav}}<div class="top_nav">></div>{{/if}}
-            {{#if chatNav}}{{{ ChatNavBtnAdd }}}{{{ ChatNavBtnDel }}}{{{ ChatNavBtnDelChat }}}{{{ Users }}}{{/if}}
+            {{#if chatNav}}{{{ ChatNavBtnAdd }}}{{{ ChatNavBtnDel }}}{{{ ChatNavBtnDelChat }}}{{/if}}
         </section>
 `;

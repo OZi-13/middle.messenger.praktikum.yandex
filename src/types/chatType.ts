@@ -32,7 +32,7 @@ export type ChatCreateType = {
 };
 
 export type ChatCreateResponseType = {
-    id: string;
+    id: number;
 };
 
 export type ChatDeleteType = {
@@ -81,9 +81,14 @@ export type ChatsUsersToggleType = {
 }
 
 export type ChatTokenResponseType = [
-    {"token": "string"}
+    {token: string}
 ]
 
 export type ChatUserResponseType = Omit<apiType.UserDTO, 'phone' | 'email'>  & {
     role: string
+}
+
+export type ChatSelectedType = {
+    id: number
+    header: string
 }

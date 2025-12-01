@@ -23,16 +23,27 @@ export default class ChatService {
         this.store.set({
             responseError: null,
         });
-
         try {
-            //await this.chatUsers(chatId);
-            const users: ChatType.ChatsUsersListResponseType = await this.api.chatUsersList(chatId);
+            const chatUsers: ChatType.ChatsUsersListResponseType = await this.api.chatUsersList(chatId);
 
-            //const chatsMapped: ChatType.ChatsListType = this.chatsMapping(chats as ChatType.ChatListResponseType);
-            this.store.set({ selectedChatId: chatId, chatUsers: users });
+            const chats = this.store.get('chats');
+            const chatData = chats[chatId];
+            const title = chatData.title;
 
-        } catch (error) {
-            const reason = (error as ResponseError).reason || 'Неизвестная ошибка';
+            let usersNameString = '';
+            if (Array.isArray(chatUsers) && chatUsers.length > 0) {
+                const namesArray = chatUsers.map(user => user.first_name);
+                usersNameString = namesArray.join(', ');
+            }
+
+            const chatSelected = {
+                id: chatId,
+                header: '[ ' + title + ' ] : :  Участники: ' + usersNameString
+            };
+            this.store.set({ selectedChat: chatSelected });
+
+        }  catch (error) {
+            const reason = (error as ResponseError).reason || 'Неизвестная ошибка выбора чата';
             this.store.set({ responseError: reason });
         }
     }
@@ -66,16 +77,17 @@ export default class ChatService {
         });
 
         try {
-            await this.api.chatCreate(data);
+            const chatResponse: ChatType.ChatCreateResponseType = await this.api.chatCreate(data);
 
             const chats: ChatType.ChatListResponseType = await this.api.chatList();
             const chatsMapped: ChatType.ChatsListType = this.chatsMapping(chats as ChatType.ChatListResponseType);
-
             this.store.set({ chats: chatsMapped });
+
+            await this.chatSelect(chatResponse.id as number);
             modal.close();
 
         } catch (error) {
-            const reason = (error as ResponseError).reason || 'Неизвестная ошибка';
+            const reason = (error as ResponseError).reason || 'Неизвестная ошибка создания чата';
             this.store.set({ responseError: reason });
         }
     }
@@ -91,42 +103,30 @@ export default class ChatService {
             this.store.set({ chats: chatsMapped });
 
         } catch (error) {
-            const reason = (error as ResponseError).reason || 'Неизвестная ошибка';
+            const reason = (error as ResponseError).reason || 'Неизвестная ошибка получения списка чатов';
             this.store.set({ responseError: reason });
         }
     }
 
-    public async chatDelete(chatId: ChatType.ChatDeleteType): Promise<void> {
+    public async chatDelete(): Promise<void> {
         this.store.set({
             responseError: null,
         });
-
+        const chatSelect = this.store.get('selectedChat');
+        const chatId = chatSelect.id;
+        const chatDeleteData: ChatType.ChatDeleteType = { chatId: chatId }
         try {
-            await this.api.chatDelete(chatId);
+            await this.api.chatDelete(chatDeleteData);
+            this.store.set({ selectedChat: null });
+
             modal.close();
-
+            await this.chatList();
         } catch (error) {
-            const reason = (error as ResponseError).reason || 'Неизвестная ошибка';
+            const reason = (error as ResponseError).reason || 'Неизвестная ошибка удаления чата';
             this.store.set({ responseError: reason });
         }
-    }
 
-    public async chatUsers(id: number): Promise<void> {
-        this.store.set({
-            responseError: null,
-        });
 
-        try {
-            const users: ChatType.ChatsUsersListResponseType = await this.api.chatUsersList(id);
-            console.log('Пользователи: ', users);
-
-            //const chatsMapped: ChatType.ChatsListType = this.chatsMapping(chats as ChatType.ChatListResponseType);
-            this.store.set({ chatUsers: users });
-
-        } catch (error) {
-            const reason = (error as ResponseError).reason || 'Неизвестная ошибка';
-            this.store.set({ responseError: reason });
-        }
     }
 
     public async chatUserAdd(data: ChatType.ChatsUsersToggleType): Promise<void> {
@@ -140,7 +140,7 @@ export default class ChatService {
             modal.close();
 
         } catch (error) {
-            const reason = (error as ResponseError).reason || 'Неизвестная ошибка';
+            const reason = (error as ResponseError).reason || 'Неизвестная ошибка добавления пользователя в чат';
             this.store.set({ responseError: reason });
         }
     }
@@ -155,7 +155,7 @@ export default class ChatService {
             modal.close();
 
         } catch (error) {
-            const reason = (error as ResponseError).reason || 'Неизвестная ошибка';
+            const reason = (error as ResponseError).reason || 'Неизвестная ошибка удаления пользователя из чата';
             this.store.set({ responseError: reason });
         }
     }
@@ -169,7 +169,7 @@ export default class ChatService {
             const userToken: ChatType.ChatTokenResponseType = await this.api.chatToken(data as string);
 
         } catch (error) {
-            const reason = (error as ResponseError).reason || 'Неизвестная ошибка';
+            const reason = (error as ResponseError).reason || 'Неизвестная ошибка получения токена пользователя для чата';
             this.store.set({ responseError: reason });
         }
     }

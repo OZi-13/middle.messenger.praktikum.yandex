@@ -23,8 +23,6 @@ import ChatService from '../../services/chatService';
 import { AppStateType } from '../../types/appType';
 import * as Type from '../../types/chatType';
 import { RouterInterface } from '../../types/routerType';
-import {ChatDeleteType, ChatsItemType, ChatUserResponseType} from "../../types/chatType";
-import {ChatNavMenu} from "../../components/chatNavMenu";
 import {Label} from "../../components/label";
 import * as ChatType from "../../types/chatType.ts";
 
@@ -32,23 +30,14 @@ const createChat = (selectedChatId: number | null): Chat | null => {
     return selectedChatId !== null ? new Chat() : null;
 };
 
-const createNavLineRight = (chatName: string | null, propsUsersName: ChatType.ChatUserResponseType[] | null): NavLineRight | null => {
-    let usersNameString = '';
+const createNavLineRight = (selectedChatHeader: string | null): NavLineRight | null => {
 
-    if (propsUsersName) {
-        const chatUsers = propsUsersName;
-
-        if (Array.isArray(chatUsers) && chatUsers.length > 0) {
-            const namesArray = chatUsers.map(user => user.first_name);
-            usersNameString = namesArray.join(', ');
-        }
-    }
-    console.log('usersNameString (в функции):', usersNameString);
-
-    return chatName !== null ? new NavLineRight({avatar: true, name: chatName, chatNav: true, users: usersNameString}) : null;
+    return selectedChatHeader !== null ?
+        new NavLineRight({avatar: true, name: selectedChatHeader, chatNav: true}) :
+        null;
 };
 
-type StoreType = Pick<AppStateType, 'user' | 'selectedChatId' | 'chats' | 'chatUsers'>;
+type StoreType = Pick<AppStateType, 'user' | 'chats' | 'selectedChat'>;
 interface ChatsPageProps extends BlockProps, RouterInterface, StoreType {}
 
 class ChatsPage extends Block {
@@ -130,7 +119,7 @@ class ChatsPage extends Block {
               class: 'info-box_content',
               children: formDeleteCld,
               onFormSubmit: (data: Record<string, string>) => {
-                  chatServiceInit.chatDelete(data as ChatType.ChatDeleteType);
+                  chatServiceInit.chatDelete();
               },
           })
       });
@@ -155,7 +144,6 @@ class ChatsPage extends Block {
     );
 
     const UserName: string = props.user?.display_name || props.user?.login || '';
-    const ChatTitle: string | null =  props.selectedChatId ? props.chats[props.selectedChatId]?.title || null : null;
 
     super({
       ...props,
@@ -168,7 +156,7 @@ class ChatsPage extends Block {
         nav: true,
         routerLink: ROUTER.profile,
       }),
-      NavLineRight: createNavLineRight(ChatTitle as string, props.chatUsers as ChatType.ChatUserResponseType[]),
+      NavLineRight: createNavLineRight(props.selectedChat?.header || null as string | null),
       AddChatBtn: new Button({
           tag: 'div',
           id: 'modal-btn',
@@ -189,7 +177,7 @@ class ChatsPage extends Block {
         message: message,
         button: button,
       }),
-      Chat: createChat(props.selectedChatId as number | null)
+      Chat: createChat(props.selectedChat?.id || null as number | null)
     });
   }
 
@@ -207,39 +195,23 @@ class ChatsPage extends Block {
 
             return false;
         }
-/*
-        if (oldProps.selectedChatId !== newProps.selectedChatId) {
-            const ChatTitle: string | null =  newProps.selectedChatId ? newProps.chats[newProps.selectedChatId]?.title || null : null;
-            const newChat = createChat(newProps.selectedChatId as number | null);
 
-            const newNavLineRight = createNavLineRight(ChatTitle as string | null, newProps.chatUsers as ChatType.ChatUserResponseType[] | null);
+        if (oldProps.selectedChat !== newProps.selectedChat) {
+
+            const newChat = createChat(newProps.selectedChat?.id || null as number | null);
+            const newNavLineRight = createNavLineRight(newProps.selectedChat?.header || null as string);
+            console.log('Обновили newChat ' + newChat);
+            console.log('Обновили newNavLineRight ' + newNavLineRight);
 
             (this as Block).setProps({
-                Chat: newChat,
-                NavLineRight: newNavLineRight,
+                Chat: newChat === null ? undefined : newChat,
+                NavLineRight: newNavLineRight === null ? undefined : newNavLineRight,
             } as Partial<ChatsPageProps>);
+
+            console.log('Обновили');
 
             return false;
         }
-*/
-        if (oldProps.chatUsers !== newProps.chatUsers) {
-            const ChatTitle: string | null =  newProps.selectedChatId
-                ? newProps.chats[newProps.selectedChatId]?.title || null
-                : 'Чат';
-
-            const newChat = createChat(newProps.selectedChatId as number | null);
-
-            const newNavLineRight = createNavLineRight(
-                ChatTitle, newProps.chatUsers as ChatType.ChatUserResponseType[] | null);
-
-            (this as Block).setProps({
-                Chat: newChat,
-                NavLineRight: newNavLineRight,
-            } as Partial<ChatsPageProps>);
-
-            return false;
-        }
-
 
         return super.componentDidUpdate(oldProps, newProps);
     }
@@ -253,8 +225,7 @@ const mapStateToProps = (state: AppStateType): StoreType =>  {
     return {
         user: state.user,
         chats: state.chats,
-        selectedChatId: state.selectedChatId || null,
-        chatUsers: state.chatUsers || null,
+        selectedChat: state.selectedChat || null,
     };
 };
 
