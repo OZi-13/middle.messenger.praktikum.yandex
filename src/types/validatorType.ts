@@ -6,6 +6,8 @@ type FileValidatorPattern = [FileValidatorFunction, string];
 type ValidatorRule = FormValidatorPattern | FileValidatorPattern;
 type FormValidatorObject = Record<string, ValidatorRule>;
 
+export type FormResult = Record<string, string | FileList>;
+
 export const validateAvatarFile = (value: FileList | null): boolean => {
     if (!value || value.length === 0) return false;
     const file = value[0];

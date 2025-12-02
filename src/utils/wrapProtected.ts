@@ -4,7 +4,7 @@ import { ROUTER } from './links';
 import { wrapStore } from './wrapStore';
 import { wrapRouter } from './wrapRouter';
 import { UserDTO } from '../types/apiType';
-import {RouterInterface} from '../types/routerType';
+import {RouterFullInterface, RouterInterface} from '../types/routerType';
 import {AppStateType} from "../types/appType.ts";
 
 type StoreType = Pick<AppStateType, 'user'>;
@@ -12,13 +12,13 @@ interface ProtectedProps extends BlockProps, RouterInterface, StoreType {}
 
 export function wrapProtected(WrappedBlock) {
     class Protected extends WrappedBlock {
-        protected user: UserDTO;
-        protected router: RouterInterface;
+        protected user: UserDTO | null;
+        protected router: RouterFullInterface;
 
         constructor(props: ProtectedProps) {
             super(props);
-            this.user = props.user as UserDTO;
-            this.router = props.router as RouterInterface;
+            this.user = props.user as (UserDTO | null);
+            this.router = props.router as RouterFullInterface;
         }
 
         componentDidMount() {

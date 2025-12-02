@@ -1,6 +1,6 @@
-import { FormValidatorData } from './formValidatorData.ts';
+import { FormValidatorData, FormResult } from '../types/validatorType';
+
 type Nullable<T> = T | null;
-type FormResult = Record<string, string | FileList>;
 
 class FormValidatorClass {
 

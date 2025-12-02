@@ -1,8 +1,8 @@
 import Block, { BlockProps } from '../../framework/Block';
 import template from './chatsListItem.hbs.ts';
-import { ChatsListType } from '../../types/chatType';
+import { ChatsListMappedType } from '../../types/chatType';
 
-interface ChatsListItemProps extends BlockProps, ChatsListType {}
+interface ChatsListItemProps extends BlockProps, ChatsListMappedType {}
 
 export class ChatsListItem extends Block {
   constructor(props: ChatsListItemProps) {

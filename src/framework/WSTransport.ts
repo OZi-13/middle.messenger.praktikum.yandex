@@ -34,7 +34,7 @@ export default class WSTransport extends EventBus {
             this.close();
         }
 
-        this.socket = new WebSocket(this.url);
+        this.socket = new WebSocket(this.url) as WebSocket;
         this.subscribe(this.socket!);
         this.setupPing();
     }

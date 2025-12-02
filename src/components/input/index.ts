@@ -1,6 +1,6 @@
 import Block, { BlockProps } from '../../framework/Block';
 import template from './input.hbs.ts';
-import { FormValidator } from '../../utils/formValidator';
+import { FormValidator } from '../../utils/formValidator.ts';
 
 interface InputProps extends BlockProps {
   id?: string,
