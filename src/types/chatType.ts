@@ -51,19 +51,20 @@ export type ChatDeleteResponseType = {
     result: ChatDeleteResultType
 };
 
-export type ChatsItemType = {
+export type ChatMappedType = {
     id: number,
     title: string,
     last_message_user_name: string,
     time: string,
     unread_count: number,
     content: string,
+    admin: number,
     events: {
         click: (event: Event) => void;
     };
 }
 
-export type ChatsListType = Record<number, ChatsItemType>
+export type ChatsListMappedType = Record<number, ChatMappedType>
 
 export type ChatsUsersListResponseType = {
     id: number
@@ -95,4 +96,5 @@ export type ChatUserResponseType = Omit<apiType.UserDTO, 'phone' | 'email'>  & {
 export type ChatSelectedType = {
     id: number
     header: string
+    admin: number
 }

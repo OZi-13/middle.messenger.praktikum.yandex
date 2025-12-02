@@ -2,7 +2,13 @@ import ChatApi from '../api/chatApi';
 import { ResponseError } from "../types/apiType.ts";
 import  * as ChatType from '../types/chatType.ts';
 import modal from '../utils/Modal';
-import {ChatsUsersAddType, ChatsUsersToggleType} from "../types/chatType.ts";
+import {
+    ChatMappedType,
+    ChatSelectedType,
+    ChatsListMappedType,
+    ChatsUsersAddType,
+    ChatsUsersToggleType
+} from "../types/chatType.ts";
 
 interface ChatServiceDependencies {
     store: typeof window.store;
@@ -36,28 +42,29 @@ export default class ChatService {
     private async UsersList(chatId: number): Promise<void> {
         const chatUsers: ChatType.ChatsUsersListResponseType = await this.api.chatUsersList(chatId);
 
-        const chats = this.store.get('chats');
-        const chatData = chats[chatId];
-        const title = chatData.title;
+        const chats: ChatType.ChatsListMappedType = this.store.get('chats');
+        const chatData: ChatType.ChatMappedType = chats[chatId];
+        const title: string = chatData.title;
 
         let usersNameString = '';
         if (Array.isArray(chatUsers) && chatUsers.length > 0) {
             const usersTmp = chatUsers.map(user => {
-                return `${user.first_name} (ID: ${user.id})`;
+                return `${user.display_name || user.first_name} (ID: ${user.id})`;
             });
             usersNameString = usersTmp.join(', ');
         }
 
-        const chatSelected = {
+        const chatSelected: ChatType.ChatSelectedType = {
             id: chatId,
-            header: '[ ' + title + ' ] : :  Участники: ' + usersNameString
+            header: '[ ' + title + ' ] : :  Участники: ' + usersNameString,
+            admin: chatData.admin
         };
         this.store.set({ selectedChat: chatSelected });
     }
 
-    private chatsMapping(chats: ChatType.ChatListResponseType): ChatType.ChatsListType {
+    private chatsMapping(chats: ChatType.ChatListResponseType): ChatType.ChatsListMappedType {
 
-        return chats.reduce((chats, chat: ChatType.ChatItemType) => {
+        return chats.reduce((chats, chat: ChatType.ChatItemType)  => {
             const last_message = chat.last_message;
 
             chats[chat.id] = {
@@ -67,6 +74,7 @@ export default class ChatService {
                 time: last_message ? last_message.time : '',
                 unread_count: chat.unread_count || 0,
                 content: last_message ? last_message.content : 'Нет сообщений',
+                admin: chat.created_by,
                 events: {
                     click: (event: Event) => {
                         event.preventDefault();
@@ -75,7 +83,7 @@ export default class ChatService {
                 }
             };
             return chats;
-        }, {} as ChatType.ChatsListType);
+        }, {} as ChatType.ChatsListMappedType);
     }
 
     public async chatCreate(data: ChatType.ChatCreateType): Promise<void> {
@@ -87,7 +95,7 @@ export default class ChatService {
             const chatResponse: ChatType.ChatCreateResponseType = await this.api.chatCreate(data);
 
             const chats: ChatType.ChatListResponseType = await this.api.chatList();
-            const chatsMapped: ChatType.ChatsListType = this.chatsMapping(chats as ChatType.ChatListResponseType);
+            const chatsMapped: ChatType.ChatsListMappedType = this.chatsMapping(chats as ChatType.ChatListResponseType);
             this.store.set({ chats: chatsMapped });
 
             await this.chatSelect(chatResponse.id as number);
@@ -106,7 +114,8 @@ export default class ChatService {
 
         try {
             const chats: ChatType.ChatListResponseType = await this.api.chatList();
-            const chatsMapped: ChatType.ChatsListType = this.chatsMapping(chats as ChatType.ChatListResponseType);
+            console.log('chats', chats);
+            const chatsMapped: ChatType.ChatsListMappedType = this.chatsMapping(chats as ChatType.ChatListResponseType);
             this.store.set({ chats: chatsMapped });
 
         } catch (error) {
@@ -119,12 +128,14 @@ export default class ChatService {
         this.store.set({
             responseError: null,
         });
+
         const chatSelect = this.store.get('selectedChat');
         const chatId = chatSelect.id;
         const chatDeleteData: ChatType.ChatDeleteType = { chatId: chatId }
+
         try {
             await this.api.chatDelete(chatDeleteData);
-            this.store.set({ selectedChat: null });
+            this.store.set({ selectedChat: null, messages: [] });
 
             modal.close();
             await this.chatList();
@@ -132,8 +143,6 @@ export default class ChatService {
             const reason = (error as ResponseError).reason || 'Неизвестная ошибка удаления чата';
             this.store.set({ responseError: reason });
         }
-
-
     }
 
     private chatUsersConverse(data: ChatsUsersAddType, chatId: number): ChatsUsersToggleType {

@@ -1,6 +1,6 @@
 import HTTPTransport from '../framework/httpTransport';
 import * as Type from '../types/chatType.ts';
-import {ChatDeleteResponseType} from "../types/chatType.ts";
+import {ChatDeleteResponseType, ChatDeleteType} from "../types/chatType.ts";
 
 const chatApiInst = new HTTPTransport('chats');
 
@@ -30,7 +30,7 @@ export default class ChatApi {
         return chatApiInst.put('/users', { data });
     }
 
-    async chatUsersDelete(data: Type.ChatsUsersToggleType): Promise<ChatDeleteResponseType>{
+    async chatUsersDelete(data: Type.ChatDeleteType): Promise<ChatDeleteResponseType>{
         return chatApiInst.delete<ChatDeleteResponseType>('/users', { data });
     }
 

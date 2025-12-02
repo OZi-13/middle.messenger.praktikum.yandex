@@ -27,6 +27,7 @@ import * as Type from '../../types/chatType';
 import { RouterInterface } from '../../types/routerType';
 import {Label} from "../../components/label";
 import * as ChatType from "../../types/chatType.ts";
+import {ChatMappedType, ChatsListMappedType} from "../../types/chatType";
 
 const messageServiceInit = new MessageService();
 
@@ -34,10 +35,10 @@ const createChat = (selectedChatId: number | null): Chat | null | '' => {
     return selectedChatId !== null ? new Chat() : '';
 };
 
-const createNavLineRight = (selectedChatHeader: string | null): NavLineRight | null | '' => {
+const createNavLineRight = (selectedChatHeader: string | null, isChatAdmin = true): NavLineRight | null | '' => {
 
     return selectedChatHeader !== null ?
-        new NavLineRight({avatar: true, name: selectedChatHeader, chatNav: true}) :
+        new NavLineRight({avatar: true, name: selectedChatHeader, chatNav: true, isChatAdmin: isChatAdmin }) :
         '';
 };
 
@@ -122,7 +123,7 @@ class ChatsPage extends Block {
               id: 'form-chat_delete',
               class: 'info-box_content',
               children: formDeleteCld,
-              onFormSubmit: (data: Record<string, string>) => {
+              onFormSubmit: () => {
                   chatServiceInit.chatDelete();
               },
           })
@@ -143,11 +144,12 @@ class ChatsPage extends Block {
     });
 
     chatServiceInit.chatList(); // получаем в стор объект с чатами
-    const ChatsListItems = Object.values(props.chats as Type.ChatsListType).map(
-      (chat: Type.ChatsItemType) => new ChatsListItem(chat),
+    const ChatsListItems = Object.values(props.chats as Type.ChatsListMappedType).map(
+      (chat: Type.ChatMappedType) => new ChatsListItem(chat),
     );
 
     const UserName: string = props.user?.display_name || props.user?.login || '';
+    const isChatAdmin: boolean = props.user?.id == props.selectedChat?.admin
 
     super({
       ...props,
@@ -160,7 +162,7 @@ class ChatsPage extends Block {
         nav: true,
         routerLink: ROUTER.profile,
       }),
-      NavLineRight: createNavLineRight(props.selectedChat?.header || null as string | null),
+      NavLineRight: createNavLineRight(props.selectedChat?.header || null as string | null, isChatAdmin),
       AddChatBtn: new Button({
           tag: 'div',
           id: 'modal-btn',
@@ -198,8 +200,8 @@ class ChatsPage extends Block {
 
         if (oldProps.chats !== newProps.chats) {
 
-            const ChatsListItems = Object.values(newProps.chats as Type.ChatsListType).map(
-                (chat: Type.ChatsItemType) => new ChatsListItem(chat),
+            const ChatsListItems = Object.values(newProps.chats as Type.ChatsListMappedType).map(
+                (chat: Type.ChatMappedType) => new ChatsListItem(chat),
             );
 
             (this as Block).setProps({
@@ -212,9 +214,8 @@ class ChatsPage extends Block {
         if (oldProps.selectedChat !== newProps.selectedChat) {
 
             const newChat = createChat(newProps.selectedChat?.id || 0 as number);
-            const newNavLineRight = createNavLineRight(newProps.selectedChat?.header || null as string);
-
-            // --- ЛОГИКА WS-ПОДКЛЮЧЕНИЯ/ОТКЛЮЧЕНИЯ ---
+            const isChatAdmin: boolean = newProps.user?.id == newProps.selectedChat?.admin;
+            const newNavLineRight = createNavLineRight(newProps.selectedChat?.header || null as string, isChatAdmin);
 
             const oldChatId = oldProps.selectedChat?.id;
             const newChatId = newProps.selectedChat?.id;
@@ -227,8 +228,6 @@ class ChatsPage extends Block {
             if (newChatId) {
                 messageServiceInit.connectToChat(newChatId).catch(console.error);
             }
-
-            // --- КОНЕЦ ЛОГИКИ WS ---
 
             (this as Block).setProps({
                 Chat: newChat === null ? undefined : newChat,

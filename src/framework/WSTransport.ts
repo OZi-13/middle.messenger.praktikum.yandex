@@ -89,17 +89,29 @@ export default class WSTransport extends EventBus {
     }
 
     public send(data: WSData): void {
-        if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
-            throw new Error('WebSocket не подключен или находится в процессе подключения');
+
+        if (!this.socket) {
+            throw new Error('WebSocket не инициализирован');
         }
 
-        // Отправляем объект в виде JSON-строки
-        this.socket.send(JSON.stringify(data));
+        if (this.socket.readyState === WebSocket.OPEN) {
+            this.socket.send(JSON.stringify(data));
+        } else if (this.socket.readyState === WebSocket.CONNECTING) {
+            console.warn('WS: Соединение еще не открыто, ждем...');
+            this.socket.addEventListener('open', () => {
+                this.socket!.send(JSON.stringify(data));
+            }, { once: true });
+        } else {
+            throw new Error(`WebSocket не подключен или находится в процессе подключения. ReadyState: ${this.socket.readyState}`);
+        }
     }
 
     public close(): void {
-        this.socket?.close();
+        if (this.socket && (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING)) {
+            this.socket.close(1000, 'User changed chat or page');
+        }
         this.clearInterval();
+        this.socket = null;
     }
 
     private clearInterval(): void {

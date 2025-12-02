@@ -57,7 +57,7 @@ export class ChatNavMenu extends Block {
             class: 'info-box_content',
             children: formChildren1,
             onFormSubmit: (data: Record<string, string>) => {
-                chatServiceInit.chatUserAdd(data as ChatType.ChatsUsersToggleType);
+                chatServiceInit.chatUserAdd(data as ChatType.ChatsUsersAddType);
             },
         }),
         Form2: new Form({
@@ -65,7 +65,7 @@ export class ChatNavMenu extends Block {
             class: 'info-box_content',
             children: formChildren2,
             onFormSubmit: (data: Record<string, string>) => {
-                chatServiceInit.chatUserDelete(data as ChatType.ChatsUsersToggleType);
+                chatServiceInit.chatUserDelete(data as ChatType.ChatsUsersAddType);
             },
         })
     });

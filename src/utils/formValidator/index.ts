@@ -85,29 +85,24 @@ class FormValidatorClass {
             }
 
             if (input.name) {
-                // 🔑 НОВАЯ ЛОГИКА СБОРА ДАННЫХ
                 if (input.type === 'file') {
                     const fileInput = input as HTMLInputElement;
 
-                    // Собираем FileList, только если он не пустой (и валидация пройдена)
                     if (fileInput.files && fileInput.files.length > 0) {
                         formValues[input.name] = fileInput.files;
                     }
-                    // Если файл не выбран, но он обязателен,
-                    // валидация в formValidateElement уже вернет false.
                 } else {
-                    // Собираем value для всех остальных полей
                     formValues[input.name] = input.value;
                 }
             }
         });
 
         if (isFormValid) {
-            console.log('✅ Валидация пройдена, собраны значения:');
-            console.log(formValues);
+            //console.log('✅ Валидация пройдена, собраны значения:');
+            //console.log(formValues);
             return formValues;
         } else {
-            console.log('❌ Валидация не прошла.');
+            //console.log('❌ Валидация не прошла.');
             return null;
         }
     }

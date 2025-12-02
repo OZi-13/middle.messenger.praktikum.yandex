@@ -1,6 +1,6 @@
 import Block, {BlockProps} from '../../framework/Block';
 import template from './chat.hbs.ts';
-import { MessageType } from '../../types/messageType';
+import {MessageInHtmlType, MessageListType, MessageType} from '../../types/messageType';
 import {AppStateType} from "../../types/appType.ts";
 
 import { MessageItem } from '../messageItem';
@@ -8,31 +8,48 @@ import { wrapStore } from '../../utils/wrapStore';
 
 type StoreType = Pick<AppStateType, 'user' | 'messages'>;
 
+const messageComponents = (messages: MessageListType | null) => {
+    let currentUserId = 0;
+
+    return messages !== null ?
+
+        Object.values(messages).map((msg, index): MessageItem => {
+
+            if (index === 0) currentUserId = msg.user_id;
+            const memberId = msg.user_id !== currentUserId ? 2 : 1;
+            const time = new Date(msg.time).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+
+            return new MessageItem({
+                memberId: memberId,
+                content: msg.content,
+                time: time,
+                is_read: msg.is_read,
+                type: msg.type
+            });
+
+        })  : null
+};
+
 interface ChatProps extends BlockProps, MessageType, StoreType {}
 class Chat extends Block {
     constructor(props: ChatProps) {
 
-        const messageComponents = props.messages.map((msg: MessageType) => {
-            return new MessageItem({...msg});
-        });
+        const messages = messageComponents(props.messages as MessageListType);
 
         super({
             ...props,
-            messageComponents
+            messages
         });
     }
 
     protected override componentDidUpdate(oldProps: ChatProps, newProps: ChatProps): boolean {
 
         if (oldProps.messages !== newProps.messages) {
-            const messageComponents = newProps.messages.map((msg: MessageType) => {
-                return new MessageItem({...msg});
-            });
 
+            const messages = messageComponents(newProps.messages as MessageListType);
             this.setProps({
-                messageComponents: messageComponents
+                messageComponents: messages
             });
-
             return false;
         }
 

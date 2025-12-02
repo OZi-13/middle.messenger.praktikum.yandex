@@ -1,12 +1,13 @@
 import * as Type from './apiType';
-import {ChatListResponseType, ChatSelectedType, ChatUserResponseType} from './chatType';
+import {ChatListResponseType, ChatSelectedType,} from './chatType';
+import {MessageListType} from './messageType';
 
 export type AppStateType = {
     user: Type.UserDTO | null;
     responseError: string | null;
-    chats: ChatListResponseType;
+    chats: ChatListResponseType | [];
     selectedChat: ChatSelectedType | null;
-    messages: unknown[];
+    messages: MessageListType | [];
     apiError?: Type.ResponseError | null;
 };
 
