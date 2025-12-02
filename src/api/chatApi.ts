@@ -34,7 +34,7 @@ export default class ChatApi {
         return chatApi.delete<ChatDeleteResponseType>('/users', { data });
     }
 
-    async chatToken(id: string): Promise<Type.ChatTokenResponseType> {
+    async getToken(id: string): Promise<Type.ChatTokenResponseType> {
         return chatApi.post<Type.ChatTokenResponseType>(`/token/${id}`);
     }
 }

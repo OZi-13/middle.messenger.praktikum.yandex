@@ -1,12 +1,11 @@
-// /src/services/chatService.ts (дополнение)
-import WSTransport, { WSEvents } from '../framework/WSTranport';
-import chatApi from '../api/chatApi'; // Предполагаем, что тут есть метод для получения токена
-import Store from '../framework/Store';
+import WSTransport, { WSEvents } from '../framework/WSTransport';
+import chatApi from '../api/chatApi';
+import { Store } from '../framework/Store';
 
 // Пример
 class ChatService {
     private sockets: Record<number, WSTransport> = {};
-    private store: typeof Store; // Получаем инстанс Store
+    private store: typeof window.store;
 
     constructor(store: typeof Store) {
         this.store = store;

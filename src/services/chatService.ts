@@ -2,6 +2,7 @@ import ChatApi from '../api/chatApi';
 import { ResponseError } from "../types/apiType.ts";
 import  * as ChatType from '../types/chatType.ts';
 import modal from '../utils/Modal';
+import {ChatsUsersAddType, ChatsUsersToggleType} from "../types/chatType.ts";
 
 interface ChatServiceDependencies {
     store: typeof window.store;
@@ -24,28 +25,34 @@ export default class ChatService {
             responseError: null,
         });
         try {
-            const chatUsers: ChatType.ChatsUsersListResponseType = await this.api.chatUsersList(chatId);
-
-            const chats = this.store.get('chats');
-            const chatData = chats[chatId];
-            const title = chatData.title;
-
-            let usersNameString = '';
-            if (Array.isArray(chatUsers) && chatUsers.length > 0) {
-                const namesArray = chatUsers.map(user => user.first_name);
-                usersNameString = namesArray.join(', ');
-            }
-
-            const chatSelected = {
-                id: chatId,
-                header: '[ ' + title + ' ] : :  Участники: ' + usersNameString
-            };
-            this.store.set({ selectedChat: chatSelected });
+            await this.UsersList(chatId)
 
         }  catch (error) {
             const reason = (error as ResponseError).reason || 'Неизвестная ошибка выбора чата';
             this.store.set({ responseError: reason });
         }
+    }
+
+    private async UsersList(chatId: number): Promise<void> {
+        const chatUsers: ChatType.ChatsUsersListResponseType = await this.api.chatUsersList(chatId);
+
+        const chats = this.store.get('chats');
+        const chatData = chats[chatId];
+        const title = chatData.title;
+
+        let usersNameString = '';
+        if (Array.isArray(chatUsers) && chatUsers.length > 0) {
+            const usersTmp = chatUsers.map(user => {
+                return `${user.first_name} (ID: ${user.id})`;
+            });
+            usersNameString = usersTmp.join(', ');
+        }
+
+        const chatSelected = {
+            id: chatId,
+            header: '[ ' + title + ' ] : :  Участники: ' + usersNameString
+        };
+        this.store.set({ selectedChat: chatSelected });
     }
 
     private chatsMapping(chats: ChatType.ChatListResponseType): ChatType.ChatsListType {
@@ -129,14 +136,34 @@ export default class ChatService {
 
     }
 
-    public async chatUserAdd(data: ChatType.ChatsUsersToggleType): Promise<void> {
+    private chatUsersConverse(data: ChatsUsersAddType, chatId: number): ChatsUsersToggleType {
+
+        let usersArr = [];
+        const usersArrayOfStrings = data.users
+            .split(',')
+            .map(id => id.trim())
+            .filter(id => id !== '');
+        usersArr = usersArrayOfStrings.map(id => Number(id));
+
+        return {
+            users: usersArr,
+            chatId: chatId
+        }
+    }
+
+
+    public async chatUserAdd(data: ChatType.ChatsUsersAddType): Promise<void> {
         this.store.set({
             responseError: null,
         });
 
         try {
-            const chatSelectId = this.store.get('chatSelectId');
-            await this.api.chatUsersAdd(data);
+            const chatSelect = this.store.get('selectedChat');
+            const dataOut: ChatType.ChatsUsersToggleType = this.chatUsersConverse(data, chatSelect.id);
+            console.log('formUserData data=', dataOut);
+
+            await this.api.chatUsersAdd(dataOut);
+            await this.UsersList(chatSelect.id)
             modal.close();
 
         } catch (error) {
@@ -145,13 +172,19 @@ export default class ChatService {
         }
     }
 
-    public async chatUserDelete(data: ChatType.ChatsUsersToggleType): Promise<void> {
+    public async chatUserDelete(data: ChatType.ChatsUsersAddType): Promise<void> {
         this.store.set({
             responseError: null,
         });
 
         try {
-            await this.api.chatUsersDelete(data);
+            const chatSelect = this.store.get('selectedChat');
+
+            const dataOut: ChatType.ChatsUsersToggleType = this.chatUsersConverse(data, chatSelect.id);
+            console.log('formUserData data=', dataOut);
+
+            await this.api.chatUsersDelete(dataOut);
+            await this.UsersList(chatSelect.id)
             modal.close();
 
         } catch (error) {

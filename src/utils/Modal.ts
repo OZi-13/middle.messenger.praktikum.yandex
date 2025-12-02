@@ -13,6 +13,9 @@ class ModalClass {
         }
         if (modalBoxElement) {
             modalBoxElement.classList.remove('none');
+            Array.from(modalBoxElement.children).forEach(modal => {
+                modal.classList.add('none');
+            });
         }
         if (modalElement) {
             modalElement.classList.remove('none');

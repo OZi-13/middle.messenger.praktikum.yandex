@@ -56,7 +56,7 @@ class ChatsPage extends Block {
           new Input({
               id: 'form_newuser_id',
               class: 'form-validate',
-              name: 'users[]',
+              name: 'users',
               type: 'text'
           }),
           new Button({
@@ -74,7 +74,7 @@ class ChatsPage extends Block {
           new Input({
               id: 'form_olduser_id',
               class: 'form-validate',
-              name: 'users[]',
+              name: 'users',
               type: 'text',
           }),
           new Button({
@@ -103,7 +103,7 @@ class ChatsPage extends Block {
               class: 'info-box_content',
               children: formAddUserCld,
               onFormSubmit: (data: Record<string, string>) => {
-                  chatServiceInit.chatUserAdd(data as ChatType.ChatsUsersToggleType);
+                  chatServiceInit.chatUserAdd(data as ChatType.ChatsUsersAddType);
               },
           }),
           modalContent3: new Form({
@@ -111,7 +111,7 @@ class ChatsPage extends Block {
               class: 'info-box_content',
               children: formDelUserCld,
               onFormSubmit: (data: Record<string, string>) => {
-                  chatServiceInit.chatUserDelete(data as ChatType.ChatsUsersToggleType);
+                  chatServiceInit.chatUserDelete(data as ChatType.ChatsUsersAddType);
               },
           }),
           modalContent4: new Form({
@@ -200,15 +200,11 @@ class ChatsPage extends Block {
 
             const newChat = createChat(newProps.selectedChat?.id || 0 as number);
             const newNavLineRight = createNavLineRight(newProps.selectedChat?.header || null as string);
-            console.log('Обновили newChat ' + newChat);
-            console.log('Обновили newNavLineRight ' + newNavLineRight);
 
             (this as Block).setProps({
                 Chat: newChat === null ? undefined : newChat,
                 NavLineRight: newNavLineRight === null ? undefined : newNavLineRight,
             } as Partial<ChatsPageProps>);
-
-            console.log('Обновили');
 
             return false;
         }

@@ -76,8 +76,12 @@ export type ChatsUsersListResponseType = {
 }[]
 
 export type ChatsUsersToggleType = {
-    users: [number]
+    users: number[]
     chatId: number
+}
+
+export type ChatsUsersAddType = {
+    users: string
 }
 
 export type ChatTokenResponseType = [
