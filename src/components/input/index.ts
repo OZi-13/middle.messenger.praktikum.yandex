@@ -13,16 +13,21 @@ interface InputProps extends BlockProps {
 
 export class Input extends Block {
   constructor(props: InputProps) {
-    super({
-      ...props,
-      events: {
-        blur: (e: Event) => {
-          e.preventDefault();
-          const inputElement = e.target as HTMLInputElement;
-          FormValidator.formValidateElement(inputElement, 'blur');
-        },
-      },
-    });
+      super({
+          ...props,
+          value: props.value || '',
+          events: {
+              blur: (e: Event) => {
+                  e.preventDefault();
+                  const inputElement = e.target as HTMLInputElement;
+                  FormValidator.formValidateElement(inputElement, 'blur');
+              },
+              input: (e: Event) => {
+                  const inputElement = e.target as HTMLInputElement;
+                  this.setProps({ value: inputElement.value });
+              }
+          },
+      });
   }
 
   override render(): string {

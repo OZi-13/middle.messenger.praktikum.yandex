@@ -4,6 +4,4 @@ export interface MessageType {
     user_id: string;
     content: string;
     type: 'message' | 'file' | 'sticker';
-    file?: unknown;
 }
-

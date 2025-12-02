@@ -28,6 +28,8 @@ import { RouterInterface } from '../../types/routerType';
 import {Label} from "../../components/label";
 import * as ChatType from "../../types/chatType.ts";
 
+const messageServiceInit = new MessageService();
+
 const createChat = (selectedChatId: number | null): Chat | null | '' => {
     return selectedChatId !== null ? new Chat() : '';
 };
@@ -49,8 +51,6 @@ class ChatsPage extends Block {
           store: window.store,
           router: window.router,
       });
-
-      const messageServiceInit = new MessageService();
 
       const formAddUserCld = [
           new Label({
@@ -219,18 +219,12 @@ class ChatsPage extends Block {
             const oldChatId = oldProps.selectedChat?.id;
             const newChatId = newProps.selectedChat?.id;
 
-            const messageServiceInit = new MessageService();
-
-            // 1. Если был выбран старый чат, отключаемся от него
             if (oldChatId && oldChatId !== newChatId) {
                 messageServiceInit.disconnectFromChat(oldChatId);
-                // Очищаем сообщения из Store при смене чата
                 window.store.set('messages', []);
             }
 
-            // 2. Если выбран новый чат (т.е. ID != 0), подключаемся
             if (newChatId) {
-                // Асинхронный вызов, не блокируем рендер
                 messageServiceInit.connectToChat(newChatId).catch(console.error);
             }
 
