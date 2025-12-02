@@ -20,7 +20,7 @@ export interface WSCloseEvent extends CloseEvent {}
 export interface WSErrorEvent extends Event {}
 
 export default class WSTransport extends EventBus {
-    private socket: WebSocket = null;
+    private socket: WebSocket | null = null;
     private interval: ReturnType<typeof setInterval> | null = null;
     private url: string;
 

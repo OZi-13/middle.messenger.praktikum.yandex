@@ -6,7 +6,7 @@ export type AppStateType = {
     responseError: string | null;
     chats: ChatListResponseType;
     selectedChat: ChatSelectedType | null;
-    messages: any[];
+    messages: unknown[];
     apiError?: Type.ResponseError | null;
 };
 

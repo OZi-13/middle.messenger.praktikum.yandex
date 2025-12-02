@@ -1,5 +1,6 @@
 import EventBus from './eventBus';
 import { AppStateType, DEFAULT_STATE } from '../types/appType';
+import { handleDispatch } from './StoreDispatch';
 
 import cloneDeep from '../utils/cloneDeep'
 import isPlainObject from '../utils/isPlainObject';
@@ -8,6 +9,11 @@ import setByPath from '../utils/set';
 
 export enum StoreEvents {
     Updated = 'Updated',
+}
+
+export interface Action {
+    type: 'ADD_OLD_MESSAGES' | 'ADD_NEW_MESSAGE' | string; // Определяем типы действий
+    payload?: unknown;
 }
 
 export class Store extends EventBus {
@@ -59,5 +65,17 @@ export class Store extends EventBus {
 
         this.state = nextState;
         this.emit(StoreEvents.Updated, prevState, nextState);
+    }
+
+    public dispatch(action: Action): void {
+
+        const currentState = this.getState();
+        const changes = handleDispatch(currentState, action);
+
+        if (Object.keys(changes).length > 0) {
+            this.set(changes);
+        } else {
+            console.warn(`[Store Dispatch] Действие ${action.type} не привело к изменениям.`);
+        }
     }
 }

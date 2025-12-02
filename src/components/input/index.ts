@@ -21,10 +21,6 @@ export class Input extends Block {
                   e.preventDefault();
                   const inputElement = e.target as HTMLInputElement;
                   FormValidator.formValidateElement(inputElement, 'blur');
-              },
-              input: (e: Event) => {
-                  const inputElement = e.target as HTMLInputElement;
-                  this.setProps({ value: inputElement.value });
               }
           },
       });
