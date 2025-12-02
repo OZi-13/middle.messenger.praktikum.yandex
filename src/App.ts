@@ -21,7 +21,6 @@ export default class App {
     private initStore(): Store {
         const store = Store.getInstance();
         window.store = store;
-        console.log('Store готов.');
 
         window.store.on(StoreEvents.Updated, (prevState, nextState) => {
             console.groupCollapsed('Store Updated');

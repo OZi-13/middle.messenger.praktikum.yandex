@@ -192,18 +192,4 @@ export default class ChatService {
             this.store.set({ responseError: reason });
         }
     }
-
-    public async chatUserToken(data: string): Promise<void> {
-        this.store.set({
-            responseError: null,
-        });
-
-        try {
-            const userToken: ChatType.ChatTokenResponseType = await this.api.chatToken(data as string);
-
-        } catch (error) {
-            const reason = (error as ResponseError).reason || 'Неизвестная ошибка получения токена пользователя для чата';
-            this.store.set({ responseError: reason });
-        }
-    }
 }

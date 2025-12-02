@@ -56,7 +56,6 @@ export default class AuthService {
         try {
             const user: ApiType.UserDTO = await this.api.user();
             this.store.set({ user });
-            console.log('Данные пользователя получены:', user.login);
 
         } catch (error) {
             this.store.set({ user: null });

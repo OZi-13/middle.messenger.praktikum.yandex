@@ -1,4 +1,5 @@
 import Block, { BlockProps } from '../../framework/Block';
+import { Store } from '../../framework/Store';
 import template from './chatsPage.hbs';
 import './chatsPage.pcss';
 
@@ -19,6 +20,7 @@ import { wrapRouter } from '../../utils/wrapRouter';
 import { wrapStore } from '../../utils/wrapStore';
 import { wrapProtected } from '../../utils/wrapProtected';
 import ChatService from '../../services/chatService';
+import MessageService from '../../services/messageService';
 
 import { AppStateType } from '../../types/appType';
 import * as Type from '../../types/chatType';
@@ -47,6 +49,8 @@ class ChatsPage extends Block {
           store: window.store,
           router: window.router,
       });
+
+      const messageServiceInit = new MessageService();
 
       const formAddUserCld = [
           new Label({
@@ -176,6 +180,15 @@ class ChatsPage extends Block {
         template: 'templateMessage',
         message: message,
         button: button,
+          onFormSubmit: (data: Record<string, string>) => {
+              const currentChatId = this.props.selectedChat?.id;
+              const messageContent = data.message; // Получаем текст из поля 'message'
+
+              if (currentChatId && messageContent) {
+                  messageServiceInit.sendMessage(currentChatId, messageContent);
+                  message.setProps({ value: '' });
+              }
+          },
       }),
       Chat: createChat(props.selectedChat?.id || null as number | null)
     });
@@ -200,6 +213,28 @@ class ChatsPage extends Block {
 
             const newChat = createChat(newProps.selectedChat?.id || 0 as number);
             const newNavLineRight = createNavLineRight(newProps.selectedChat?.header || null as string);
+
+            // --- ЛОГИКА WS-ПОДКЛЮЧЕНИЯ/ОТКЛЮЧЕНИЯ ---
+
+            const oldChatId = oldProps.selectedChat?.id;
+            const newChatId = newProps.selectedChat?.id;
+
+            const messageServiceInit = new MessageService();
+
+            // 1. Если был выбран старый чат, отключаемся от него
+            if (oldChatId && oldChatId !== newChatId) {
+                messageServiceInit.disconnectFromChat(oldChatId);
+                // Очищаем сообщения из Store при смене чата
+                window.store.set('messages', []);
+            }
+
+            // 2. Если выбран новый чат (т.е. ID != 0), подключаемся
+            if (newChatId) {
+                // Асинхронный вызов, не блокируем рендер
+                messageServiceInit.connectToChat(newChatId).catch(console.error);
+            }
+
+            // --- КОНЕЦ ЛОГИКИ WS ---
 
             (this as Block).setProps({
                 Chat: newChat === null ? undefined : newChat,

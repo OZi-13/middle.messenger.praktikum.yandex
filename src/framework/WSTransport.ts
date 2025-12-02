@@ -1,8 +1,6 @@
 import EventBus from './EventBus';
-import { Store } from './Store';
-import { apiUrl } from '../config';
-
-//const socket = new WebSocket(apiUrl);
+//import { Store } from './Store';
+import { apiUrl, wsUrl } from '../config';
 
 export enum WSEvents {
     Connected = 'connected',
@@ -11,30 +9,33 @@ export enum WSEvents {
     Close = 'close',
 }
 
+//const socket = new WebSocket('wss://ya-praktikum.tech/ws/chats/<USER_ID>/<CHAT_ID>/<TOKEN_VALUE>');
+export interface WSData {
+    type: string;
+    content?: string;
+}
+
+export interface WSCloseEvent extends CloseEvent {}
+
+export interface WSErrorEvent extends Event {}
+
 export default class WSTransport extends EventBus {
-    private socket: WebSocket | null = null;
+    private socket: WebSocket = null;
     private interval: ReturnType<typeof setInterval> | null = null;
     private url: string;
 
     constructor(userId: number, chatId: number, token: string) {
         super();
-        // Формируем полный URL согласно документации: /chats/{chatId}/{userId}/{token}
-        // *Важно:* в документации указан URL: /chats/{chatId}/ и передача куки.
-        // На практике часто требуется передача user/token в пути, как в старых версиях API.
-        // Если API требует **только** куки, ваш URL будет `this.url = ${WS_API_URL}/chats/${chatId}/`;
-        // Но для более надежного соединения используем токен, если он доступен:
-        this.url = `${apiUrl}/chats/${chatId}/${userId}/${token}`;
+        this.url = `${wsUrl}chats/${userId}/${chatId}/${token}`;
     }
 
     public connect(): void {
         if (this.socket) {
-            // Если уже есть, закрываем перед новым подключением
             this.close();
         }
 
-        // Заменяем 'https' в apiUrl на 'wss' для WebSocket, если нужно
         this.socket = new WebSocket(this.url);
-        this.subscribe(this.socket);
+        this.subscribe(this.socket!);
         this.setupPing();
     }
 
@@ -51,7 +52,7 @@ export default class WSTransport extends EventBus {
             this.emit(WSEvents.Connected);
         });
 
-        socket.addEventListener('close', event => {
+        socket.addEventListener('close', (event: WSCloseEvent) => {
             this.emit(WSEvents.Close, event);
             this.clearInterval();
             if (!event.wasClean) {
@@ -61,28 +62,33 @@ export default class WSTransport extends EventBus {
         });
 
         socket.addEventListener('message', event => {
+            const dataString = event.data;
+
+            if (!dataString || dataString === '[]') {
+                console.log('WS: Получен пустой или незначащий ответ.');
+                return;
+            }
+
             try {
-                const data = JSON.parse(event.data);
+                const data = JSON.parse(dataString);
+
                 if (Array.isArray(data)) {
-                    // Обработка старых сообщений (get old)
                     this.emit(WSEvents.Message, data);
-                } else if (data.type === 'pong') {
-                    // Игнорируем pong, он только для поддержания соединения
+                } else if (data && data.type === 'pong') {
                 } else {
-                    // Обработка новых сообщений, user connected и др.
                     this.emit(WSEvents.Message, data);
                 }
             } catch (e) {
-                console.error('Не удалось распарсить WS сообщение:', event.data);
+                console.error('Не удалось распарсить WS сообщение:', dataString);
             }
         });
 
-        socket.addEventListener('error', event => {
+        socket.addEventListener('error', (event: WSErrorEvent) => {
             this.emit(WSEvents.Error, event);
         });
     }
 
-    public send(data: unknown): void {
+    public send(data: WSData): void {
         if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
             throw new Error('WebSocket не подключен или находится в процессе подключения');
         }

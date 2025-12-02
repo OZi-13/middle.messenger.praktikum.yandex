@@ -1,23 +1,24 @@
 import WSTransport, { WSEvents } from '../framework/WSTransport';
-import chatApi from '../api/chatApi';
+import ChatApi from '../api/chatApi';
+import { ChatTokenResponseType } from "../types/chatType.ts";
 import { Store } from '../framework/Store';
 
 // Пример
-class ChatService {
+export default class MessageService {
+    private readonly api: ChatApi;
     private sockets: Record<number, WSTransport> = {};
-    private store: typeof window.store;
+    private store: Store;
 
-    constructor(store: typeof Store) {
-        this.store = store;
+    constructor() {
+        this.api = new ChatApi();
+        this.store = Store.getInstance();
     }
 
-    // 1. Получаем токен и подключаемся
     public async connectToChat(chatId: number): Promise<void> {
-        // Получаем токен
-        const tokenResponse = await chatApi.getToken(chatId);
-        const { token } = tokenResponse; // Предполагаем, что ответ - { token: string }
+        const tokenResponse: ChatTokenResponseType = await this.api.getToken(chatId as number);
+        const { token } = tokenResponse;
 
-        // Получаем id текущего пользователя из Store
+        //const currentUser = this.store.get('user')?.id;
         const currentUserId = this.store.getState().user?.id;
         if (!currentUserId) {
             throw new Error('Пользователь не авторизован');
