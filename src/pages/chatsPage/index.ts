@@ -176,7 +176,7 @@ class ChatsPage extends Block {
       ChatsListItem: ChatsListItems,
       ModalBox: modalBoxInstance,
 
-      Form: new Form({
+      ChatForm: new Form({
         id: 'form',
         class: 'chats_bottom',
         template: 'templateMessage',

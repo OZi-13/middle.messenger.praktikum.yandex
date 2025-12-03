@@ -1,7 +1,9 @@
 import WSTransport, { WSEvents } from '../framework/WSTransport';
 import ChatApi from '../api/chatApi';
-import { ChatTokenResponseType } from "../types/chatType.ts";
+import { ChatTokenResponseType } from "../types/chatType";
 import { Store } from '../framework/Store';
+import { escapeHtml } from '../utils/sanitize';
+import { MessageType } from '../types/messageType';
 
 export default class MessageService {
     private readonly api: ChatApi;
@@ -14,7 +16,7 @@ export default class MessageService {
     }
 
     public async connectToChat(chatId: number): Promise<void> {
-        const tokenResponse: ChatTokenResponseType = await this.api.getToken(chatId as number);
+        const tokenResponse: ChatTokenResponseType = await this.api.getToken(chatId);
         const { token } = tokenResponse;
 
         const currentUser = this.store.get('user');
@@ -39,12 +41,13 @@ export default class MessageService {
     public sendMessage(chatId: number, content: string): void {
         const socket = this.sockets[chatId];
         if (socket) {
+            const sanitizedContent = escapeHtml(content);
+
             socket.send({
-                content: content,
+                content: sanitizedContent,
                 type: 'message',
             });
         }
-        //console.log('Сообщение отправлено')
     }
 
     public getOldMessages(chatId: number, offset: number): void {
@@ -58,20 +61,33 @@ export default class MessageService {
     }
 
     private handleNewMessages = (data: unknown) => {
-        //console.log('Сообщение пришло' + data)
-
         if (Array.isArray(data)) {
+            // Экранирование массива старых сообщений
+            const sanitizedData = (data as MessageType[]).map(msg => {
+                if (msg.content) {
+                    msg.content = escapeHtml(msg.content);
+                }
+                return msg;
+            });
+
             this.store.dispatch({
                 type: 'ADD_OLD_MESSAGES',
-                payload: data
+                payload: sanitizedData
             });
+
         } else if (data && typeof data === 'object' && 'type' in data) {
-            const message = data as { type: string, content: string, user_id: string };
+            const message = data as MessageType;
 
             if (message.type === 'message' || message.type === 'file' || message.type === 'sticker') {
+
+                // Экранирование нового единичного сообщения
+                if (message.content) {
+                    message.content = escapeHtml(message.content);
+                }
+
                 this.store.dispatch({
                     type: 'ADD_NEW_MESSAGE',
-                    payload: data
+                    payload: message
                 });
             } else if (message.type === 'user connected') {
                 console.log(`Пользователь ${message.content} подключился`);
