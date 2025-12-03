@@ -23,7 +23,7 @@ class NoPage extends Block {
         text: 'Назад к чатам',
         onClick: (event: Event) => {
           event.preventDefault();
-            props.router.go(ROUTER.chats);
+          props.router.go(ROUTER.chats);
         },
       }),
     });

@@ -1,19 +1,18 @@
 import Block, { BlockProps } from '../../framework/Block';
 import template from './messageItem.hbs';
-import { AppStateType } from '../../types/appType';
-import {MessageInHtmlType, MessageType} from '../../types/messageType';
+import { MessageInHtmlType } from '../../types/messageType';
 
 interface MessageItemProps extends BlockProps, MessageInHtmlType {}
 
 export class MessageItem extends Block {
-    constructor(props: MessageItemProps) {
+  constructor(props: MessageItemProps) {
 
-        super({
-            ...props,
-        });
-    }
+    super({
+      ...props,
+    });
+  }
 
-    render(): string {
-        return template;
-    }
+  render(): string {
+    return template;
+  }
 }

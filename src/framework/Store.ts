@@ -1,81 +1,86 @@
-import EventBus from './eventBus';
+import EventBus from './EventBus';
 import { AppStateType, DEFAULT_STATE } from '../types/appType';
 import { handleDispatch } from './StoreDispatch';
 
-import cloneDeep from '../utils/cloneDeep'
+import cloneDeep from '../utils/cloneDeep';
 import isPlainObject from '../utils/isPlainObject';
 import isEqual from '../utils/isEqual';
 import setByPath from '../utils/set';
 
 export enum StoreEvents {
-    Updated = 'Updated',
+  Updated = 'Updated',
 }
 
 export interface Action {
-    type: 'ADD_OLD_MESSAGES' | 'ADD_NEW_MESSAGE' | string; // Определяем типы действий
-    payload?: unknown;
+  type: 'ADD_OLD_MESSAGES' | 'ADD_NEW_MESSAGE' | string; // Определяем типы действий
+  payload?: unknown;
 }
 
 export class Store extends EventBus {
-    private static __instance: Store | null = null;
-    private state: AppStateType = DEFAULT_STATE;
+  private static __instance: Store | null = null;
 
-    private constructor() {
-        super();
-        this.state = DEFAULT_STATE;
-    }
+  private state: AppStateType = DEFAULT_STATE;
 
-    public static getInstance(): Store {
-        if (!Store.__instance) {
-            Store.__instance = new Store();
-        }
-        return Store.__instance;
-    }
+  private constructor() {
+    super();
+    this.state = DEFAULT_STATE;
+  }
 
-    public getState(): AppStateType {
-        return cloneDeep(this.state);
+  public static getInstance(): Store {
+    if (!Store.__instance) {
+      Store.__instance = new Store();
     }
+    return Store.__instance;
+  }
+
+  public getState(): AppStateType {
+    return cloneDeep(this.state);
+  }
 
     public get<T extends keyof AppStateType>(key: T): AppStateType[T] {
-        return cloneDeep(this.state[key]);
+        const value = this.state[key];
+        if (value === undefined) {
+            return value as AppStateType[T];
+        }
+        return cloneDeep(value) as AppStateType[T];
     }
 
-    /**
+  /**
      * Обновление вложенных свойств по пути: set('user.firstName', 'Ivan')
      * * @param nextStateOrPath
      * @param value Новое значение
      */
-    public set(nextStateOrPath: Partial<AppStateType> | string, value?: unknown): void {
-        const prevState = this.state;
+  public set(nextStateOrPath: Partial<AppStateType> | string, value?: unknown): void {
+    const prevState = this.state;
 
-        let nextState: AppStateType = cloneDeep(prevState);
+    let nextState: AppStateType = cloneDeep(prevState);
 
-        if (typeof nextStateOrPath === 'string' && value !== undefined) {
-            setByPath(nextState, nextStateOrPath, value);
+    if (typeof nextStateOrPath === 'string' && value !== undefined) {
+      setByPath(nextState, nextStateOrPath, value);
 
-        } else if (isPlainObject(nextStateOrPath)) {
-            nextState = { ...nextState, ...(nextStateOrPath as Partial<AppStateType>) } as AppStateType;
+    } else if (isPlainObject(nextStateOrPath)) {
+      nextState = { ...nextState, ...(nextStateOrPath) } as AppStateType;
 
-        } else {
-            return;
-        }
-        if (isEqual(prevState, nextState)) {
-            return;
-        }
-
-        this.state = nextState;
-        this.emit(StoreEvents.Updated, prevState, nextState);
+    } else {
+      return;
+    }
+    if (isEqual(prevState, nextState)) {
+      return;
     }
 
-    public dispatch(action: Action): void {
+    this.state = nextState;
+    this.emit(StoreEvents.Updated, prevState, nextState);
+  }
 
-        const currentState = this.getState();
-        const changes = handleDispatch(currentState, action);
+  public dispatch(action: Action): void {
 
-        if (Object.keys(changes).length > 0) {
-            this.set(changes);
-        } else {
-            console.warn(`[Store Dispatch] Действие ${action.type} не привело к изменениям.`);
-        }
+    const currentState = this.getState();
+    const changes = handleDispatch(currentState, action);
+
+    if (Object.keys(changes).length > 0) {
+      this.set(changes);
+    } else {
+      console.warn(`[Store Dispatch] Действие ${action.type} не привело к изменениям.`);
     }
+  }
 }

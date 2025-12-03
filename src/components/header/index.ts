@@ -3,9 +3,10 @@ import template from './header.hbs.ts';
 import './header.pcss';
 
 import { ROUTER } from '../../utils/links.ts';
-import { wrapRouter } from "../../utils/wrapRouter";
+import { wrapRouter } from '../../utils/wrapRouter';
 
 import { Link } from '../link';
+import {RouterInterface} from '../../types/routerType';
 
 interface HeaderProps extends BlockProps {
   isLoginPage?: string;

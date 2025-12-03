@@ -8,9 +8,9 @@ interface ErrorBoxProps extends BlockProps {
 
 export class ErrorBox extends Block {
   constructor(props: ErrorBoxProps) {
-      super({
-          ...props,
-      });
+    super({
+      ...props,
+    });
   }
 
   override render() {

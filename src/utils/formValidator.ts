@@ -4,46 +4,46 @@ type Nullable<T> = T | null;
 
 class FormValidatorClass {
 
-    private validateField(
-        element: HTMLInputElement | HTMLTextAreaElement,
-        mode: string
-    ): Nullable<string> {
+  private validateField(
+    element: HTMLInputElement | HTMLTextAreaElement,
+    mode: string,
+  ): Nullable<string> {
 
-        const name = element.name;
-        const rule = FormValidatorData[name];
+    const name = element.name;
+    const rule = FormValidatorData[name];
 
-        if (rule) {
-            const [validator, errorMessage] = rule;
+    if (rule) {
+      const [validator, errorMessage] = rule;
 
-            // 1. Проверка, является ли поле файлом
-            if (typeof validator === 'function') {
-                const files = (element as HTMLInputElement).files; // Получаем FileList
+      // 1. Проверка, является ли поле файлом
+      if (typeof validator === 'function') {
+        const files = (element as HTMLInputElement).files; // Получаем FileList
 
-                // Если это валидатор-функция (для файлов)
-                if (!validator(files)) {
-                    return errorMessage;
-                }
-                // 💡 Валидация файлов не требует дополнительной проверки на 'required',
-                // так как это обрабатывается внутри validateAvatarFile (проверка на files.length === 0)
-            }
-
-            // 2. Проверка, является ли поле строкой (через RegExp)
-            else if (validator instanceof RegExp) {
-                const value = element.value;
-
-                // Проверка по шаблону (если значение есть)
-                if (value && !validator.test(value)) {
-                    return errorMessage;
-                }
-
-                // Проверка на обязательность (если это строка)
-                if (mode === 'submit' && !value) {
-                    return 'Поле обязательно для заполнения';
-                }
-            }
+        // Если это валидатор-функция (для файлов)
+        if (!validator(files)) {
+          return errorMessage;
         }
-        return null;
+        // 💡 Валидация файлов не требует дополнительной проверки на 'required',
+        // так как это обрабатывается внутри validateAvatarFile (проверка на files.length === 0)
+      }
+
+      // 2. Проверка, является ли поле строкой (через RegExp)
+      else if (validator instanceof RegExp) {
+        const value = element.value;
+
+        // Проверка по шаблону (если значение есть)
+        if (value && !validator.test(value)) {
+          return errorMessage;
+        }
+
+        // Проверка на обязательность (если это строка)
+        if (mode === 'submit' && !value) {
+          return 'Поле обязательно для заполнения';
+        }
+      }
     }
+    return null;
+  }
 
   public formValidateElement(e: HTMLInputElement | HTMLTextAreaElement, mode: string): boolean  {
     const ErrorDivOld = e.nextElementSibling;
@@ -52,7 +52,7 @@ class FormValidatorClass {
       ErrorDivOld.remove();
     }
 
-      const validated: Nullable<string> = this.validateField(e, mode);
+    const validated: Nullable<string> = this.validateField(e, mode);
 
     if (validated) {
       e.classList.add('form-error_element');
@@ -68,44 +68,44 @@ class FormValidatorClass {
     } else return true;
   }
 
-    public submitForm(e: Event): FormResult | null { // 🔑 ИЗМЕНЕН ВОЗВРАЩАЕМЫЙ ТИП
-        e.preventDefault();
-        const form = e.target as HTMLFormElement;
+  public submitForm(e: Event): FormResult | null { // 🔑 ИЗМЕНЕН ВОЗВРАЩАЕМЫЙ ТИП
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
 
-        const inputElements: NodeListOf<HTMLInputElement | HTMLTextAreaElement> =
+    const inputElements: NodeListOf<HTMLInputElement | HTMLTextAreaElement> =
             form.querySelectorAll('.form-validate');
 
-        const formValues: FormResult = {}; // 🔑 ИСПОЛЬЗУЕМ НОВЫЙ ТИП
-        let isFormValid = true;
+    const formValues: FormResult = {}; // 🔑 ИСПОЛЬЗУЕМ НОВЫЙ ТИП
+    let isFormValid = true;
 
-        inputElements.forEach(input => {
-            const isValid = this.formValidateElement(input, 'submit');
-            if (!isValid) {
-                isFormValid = false;
-            }
+    inputElements.forEach(input => {
+      const isValid = this.formValidateElement(input, 'submit');
+      if (!isValid) {
+        isFormValid = false;
+      }
 
-            if (input.name) {
-                if (input.type === 'file') {
-                    const fileInput = input as HTMLInputElement;
+      if (input.name) {
+        if (input.type === 'file') {
+          const fileInput = input as HTMLInputElement;
 
-                    if (fileInput.files && fileInput.files.length > 0) {
-                        formValues[input.name] = fileInput.files;
-                    }
-                } else {
-                    formValues[input.name] = input.value;
-                }
-            }
-        });
-
-        if (isFormValid) {
-            //console.log('✅ Валидация пройдена, собраны значения:');
-            //console.log(formValues);
-            return formValues;
+          if (fileInput.files && fileInput.files.length > 0) {
+            formValues[input.name] = fileInput.files;
+          }
         } else {
-            //console.log('❌ Валидация не прошла.');
-            return null;
+          formValues[input.name] = input.value;
         }
+      }
+    });
+
+    if (isFormValid) {
+      //console.log('✅ Валидация пройдена, собраны значения:');
+      //console.log(formValues);
+      return formValues;
+    } else {
+      //console.log('❌ Валидация не прошла.');
+      return null;
     }
+  }
 }
 
 export const FormValidator = new FormValidatorClass();

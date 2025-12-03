@@ -8,7 +8,7 @@ import { Input } from '../../components/input';
 import { Button } from '../../components/button';
 import { Link } from '../../components/link';
 import { Form } from '../../components/form';
-import {ErrorBox} from '../../components/ErrorBox';
+import { ErrorBox } from '../../components/errorBox';
 
 import { ROUTER } from '../../utils/links.ts';
 import { wrapRouter } from '../../utils/wrapRouter';
@@ -26,10 +26,10 @@ interface RegistrationPageProps extends BlockProps, RouterInterface, StoreType {
 class RegistrationPage extends Block {
   constructor(props: RegistrationPageProps) {
 
-      const authServiceInit = new AuthService({
-          store: window.store,
-          router: window.router,
-      });
+    const authServiceInit = new AuthService({
+      store: window.store,
+      router: window.router,
+    });
 
     const formChildren = [
       new Label({
@@ -122,28 +122,28 @@ class RegistrationPage extends Block {
         class: 'info-box_content',
         children: formChildren,
 
-          onFormSubmit: (data: Record<string, string>) => {
-              console.log('Данные формы:', data);
-              authServiceInit.registration(data as RegistrationType);
-          },
+        onFormSubmit: (data: Record<string, string>) => {
+          console.log('Данные формы:', data);
+          authServiceInit.registration(data as RegistrationType);
+        },
 
       }),
-        ErrorBox:  new ErrorBox({text: props.responseError as string | null}),
+      ErrorBox:  new ErrorBox({ text: props.responseError }),
     });
   }
 
-    protected override componentDidUpdate(oldProps: RegistrationPageProps, newProps: RegistrationPageProps): boolean {
+  protected override componentDidUpdate(oldProps: RegistrationPageProps, newProps: RegistrationPageProps): boolean {
 
-        if (oldProps.responseError !== newProps.responseError && newProps.responseError !== null) {
+    if (oldProps.responseError !== newProps.responseError && newProps.responseError !== null) {
 
-            (this as Block).setProps({
-                ErrorBox: new ErrorBox({text: newProps.responseError as string}),
-            } as Partial<RegistrationPageProps>);
+      (this as Block).setProps({
+        ErrorBox: new ErrorBox({ text: newProps.responseError }),
+      } as Partial<RegistrationPageProps>);
 
-            return false;
-        }
-        return super.componentDidUpdate(oldProps, newProps);
+      return false;
     }
+    return super.componentDidUpdate(oldProps, newProps);
+  }
 
   override render() {
     return template;
@@ -151,9 +151,9 @@ class RegistrationPage extends Block {
 }
 
 const mapStateToProps = (state: AppStateType): StoreType => {
-    return {
-        responseError: state.responseError,
-    };
+  return {
+    responseError: state.responseError,
+  };
 };
 
 const RegistrationPageRouter = wrapRouter(wrapProtected(wrapStore(mapStateToProps)(RegistrationPage)));

@@ -11,39 +11,36 @@ import { ChatCreateType } from '../../types/chatType.ts';
 export class ChatAddForm extends Block {
   constructor() {
 
-      const ChatServiceInit = new ChatService({
-          store: window.store,
-          router: window.router,
-      });
+    const chatServiceInit = new ChatService(window.store);
 
     const formChildren = [
-          new Label({
-          forAttr: 'form-avatar',
-          text: 'Название нового чата',
+      new Label({
+        forAttr: 'form-avatar',
+        text: 'Название нового чата',
       }),
-          new Input({
-          id: 'form-title',
-          class: 'form-validate',
-          name: 'title',
-          type: 'text',
+      new Input({
+        id: 'form-title',
+        class: 'form-validate',
+        name: 'title',
+        type: 'text',
       }),
-        new Button({
-            tag: 'button',
-            type: 'submit',
-            id: 'form-btn',
-            text: 'Загрузить',
-        }),
+      new Button({
+        tag: 'button',
+        type: 'submit',
+        id: 'form-btn',
+        text: 'Загрузить',
+      }),
     ];
 
     super({
-        Form: new Form({
-            id: 'form',
-            class: 'info-box_content',
-            children: formChildren,
-            onFormSubmit: (data: Record<string, string>) => {
-                ChatServiceInit.chatCreate(data as ChatCreateType);
-            },
-        }),
+      Form: new Form({
+        id: 'form',
+        class: 'info-box_content',
+        children: formChildren,
+        onFormSubmit: (data: Record<string, string>) => {
+          chatServiceInit.chatCreate(data as ChatCreateType);
+        },
+      }),
     });
   }
 

@@ -21,20 +21,20 @@ import { UserEditType } from '../../types/userType';
 import { profileInfoConst } from '../../types/userType';
 
 const UserProfileList = (user: UserDTO | null) => {
-    if (!user) {
-        return [];
-    }
-    const profileListAll =  profileInfoConst.map(({ header, name }): [Label, Input] => {
-        const value: string = user[name] ? String(user[name]) : '';
-        return [
-            new Label({ forAttr: name, text: header }),
-            new Input({ id: name, class: 'form-validate', name: name, type: 'input', value: value }),
-        ];
-    }).flat();
-    profileListAll.push(new Button({ tag:'button', type:'submit', id:'form-btn', text:'Записать' }));
+  if (!user) {
+    return [];
+  }
+  const profileListAll =  profileInfoConst.map(({ header, name }): [Label, Input] => {
+    const value: string = user[name] ? String(user[name]) : '';
+    return [
+      new Label({ forAttr: name, text: header }),
+      new Input({ id: name, class: 'form-validate', name: name, type: 'input', value: value }),
+    ];
+  }).flat();
+  profileListAll.push(new Button({ tag:'button', type:'submit', id:'form-btn', text:'Записать' }));
 
-    return profileListAll;
-}
+  return profileListAll;
+};
 
 type StoreType = Pick<AppStateType, 'user'>;
 interface ProfileEditPageProps extends BlockProps, StoreType {}
@@ -42,15 +42,15 @@ interface ProfileEditPageProps extends BlockProps, StoreType {}
 class ProfileEditPage extends Block {
   constructor(props: ProfileEditPageProps) {
 
-      const userFromProps = props.user as UserDTO | null;
-      const ProfileList = UserProfileList(userFromProps);
+    const userFromProps = props.user;
+    const ProfileList = UserProfileList(userFromProps);
 
-      const userServiceInit = new UserService({
-          store: window.store,
-          router: window.router,
-      });
+    const userServiceInit = new UserService({
+      store: window.store,
+      router: window.router,
+    });
 
-      const UserName: string = props.user.display_name || props.user.login || '';
+    const UserName: string = props.user?.display_name || props.user?.login || '';
 
     super({
       ...props,
@@ -74,7 +74,7 @@ class ProfileEditPage extends Block {
         class: 'info-box_content',
         children: ProfileList,
         onFormSubmit: (data: Record<string, string>) => {
-            userServiceInit.userEdit(data as UserEditType);
+          userServiceInit.userEdit(data as UserEditType);
         },
       }),
     });
@@ -86,9 +86,9 @@ class ProfileEditPage extends Block {
 }
 
 const mapStateToProps = (state: AppStateType): StoreType => {
-    return {
-        user: state.user,
-    };
+  return {
+    user: state.user,
+  };
 };
 
 const LoginPageRouter = wrapProtected(wrapStore(mapStateToProps)(ProfileEditPage));

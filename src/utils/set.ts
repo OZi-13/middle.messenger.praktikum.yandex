@@ -1,20 +1,22 @@
-type Indexed<T = unknown> = {
+export type Indexed<T = unknown> = {
     [key in string]: T;
 };
 
 function merge(lhs: Indexed, rhs: Indexed): Indexed {
-    for (let p in rhs) {
+    for (const p in rhs) {
         if (!rhs.hasOwnProperty(p)) {
             continue;
         }
 
         try {
-            if (rhs[p].constructor === Object) {
-                rhs[p] = merge(lhs[p] as Indexed, rhs[p] as Indexed);
+            const rhsValue = rhs[p];
+
+            if (typeof rhsValue === 'object' && rhsValue !== null && rhsValue.constructor === Object) {
+                rhs[p] = merge(lhs[p] as Indexed, rhsValue as Indexed);
             } else {
                 lhs[p] = rhs[p];
             }
-        } catch(e) {
+        } catch (e) {
             lhs[p] = rhs[p];
         }
     }
@@ -33,8 +35,9 @@ function set(object: Indexed | unknown, path: string, value: unknown): Indexed |
 
     const result = path.split('.').reduceRight<Indexed>((acc, key) => ({
         [key]: acc,
-    }), value as any);
+    }), value as Indexed);
+
     return merge(object as Indexed, result);
 }
 
-export default set
+export default set;

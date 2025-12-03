@@ -10,22 +10,22 @@ import { Action } from './Store';
  */
 export const handleDispatch = (state: AppStateType, action: Action): Partial<AppStateType> => {
 
-    if (action.type === 'ADD_OLD_MESSAGES') {
-        const oldMessages = state.messages as MessageListType;
-        const incomingMessages = action.payload as MessageListType;
+  if (action.type === 'ADD_OLD_MESSAGES') {
+    const oldMessages = state.messages as MessageListType;
+    const incomingMessages = action.payload as MessageListType;
 
-        const updatedMessages = [...incomingMessages].reverse().concat(oldMessages);
+    const updatedMessages = [...incomingMessages].reverse().concat(oldMessages);
 
-        return { messages: updatedMessages };
+    return { messages: updatedMessages };
 
-    } else if (action.type === 'ADD_NEW_MESSAGE') {
-        const currentMessages = state.messages as MessageListType;
-        const newMessage = action.payload as MessageType;
+  } else if (action.type === 'ADD_NEW_MESSAGE') {
+    const currentMessages = state.messages as MessageListType;
+    const newMessage = action.payload as MessageType;
 
-        const updatedMessages = [...currentMessages, newMessage];
+    const updatedMessages = [...currentMessages, newMessage];
 
-        return { messages: updatedMessages };
-    }
+    return { messages: updatedMessages };
+  }
 
-    return {};
+  return {};
 };

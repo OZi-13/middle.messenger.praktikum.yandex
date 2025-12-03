@@ -26,10 +26,10 @@ interface LoginPageProps extends BlockProps, RouterInterface, StoreType {}
 class LoginPage extends Block {
   constructor(props: LoginPageProps) {
 
-      const authServiceInit = new AuthService({
-          store: window.store,
-          router: window.router,
-      });
+    const authServiceInit = new AuthService({
+      store: window.store,
+      router: window.router,
+    });
 
     const formChildren = [
       new Label({
@@ -70,7 +70,7 @@ class LoginPage extends Block {
     ];
 
     super({
-        ...props,
+      ...props,
       Header: new Header({
         isLoginPage: '1',
         changePage: props.changePage,
@@ -84,35 +84,35 @@ class LoginPage extends Block {
         class: 'info-box_content',
         children: formChildren,
         onFormSubmit: (data: Record<string, string>) => {
-            authServiceInit.login(data as LoginType);
+          authServiceInit.login(data as LoginType);
         },
       }),
-        ErrorBox:  new ErrorBox({text: props.responseError as string | null}),
+      ErrorBox:  new ErrorBox({ text: props.responseError }),
     });
   }
 
-    protected override componentDidUpdate(oldProps: LoginPageProps, newProps: LoginPageProps): boolean {
+  protected override componentDidUpdate(oldProps: LoginPageProps, newProps: LoginPageProps): boolean {
 
-        if (oldProps.responseError !== newProps.responseError && newProps.responseError !== null) {
+    if (oldProps.responseError !== newProps.responseError && newProps.responseError !== null) {
 
-            (this as Block).setProps({
-                ErrorBox: new ErrorBox({text: newProps.responseError as string}),
-            } as Partial<LoginPageProps>);
+      (this as Block).setProps({
+        ErrorBox: new ErrorBox({ text: newProps.responseError }),
+      } as Partial<LoginPageProps>);
 
-            return false;
-        }
-        return super.componentDidUpdate(oldProps, newProps);
+      return false;
     }
+    return super.componentDidUpdate(oldProps, newProps);
+  }
 
-    override render() {
+  override render() {
     return template;
   }
 }
 
 const mapStateToProps = (state: AppStateType): StoreType =>  {
-    return {
-        responseError: state.responseError,
-    };
+  return {
+    responseError: state.responseError,
+  };
 };
 
 const LoginPageRouter = wrapRouter(wrapProtected(wrapStore(mapStateToProps)(LoginPage)));

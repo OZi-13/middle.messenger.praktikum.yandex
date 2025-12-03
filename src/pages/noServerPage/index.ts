@@ -11,7 +11,7 @@ import { Button } from '../../components/button';
 interface NoServerPageProps extends BlockProps, RouterInterface {}
 
 class NoServerPage extends Block {
-  constructor(props: BlockProps) {
+  constructor(props: NoServerPageProps) {
 
     super({
       Header: new Header({
@@ -24,7 +24,7 @@ class NoServerPage extends Block {
         text: 'Назад к чатам',
         onClick: (event: Event) => {
           event.preventDefault();
-            props.router.go(ROUTER.chats);
+          props.router.go(ROUTER.chats);
         },
       }),
     });

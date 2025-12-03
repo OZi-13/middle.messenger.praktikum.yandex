@@ -17,9 +17,9 @@ export class Form extends Block {
   constructor(props: FormProps) {
 
     const submitHandler = (e: Event) => {
-        const validationResult: FormResult | null = FormValidator.submitForm(e);
+      const validationResult: FormResult | null = FormValidator.submitForm(e);
       if (validationResult && props.onFormSubmit) {
-          props.onFormSubmit(validationResult);
+        props.onFormSubmit(validationResult);
       }
     };
     const templateName = props.template == 'templateMessage' ? templateMessage : templateForm;

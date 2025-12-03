@@ -17,37 +17,38 @@ import { AppStateType } from '../../types/appType';
 import { UserDTO } from '../../types/apiType';
 import { profileInfoConst } from '../../types/userType';
 import { wrapProtected } from '../../utils/wrapProtected';
-import {ModalBox} from "../../components/modalBox";
-import {ProfileAvatarEditForm} from "../../components/profileAvatarEditForm";
-import getSourceLink from "../../utils/getSourceLink.ts";
+import { ModalBox } from '../../components/modalBox';
+import { ProfileAvatarEditForm } from '../../components/profileAvatarEditForm';
+import getSourceLink from '../../utils/getSourceLink';
+import { RouterInterface } from '../../types/routerType';
 
 type StoreType = Pick<AppStateType, 'user'>;
-interface ProfilePageProps extends BlockProps, StoreType {}
+interface ProfilePageProps extends BlockProps, RouterInterface, StoreType {}
 
 const UserProfileList = (user: UserDTO | null): ProfileListItem[] => {
-    if (!user) {
-        return [];
-    }
-    return profileInfoConst.map(({ header, name }) => {
-        const value = user[name] ? String(user[name]) : '';
-        return new ProfileListItem({ header, value });
-    });
-}
+  if (!user) {
+    return [];
+  }
+  return profileInfoConst.map(({ header, name }) => {
+    const value = user[name] ? String(user[name]) : '';
+    return new ProfileListItem({ header, value });
+  });
+};
 
 class ProfilePage extends Block {
   constructor(props: ProfilePageProps) {
 
-      const authServiceInit = new AuthService({
-          store: window.store,
-          router: window.router,
-      });
+    const authServiceInit = new AuthService({
+      store: window.store,
+      router: window.router,
+    });
 
-      const modalBoxInstance: ModalBox = new ModalBox({
-          id1: 'avatar_edit',
-          modalContent1: new ProfileAvatarEditForm(),
-      });
+    const modalBoxInstance: ModalBox = new ModalBox({
+      id1: 'avatar_edit',
+      modalContent1: new ProfileAvatarEditForm(),
+    });
 
-    const userFromProps = props.user as UserDTO | null;
+    const userFromProps = props.user;
     const ProfileList = UserProfileList(userFromProps);
     const UserName: string = props.user?.display_name || props.user?.login || '';
 
@@ -81,11 +82,11 @@ class ProfilePage extends Block {
         text: 'Выйти',
         onClick: (event: Event) => {
           event.preventDefault();
-            authServiceInit.logout();
+          authServiceInit.logout();
         },
       }),
       Avatar: new ProfileAvatar({
-          avatar: props.user?.avatar ? getSourceLink(props.user?.avatar) : ''
+        avatar: props.user?.avatar ? getSourceLink(props.user?.avatar) : '',
       }),
       ProfileList: ProfileList,
       ModalBox: modalBoxInstance,
@@ -93,34 +94,32 @@ class ProfilePage extends Block {
     });
   }
 
-    protected override componentDidUpdate(oldProps: ProfilePageProps, newProps: ProfilePageProps): boolean {
+  protected override componentDidUpdate(oldProps: ProfilePageProps, newProps: ProfilePageProps): boolean {
 
-        if (oldProps.user?.avatar !== newProps.user?.avatar) {
+    if (oldProps.user?.avatar !== newProps.user?.avatar) {
 
-            (this as Block).setProps({
-                Avatar: new ProfileAvatar({
-                    avatar: getSourceLink(newProps.user?.avatar as string)
-                }),
-            } as Partial<ProfilePageProps>);
+      (this as Block).setProps({
+        Avatar: new ProfileAvatar({
+          avatar: getSourceLink(newProps.user?.avatar as string),
+        }),
+      } as Partial<ProfilePageProps>);
 
-            return false;
-        }
-
-        return super.componentDidUpdate(oldProps, newProps);
+      return false;
     }
 
-    override render() {
+    return super.componentDidUpdate(oldProps, newProps);
+  }
+
+  override render() {
     return template;
   }
 }
 
 const mapStateToProps = (state: AppStateType): StoreType => {
-    return {
-        user: state.user,
-    };
+  return {
+    user: state.user,
+  };
 };
 
-const ConnectedProfilePage = wrapStore<ProfilePageProps>(mapStateToProps)(ProfilePage);
-const ProfilePageRouter = wrapRouter(wrapProtected(ConnectedProfilePage));
-
+const ProfilePageRouter = wrapRouter(wrapProtected(wrapStore(mapStateToProps)(ProfilePage)));
 export { ProfilePageRouter as ProfilePage };

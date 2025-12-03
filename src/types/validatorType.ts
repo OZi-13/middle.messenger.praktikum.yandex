@@ -9,15 +9,15 @@ type FormValidatorObject = Record<string, ValidatorRule>;
 export type FormResult = Record<string, string | FileList>;
 
 export const validateAvatarFile = (value: FileList | null): boolean => {
-    if (!value || value.length === 0) return false;
-    const file = value[0];
-    const MAX_SIZE = 5 * 1024 * 1024;
-    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+  if (!value || value.length === 0) return false;
+  const file = value[0];
+  const MAX_SIZE = 5 * 1024 * 1024;
+  const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
-    if (file.size > MAX_SIZE) return false;
-    if (!ALLOWED_TYPES.includes(file.type)) return false;
+  if (file.size > MAX_SIZE) return false;
+  if (!ALLOWED_TYPES.includes(file.type)) return false;
 
-    return true;
+  return true;
 };
 
 export const FormValidatorData: FormValidatorObject = {

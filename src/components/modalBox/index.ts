@@ -29,7 +29,7 @@ export class ModalBox extends Block {
       class: 'modal-back none',
       onClick: (event: Event) => {
         event.preventDefault();
-          modal.close();
+        modal.close();
       },
     });
     const modalMain = new ModalModal({
@@ -51,7 +51,7 @@ export class ModalBox extends Block {
       ModalBack: modalBack,
       ModalModal: modalMain,
     });
-    }
+  }
 
   override render(): string {
     return template;
