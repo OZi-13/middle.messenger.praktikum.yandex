@@ -48,6 +48,7 @@ export default class MessageService {
                 type: 'message',
             });
         }
+        //console.log('Сообщение отправлено')
     }
 
     public getOldMessages(chatId: number, offset: number): void {
@@ -61,6 +62,8 @@ export default class MessageService {
     }
 
     private handleNewMessages = (data: unknown) => {
+        //console.log('Сообщение пришло' + data)
+
         if (Array.isArray(data)) {
             // Экранирование массива старых сообщений
             const sanitizedData = (data as MessageType[]).map(msg => {

@@ -1,39 +1,44 @@
 import Block, { BlockProps } from '../../framework/Block';
-import { FormValidator } from '../../utils/formValidator.ts';
-import templateForm from './form.hbs.ts';
-import templateMessage from './formMessage.hbs.ts';
+import { FormValidator } from '../../utils/formValidator';
 import { FormResult } from '../../types/validatorType';
+import template from '../chatForm/chatForm.hbs';
+import MessageService from '../../services/messageService';
 
-interface FormProps extends BlockProps {
-  id: string;
-  class?: string;
-  onFormSubmit?: (data: FormResult) => void;
-  template?: 'templateForm' | 'templateMessage';
-  message?: Block;
-  button?: Block;
+interface chatFormProps extends BlockProps {
+  message: Block;
+  button: Block;
+  selectedChatId: number
 }
 
-export class Form extends Block {
-  constructor(props: FormProps) {
+export class ChatForm extends Block {
+  constructor(props: chatFormProps) {
 
-    const submitHandler = (e: Event) => {
-        const validationResult: FormResult | null = FormValidator.submitForm(e);
-      if (validationResult && props.onFormSubmit) {
-          props.onFormSubmit(validationResult);
+      const messageServiceInit = new MessageService();
+
+      const submitHandler = (e: Event) => {
+          e.preventDefault();
+          const validationResult: FormResult | null = FormValidator.submitForm(e);
+
+          if (validationResult) {
+              const currentChatId = props.selectedChatId;
+              const messageContent = validationResult.message;
+
+              if (currentChatId && typeof messageContent === 'string') {
+                  messageServiceInit.sendMessage(currentChatId, messageContent);
+                  props.message.setProps({ value: '' });
+              }
+          }
       }
-    };
-    const templateName = props.template == 'templateMessage' ? templateMessage : templateForm;
 
     super({
       ...props,
-      template: templateName,
       events: {
         submit: submitHandler,
       },
     });
   }
 
-  override render(): string {
-    return this.props.template as string;
-  }
+    override render(): string {
+        return template;
+    }
 }

@@ -1,5 +1,5 @@
 import Block, { BlockProps } from '../../framework/Block';
-import template from './button.hbs.ts';
+import template from './button.hbs';
 
 interface ButtonProps extends BlockProps {
   tag: string,

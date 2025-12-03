@@ -16,7 +16,7 @@ export default `
             <div class="chats_content">
                 {{{ Chat }}}
             </div>
-            {{{ Form }}}
+            {{{ ChatForm }}}
         </div>
     </main>
     {{{ ModalBox }}}

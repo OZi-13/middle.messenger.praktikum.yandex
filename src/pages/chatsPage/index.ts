@@ -27,7 +27,7 @@ import * as Type from '../../types/chatType';
 import { RouterInterface } from '../../types/routerType';
 import {Label} from "../../components/label";
 import * as ChatType from "../../types/chatType.ts";
-import {ChatMappedType, ChatsListMappedType} from "../../types/chatType";
+import { ChatForm } from "../../components/chatForm";
 
 const messageServiceInit = new MessageService();
 
@@ -39,6 +39,27 @@ const createNavLineRight = (selectedChatHeader: string | null, isChatAdmin = tru
 
     return selectedChatHeader !== null ?
         new NavLineRight({avatar: true, name: selectedChatHeader, chatNav: true, isChatAdmin: isChatAdmin }) :
+        '';
+};
+
+const createChatForm = (selectedChatId: number | null): ChatForm | null | '' => {
+
+    const message = new Input({
+        id: 'message',
+        class: 'form-validate',
+        name: 'message',
+        type: 'input',
+        placeholder: 'Сообщение',
+    });
+    const button = new Button({
+        tag: 'button',
+        type: 'submit',
+        id: 'form-btn',
+        text: '>',
+    });
+
+    return selectedChatId !== null ?
+        new ChatForm({message: message, button: button, selectedChatId: selectedChatId }) :
         '';
 };
 
@@ -129,20 +150,6 @@ class ChatsPage extends Block {
           })
       });
 
-    const message = new Input({
-      id: 'message',
-      class: 'form-validate',
-      name: 'message',
-      type: 'input',
-      placeholder: 'Сообщение',
-    });
-    const button = new Button({
-      tag: 'button',
-      type: 'submit',
-      id: 'form-btn',
-      text: '>',
-    });
-
     chatServiceInit.chatList(); // получаем в стор объект с чатами
     const ChatsListItems = Object.values(props.chats as Type.ChatsListMappedType).map(
       (chat: Type.ChatMappedType) => new ChatsListItem(chat),
@@ -176,22 +183,7 @@ class ChatsPage extends Block {
       ChatsListItem: ChatsListItems,
       ModalBox: modalBoxInstance,
 
-      ChatForm: new Form({
-        id: 'form',
-        class: 'chats_bottom',
-        template: 'templateMessage',
-        message: message,
-        button: button,
-          onFormSubmit: (data: Record<string, string>) => {
-              const currentChatId = this.props.selectedChat?.id;
-              const messageContent = data.message; // Получаем текст из поля 'message'
-
-              if (currentChatId && messageContent) {
-                  messageServiceInit.sendMessage(currentChatId, messageContent);
-                  message.setProps({ value: '' });
-              }
-          },
-      }),
+      ChatForm: createChatForm(props.selectedChat?.id || null),
       Chat: createChat(props.selectedChat?.id || null as number | null)
     });
   }
@@ -216,7 +208,7 @@ class ChatsPage extends Block {
             const newChat = createChat(newProps.selectedChat?.id || 0 as number);
             const isChatAdmin: boolean = newProps.user?.id == newProps.selectedChat?.admin;
             const newNavLineRight = createNavLineRight(newProps.selectedChat?.header || null as string, isChatAdmin);
-
+            const newChatForm = createChatForm(newProps.selectedChat?.id || null as number | null)
             const oldChatId = oldProps.selectedChat?.id;
             const newChatId = newProps.selectedChat?.id;
 
@@ -232,6 +224,7 @@ class ChatsPage extends Block {
             (this as Block).setProps({
                 Chat: newChat === null ? undefined : newChat,
                 NavLineRight: newNavLineRight === null ? undefined : newNavLineRight,
+                ChatForm: newChatForm === null ? undefined : newChatForm
             } as Partial<ChatsPageProps>);
 
             return false;

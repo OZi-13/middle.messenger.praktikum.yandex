@@ -1,5 +1,5 @@
 export default `
-            <form id="{{ id }}" class="{{ class }}">
+            <form id="form-message" class="chats_bottom">
                 <div class="add-file"></div>
                 <div>
                     {{{ message }}}
