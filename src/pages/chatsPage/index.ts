@@ -27,7 +27,6 @@ import * as Type from '../../types/chatType';
 import { RouterInterface } from '../../types/routerType';
 import {Label} from "../../components/label";
 import * as ChatType from "../../types/chatType.ts";
-import { ChatForm } from "../../components/chatForm";
 
 const messageServiceInit = new MessageService();
 
@@ -42,7 +41,7 @@ const createNavLineRight = (selectedChatHeader: string | null, isChatAdmin = tru
         '';
 };
 
-const createChatForm = (selectedChatId: number | null): ChatForm | null | '' => {
+const createChatForm = (selectedChatId: number | null): Form | null | '' => {
 
     const message = new Input({
         id: 'message',
@@ -59,7 +58,22 @@ const createChatForm = (selectedChatId: number | null): ChatForm | null | '' => 
     });
 
     return selectedChatId !== null ?
-        new ChatForm({message: message, button: button, selectedChatId: selectedChatId }) :
+        new Form({
+            id: 'form',
+            class: 'chats_bottom',
+            template: 'templateMessage',
+            message: message,
+            button: button,
+            onFormSubmit: (data: Record<string, string>) => {
+                const currentChatId = selectedChatId;
+                const messageContent = data.message;
+
+                if (currentChatId && messageContent) {
+                    messageServiceInit.sendMessage(currentChatId, messageContent);
+                    message.setProps({ value: '' });
+                }
+            },
+        }) :
         '';
 };
 
