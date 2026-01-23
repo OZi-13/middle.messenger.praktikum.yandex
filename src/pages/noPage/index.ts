@@ -36,4 +36,3 @@ class NoPage extends Block {
 
 const NoPageRouter = wrapRouter(NoPage);
 export { NoPageRouter as NoPage };
-

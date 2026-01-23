@@ -35,6 +35,4 @@ export const FormValidatorData: FormValidatorObject = {
 
 };
 
-
-
 export const FormValidatorKeys: string[] = Object.keys(FormValidatorData);
