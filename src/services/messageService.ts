@@ -9,7 +9,9 @@ export default class MessageService {
   private readonly api: ChatApi;
 
   private sockets: Record<number, WSTransport | undefined> = {};
-  private connectionPromises: Record<number, Promise<void> | undefined> = {};
+
+  // Храним ID попытки подключения вместо промиса
+  private connectionAttempts: Record<number, number | undefined> = {};
 
   private store: Store;
 
@@ -19,45 +21,44 @@ export default class MessageService {
   }
 
   public async connectToChat(chatId: number): Promise<void> {
-    if (this.sockets[chatId] || this.connectionPromises[chatId]) {
+    if (this.sockets[chatId] || this.connectionAttempts[chatId]) {
       return;
     }
 
-    let connectionPromise: Promise<void> | undefined;
+    // Генерируем уникальный ID для этой попытки
+    const attemptId = Date.now();
+    this.connectionAttempts[chatId] = attemptId;
 
-    connectionPromise = (async () => {
-      try {
-        const tokenResponse: ChatTokenResponseType = await this.api.getToken(chatId);
-        const { token } = tokenResponse;
+    try {
+      const tokenResponse: ChatTokenResponseType = await this.api.getToken(chatId);
+      const { token } = tokenResponse;
 
-        if (this.connectionPromises[chatId] !== connectionPromise) {
-          return;
-        }
-
-        const currentUser = this.store.get('user');
-        const currentUserId = currentUser?.id;
-        if (!currentUserId) {
-          throw new Error('Пользователь не авторизован');
-        }
-
-        const socket = new WSTransport(currentUserId, chatId, token);
-        this.sockets[chatId] = socket;
-
-        socket.on(WSEvents.Message, this.handleNewMessages);
-        socket.on(WSEvents.Connected, () => this.afterConnected(chatId));
-
-        socket.connect();
-      } catch (error) {
-        console.error(`Ошибка подключения к чату ${chatId}:`, error);
-      } finally {
-        if (this.connectionPromises[chatId] === connectionPromise) {
-          delete this.connectionPromises[chatId];
-        }
+      // Проверяем, актуальна ли эта попытка
+      if (this.connectionAttempts[chatId] !== attemptId) {
+        return;
       }
-    })();
 
-    this.connectionPromises[chatId] = connectionPromise;
-    await connectionPromise;
+      const currentUser = this.store.get('user');
+      const currentUserId = currentUser?.id;
+      if (!currentUserId) {
+        throw new Error('Пользователь не авторизован');
+      }
+
+      const socket = new WSTransport(currentUserId, chatId, token);
+      this.sockets[chatId] = socket;
+
+      socket.on(WSEvents.Message, this.handleNewMessages);
+      socket.on(WSEvents.Connected, () => this.afterConnected(chatId));
+
+      socket.connect();
+    } catch (error) {
+      console.error(`Ошибка подключения к чату ${chatId}:`, error);
+    } finally {
+      // Очищаем попытку, если она все еще наша
+      if (this.connectionAttempts[chatId] === attemptId) {
+        delete this.connectionAttempts[chatId];
+      }
+    }
   }
 
   private afterConnected(chatId: number): void {
@@ -123,8 +124,9 @@ export default class MessageService {
   };
 
   public disconnectFromChat(chatId: number): void {
-    if (this.connectionPromises[chatId]) {
-      delete this.connectionPromises[chatId];
+    // Удаляем текущую попытку подключения
+    if (this.connectionAttempts[chatId]) {
+      delete this.connectionAttempts[chatId];
     }
 
     const socket = this.sockets[chatId];

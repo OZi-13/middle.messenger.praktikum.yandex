@@ -84,7 +84,7 @@ class LoginPage extends Block {
         class: 'info-box_content',
         children: formChildren,
         onFormSubmit: (data: Record<string, string>) => {
-          authServiceInit.login(data as LoginType);
+          authServiceInit.login(data as LoginType).catch(console.error);
         },
       }),
       ErrorBox:  new ErrorBox({ text: props.responseError }),

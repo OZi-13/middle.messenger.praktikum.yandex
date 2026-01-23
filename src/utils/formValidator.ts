@@ -21,9 +21,7 @@ class FormValidatorClass {
         if (!validator(files)) {
           return errorMessage;
         }
-      }
-
-      else if (validator instanceof RegExp) {
+      } else if (validator instanceof RegExp) {
         const value = element.value;
 
         if (value && !validator.test(value)) {

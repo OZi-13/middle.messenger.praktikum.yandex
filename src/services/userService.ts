@@ -8,14 +8,16 @@ import { StoreInterface } from '../types/appType';
 
 export default class UserService {
   private readonly api: UserApi;
-    private readonly store: StoreInterface;
-    private readonly router: Router;
 
-    constructor({ store, router }: { store: StoreInterface, router: Router }) {
-        this.api = new UserApi();
-        this.store = store;
-        this.router = router;
-    }
+  private readonly store: StoreInterface;
+
+  private readonly router: Router;
+
+  constructor({ store, router }: { store: StoreInterface, router: Router }) {
+    this.api = new UserApi();
+    this.store = store;
+    this.router = router;
+  }
 
   public async userEdit(data: UserType.UserEditType): Promise<void> {
     this.store.set({
@@ -67,18 +69,18 @@ export default class UserService {
       return;
     }
 
-      try {
-          const updatedUser: ApiType.UserDTO = await this.api.editAvatar(formData);
+    try {
+      const updatedUser: ApiType.UserDTO = await this.api.editAvatar(formData);
 
-          console.log('Обновили аватар', updatedUser);
-          this.store.set({ user: updatedUser });
-          modal.close();
+      console.log('Обновили аватар', updatedUser);
+      this.store.set({ user: updatedUser });
+      modal.close();
 
-      } catch (error) {
-          const reason = (error as ApiType.ResponseError)?.reason || 'Неизвестная ошибка обновления аватара';
-          this.store.set({
-            responseError: reason,
-          });
+    } catch (error) {
+      const reason = (error as ApiType.ResponseError)?.reason || 'Неизвестная ошибка обновления аватара';
+      this.store.set({
+        responseError: reason,
+      });
     }
   }
 }

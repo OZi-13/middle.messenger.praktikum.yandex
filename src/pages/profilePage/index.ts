@@ -82,7 +82,7 @@ class ProfilePage extends Block {
         text: 'Выйти',
         onClick: (event: Event) => {
           event.preventDefault();
-          authServiceInit.logout();
+          authServiceInit.logout().catch(console.error);
         },
       }),
       Avatar: new ProfileAvatar({

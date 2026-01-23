@@ -124,7 +124,7 @@ class RegistrationPage extends Block {
 
         onFormSubmit: (data: Record<string, string>) => {
           console.log('Данные формы:', data);
-          authServiceInit.registration(data as RegistrationType);
+          authServiceInit.registration(data as RegistrationType).catch(console.error);
         },
 
       }),

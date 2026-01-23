@@ -1,8 +1,5 @@
 class ModalClass {
 
-  constructor() {
-  }
-
   public open(modalId: string): void {
     const modalBackElement: HTMLElement | null = document.getElementById('modal-back');
     const modalBoxElement: HTMLElement | null = document.getElementById('modal_modal');

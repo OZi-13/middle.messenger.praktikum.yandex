@@ -6,10 +6,10 @@ export interface RouterInterface {
 }
 
 export interface RouterFullInterface {
-    go(pathname: string): void;
-    back(): void;
-    forward(): void;
-    use(pathname: string, block: typeof Block): RouterInterface;
-    start(): void
-    getRoute(pathname: string): Route | undefined;
+  go(pathname: string): void;
+  back(): void;
+  forward(): void;
+  use(pathname: string, block: typeof Block): RouterInterface;
+  start(): void
+  getRoute(pathname: string): Route | undefined;
 }

@@ -11,7 +11,7 @@ export type UserEditAvatarType = {
   avatar: FileList;
 };
 
-export type getUserAvatarType = {
+export type GetUserAvatarType = {
   avatar: FileList;
 };
 

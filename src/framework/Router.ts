@@ -3,20 +3,23 @@ import Block from '../framework/Block';
 import { ROUTER } from '../utils/links';
 
 export interface RouterInterface {
-    go(pathname: string): void;
-    back(): void;
-    forward(): void;
-    use(pathname: string, block: typeof Block): RouterInterface;
-    start(): void
-    getRoute(pathname: string): Route | undefined;
+  go(pathname: string): void;
+  back(): void;
+  forward(): void;
+  use(pathname: string, block: typeof Block): RouterInterface;
+  start(): void
+  getRoute(pathname: string): Route | undefined;
 }
 
 export default class Router {
   static __instance: Router | null = null;
 
   routes: Route[] = [];
+
   history: History;
+
   _currentRoute: Route | null = null;
+
   _rootQuery: string;
 
   constructor(rootQuery: string) {

@@ -13,7 +13,7 @@ export class ChatsListItem extends Block {
       ...props,
       attr: {
         class: props.isSelected ? 'active_chat' : '',
-      }
+      },
     });
   }
 

@@ -23,12 +23,12 @@ export const DEFAULT_STATE: AppStateType = {
 };
 
 export interface StoreInterface {
-    on(event: StoreEvents.Updated, callback: (oldState: AppStateType, newState: AppStateType) => void): void;
-    on(event: string, callback: EventCallback): void;
-    off(event: string, callback: EventCallback): void;
-    emit(event: string, ...args: unknown[]): void;
-    getState(): AppStateType;
-    get<T extends keyof AppStateType>(key: T): AppStateType[T];
-    set(nextStateOrPath: Partial<AppStateType> | string, value?: unknown): void;
-    dispatch(action: Action): void;
+  on(event: StoreEvents.Updated, callback: (oldState: AppStateType, newState: AppStateType) => void): void;
+  on(event: string, callback: EventCallback): void;
+  off(event: string, callback: EventCallback): void;
+  emit(event: string, ...args: unknown[]): void;
+  getState(): AppStateType;
+  get<T extends keyof AppStateType>(key: T): AppStateType[T];
+  set(nextStateOrPath: Partial<AppStateType> | string, value?: unknown): void;
+  dispatch(action: Action): void;
 }

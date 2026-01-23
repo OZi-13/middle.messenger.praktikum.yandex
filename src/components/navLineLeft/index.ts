@@ -2,7 +2,7 @@ import Block, { BlockProps } from '../../framework/Block';
 import template from './navLineLeft.hbs.ts';
 
 import { wrapRouter } from '../../utils/wrapRouter';
-import {RouterInterface} from '../../types/routerType';
+import { RouterInterface } from '../../types/routerType';
 
 interface NavLineLeftProps extends BlockProps, RouterInterface {
   nav?: boolean;

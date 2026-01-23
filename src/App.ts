@@ -16,9 +16,6 @@ declare global {
 export default class App {
   private readonly ROOT_ELEMENT: string = rootElement;
 
-  constructor() {
-  }
-
   private initStore(): Store {
     const store = Store.getInstance();
     window.store = store;
@@ -32,7 +29,7 @@ export default class App {
     return store;
   }
 
-  private async initRouter(): Promise<Router> {
+  private initRouter(): Router {
     const router = new Router(this.ROOT_ELEMENT);
 
     if (!document.querySelector(this.ROOT_ELEMENT)) {
@@ -56,7 +53,7 @@ export default class App {
 
   public async render(): Promise<void> {
     const store = this.initStore();
-    const router = await this.initRouter();
+    const router = this.initRouter();
 
     const authService = new AuthService({ store, router });
     await authService.checkLoginUser();

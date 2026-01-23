@@ -10,7 +10,7 @@ import * as ChatType from '../../types/chatType.ts';
 export class ChatNavMenu extends Block {
   constructor() {
 
-      const chatServiceInit = new ChatService(window.store);
+    const chatServiceInit = new ChatService(window.store);
 
     const formChildren1 = [
       new Label({
@@ -54,7 +54,7 @@ export class ChatNavMenu extends Block {
         class: 'info-box_content',
         children: formChildren1,
         onFormSubmit: (data: Record<string, string>) => {
-          chatServiceInit.chatUserAdd(data as ChatType.ChatsUsersAddType);
+          chatServiceInit.chatUserAdd(data as ChatType.ChatsUsersAddType).catch(console.error);
         },
       }),
       Form2: new Form({
@@ -62,7 +62,7 @@ export class ChatNavMenu extends Block {
         class: 'info-box_content',
         children: formChildren2,
         onFormSubmit: (data: Record<string, string>) => {
-          chatServiceInit.chatUserDelete(data as ChatType.ChatsUsersAddType);
+          chatServiceInit.chatUserDelete(data as ChatType.ChatsUsersAddType).catch(console.error);
         },
       }),
     });

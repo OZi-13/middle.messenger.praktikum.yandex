@@ -82,7 +82,7 @@ class ProfileEditPassPage extends Block {
         class: 'info-box_content',
         children: formChildren,
         onFormSubmit: (data: Record<string, string>) => {
-          userServiceInit.userEditPassword(data as UserEditPassType);
+          userServiceInit.userEditPassword(data as UserEditPassType).catch(console.error);
         },
       }),
 

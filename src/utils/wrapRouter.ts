@@ -6,12 +6,12 @@ type RouterWrapperProps = BlockProps;
 
 export function wrapRouter(WrappedBlock: WrappedBlockConstructor) {
 
-    return class RouterWrapper extends WrappedBlock {
-        constructor(props: RouterWrapperProps) {
-            super({
-                ...props,
-                router: window.router
-            } as BlockProps & RouterInterface);
-        }
-    };
+  return class RouterWrapper extends WrappedBlock {
+    constructor(props: RouterWrapperProps) {
+      super({
+        ...props,
+        router: window.router,
+      } as BlockProps & RouterInterface);
+    }
+  };
 }

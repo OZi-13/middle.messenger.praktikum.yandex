@@ -38,7 +38,7 @@ export class ChatAddForm extends Block {
         class: 'info-box_content',
         children: formChildren,
         onFormSubmit: (data: Record<string, string>) => {
-          chatServiceInit.chatCreate(data as ChatCreateType);
+          chatServiceInit.chatCreate(data as ChatCreateType).catch(console.error);
         },
       }),
     });

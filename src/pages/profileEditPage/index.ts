@@ -74,7 +74,7 @@ class ProfileEditPage extends Block {
         class: 'info-box_content',
         children: ProfileList,
         onFormSubmit: (data: Record<string, string>) => {
-          userServiceInit.userEdit(data as UserEditType);
+          userServiceInit.userEdit(data as UserEditType).catch(console.error);
         },
       }),
     });

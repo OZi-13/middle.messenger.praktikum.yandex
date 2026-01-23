@@ -42,8 +42,8 @@ export class ProfileAvatarEditForm extends Block {
         id: 'form',
         class: 'info-box_content',
         children: formChildren,
-          onFormSubmit: (data: FormResult) => {
-          UserServiceInit.userEditAvatar(data as unknown as Type.UserEditAvatarType);
+        onFormSubmit: (data: FormResult) => {
+          UserServiceInit.userEditAvatar(data as unknown as Type.UserEditAvatarType).catch(console.error);
         },
       }),
     });

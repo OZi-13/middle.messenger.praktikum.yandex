@@ -12,7 +12,7 @@ export enum StoreEvents {
 }
 
 export interface Action {
-  type: 'ADD_OLD_MESSAGES' | 'ADD_NEW_MESSAGE' | string;
+  type: string;
   payload?: unknown;
 }
 
@@ -37,13 +37,13 @@ export class Store extends EventBus {
     return cloneDeep(this.state);
   }
 
-    public get<T extends keyof AppStateType>(key: T): AppStateType[T] {
-        const value = this.state[key];
-        if (value === undefined) {
-            return value as AppStateType[T];
-        }
-        return cloneDeep(value) as AppStateType[T];
+  public get<T extends keyof AppStateType>(key: T): AppStateType[T] {
+    const value = this.state[key];
+    if (value === undefined) {
+      return value;
     }
+    return cloneDeep(value) as AppStateType[T];
+  }
 
   /**
      * Обновление вложенных свойств по пути: set('user.firstName', 'Ivan')

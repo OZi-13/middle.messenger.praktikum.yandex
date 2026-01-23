@@ -30,7 +30,7 @@ import * as ChatType from '../../types/chatType';
 const messageServiceInit = new MessageService();
 
 const createChat = (selectedChatId: number | null): Block | null | '' => {
-    return selectedChatId !== null ? new Chat({}) : '';
+  return selectedChatId !== null ? new Chat({}) : '';
 };
 
 const createNavLineRight = (selectedChatHeader: string | null, isChatAdmin = true): NavLineRight | null | '' => {
@@ -43,7 +43,7 @@ const createNavLineRight = (selectedChatHeader: string | null, isChatAdmin = tru
 const createChatForm = (selectedChatId: number | null, usersCount: number = 0): Block | null | string => {
 
   if (selectedChatId !== null && usersCount < 2) {
-      return '<div class="chat-notification">Необходимо добавить пользователя, чтобы начать чат</div>';
+    return '<div class="chat-notification">Необходимо добавить пользователя, чтобы начать чат</div>';
   }
 
   const message = new Input({
@@ -151,7 +151,7 @@ class ChatsPage extends Block {
         class: 'info-box_content',
         children: formAddUserCld,
         onFormSubmit: (data: Record<string, string>) => {
-          chatServiceInit.chatUserAdd(data as ChatType.ChatsUsersAddType);
+          chatServiceInit.chatUserAdd(data as ChatType.ChatsUsersAddType).catch(console.error);
         },
       }),
       modalContent3: new Form({
@@ -159,7 +159,7 @@ class ChatsPage extends Block {
         class: 'info-box_content',
         children: formDelUserCld,
         onFormSubmit: (data: Record<string, string>) => {
-          chatServiceInit.chatUserDelete(data as ChatType.ChatsUsersAddType);
+          chatServiceInit.chatUserDelete(data as ChatType.ChatsUsersAddType).catch(console.error);
         },
       }),
       modalContent4: new Form({
@@ -167,18 +167,18 @@ class ChatsPage extends Block {
         class: 'info-box_content',
         children: formDeleteCld,
         onFormSubmit: () => {
-          chatServiceInit.chatDelete();
+          chatServiceInit.chatDelete().catch(console.error);
         },
       }),
     });
 
-    chatServiceInit.chatList();
+    chatServiceInit.chatList().catch(console.error);
     
     const selectedId = props.selectedChat?.id;
     const ChatsListItems = Object.values(props.chats as Type.ChatsListMappedType).map(
       (chat: Type.ChatMappedType) => new ChatsListItem({
-          ...chat,
-          isSelected: chat.id === selectedId
+        ...chat,
+        isSelected: chat.id === selectedId,
       }),
     );
 
@@ -224,8 +224,8 @@ class ChatsPage extends Block {
 
       const ChatsListItems = Object.values(newProps.chats as Type.ChatsListMappedType).map(
         (chat: Type.ChatMappedType) => new ChatsListItem({
-            ...chat,
-            isSelected: chat.id === selectedId
+          ...chat,
+          isSelected: chat.id === selectedId,
         }),
       );
 

@@ -6,7 +6,7 @@ import { ROUTER } from '../../utils/links';
 import { wrapRouter } from '../../utils/wrapRouter';
 
 import { Link } from '../link';
-import {RouterInterface} from "../../types/routerType.ts";
+import { RouterInterface } from '../../types/routerType.ts';
 
 interface HeaderProps extends BlockProps {
   isLoginPage?: string;

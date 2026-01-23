@@ -7,6 +7,7 @@ import { StoreInterface } from '../types/appType';
 
 export default class ChatService {
   private readonly api: ChatApi;
+
   private readonly store: StoreInterface;
 
 
@@ -28,8 +29,8 @@ export default class ChatService {
           id: chatId,
           header: '[ ' + chatData.title + ' ] : :  Загрузка участников...',
           admin: chatData.admin,
-          usersCount: 0
-        }
+          usersCount: 0,
+        },
       });
     }
 
@@ -45,7 +46,7 @@ export default class ChatService {
   private async UsersList(chatId: number): Promise<void> {
     const chatUsers: ChatType.ChatsUsersListResponseType = await this.api.chatUsersList(chatId);
 
-      const chats = this.store.get('chats') as ChatType.ChatsListMappedType;
+    const chats = this.store.get('chats') as ChatType.ChatsListMappedType;
     const chatData: ChatType.ChatMappedType = chats[chatId];
     const title: string = chatData.title;
 
@@ -66,32 +67,32 @@ export default class ChatService {
       id: chatId,
       header: '[ ' + title + ' ] : :  Участники: ' + usersNameString,
       admin: chatData.admin,
-      usersCount: usersCount
+      usersCount: usersCount,
     };
     this.store.set({ selectedChat: chatSelected });
   }
 
   private chatsMapping(chats: ChatType.ChatListResponseType): ChatType.ChatsListMappedType {
 
-    return chats.reduce((chats, chat: ChatType.ChatItemType)  => {
-      const last_message = chat.last_message;
+    return chats.reduce((acc, chat: ChatType.ChatItemType)  => {
+      const lastMessage = chat.last_message;
 
-      chats[chat.id] = {
+      acc[chat.id] = {
         id: chat.id,
         title: chat.title,
-        last_message_user_name: last_message ? last_message.user.first_name : ': ',
-        time: last_message ? last_message.time : '',
+        last_message_user_name: lastMessage ? lastMessage.user.first_name : ': ',
+        time: lastMessage ? lastMessage.time : '',
         unread_count: chat.unread_count || 0,
-        content: last_message ? last_message.content : 'Нет сообщений',
+        content: lastMessage ? lastMessage.content : 'Нет сообщений',
         admin: chat.created_by,
         events: {
           click: (event: Event) => {
             event.preventDefault();
-            this.chatSelect(chat.id);
+            this.chatSelect(chat.id).catch(console.error);
           },
         },
       };
-      return chats;
+      return acc;
     }, {} as ChatType.ChatsListMappedType);
   }
 
@@ -137,13 +138,13 @@ export default class ChatService {
     this.store.set({
       responseError: null,
     });
-      const chatSelect = this.store.get('selectedChat') as ChatType.ChatSelectedType | null;
-      if (!chatSelect) {
-          console.warn("Попытка удаления чата, когда selectedChat: null");
-          return;
-      }
-      const chatId = chatSelect.id;
-      const chatDeleteData: ChatType.ChatDeleteType = { chatId: chatId };
+    const chatSelect = this.store.get('selectedChat');
+    if (!chatSelect) {
+      console.warn('Попытка удаления чата, когда selectedChat: null');
+      return;
+    }
+    const chatId = chatSelect.id;
+    const chatDeleteData: ChatType.ChatDeleteType = { chatId: chatId };
 
     try {
       await this.api.chatDelete(chatDeleteData);
@@ -178,23 +179,23 @@ export default class ChatService {
       responseError: null,
     });
 
-      try {
-          const chatSelect = this.store.get('selectedChat') as ChatType.ChatSelectedType | null;
-          if (!chatSelect) {
-              console.warn('Попытка добавления пользователя, когда чат не выбран.');
-              return;
-          }
+    try {
+      const chatSelect = this.store.get('selectedChat');
+      if (!chatSelect) {
+        console.warn('Попытка добавления пользователя, когда чат не выбран.');
+        return;
+      }
 
-          const dataOut: ChatType.ChatsUsersToggleType = this.chatUsersConverse(data, chatSelect.id);
-          console.log('formUserData data=', dataOut);
+      const dataOut: ChatType.ChatsUsersToggleType = this.chatUsersConverse(data, chatSelect.id);
+      console.log('formUserData data=', dataOut);
 
-          await this.api.chatUsersAdd(dataOut);
-          await this.UsersList(chatSelect.id);
-          modal.close();
+      await this.api.chatUsersAdd(dataOut);
+      await this.UsersList(chatSelect.id);
+      modal.close();
 
-      } catch (error) {
-          const reason = (error as ResponseError).reason || 'Неизвестная ошибка добавления пользователя в чат';
-          this.store.set({ responseError: reason });
+    } catch (error) {
+      const reason = (error as ResponseError).reason || 'Неизвестная ошибка добавления пользователя в чат';
+      this.store.set({ responseError: reason });
     }
   }
 
@@ -203,22 +204,22 @@ export default class ChatService {
       responseError: null,
     });
 
-      try {
-          const chatSelect = this.store.get('selectedChat') as ChatType.ChatSelectedType | null;
+    try {
+      const chatSelect = this.store.get('selectedChat');
 
-          if (!chatSelect) {
-              console.warn('Попытка удаления пользователя, когда чат не выбран.');
-              return;
-          }
+      if (!chatSelect) {
+        console.warn('Попытка удаления пользователя, когда чат не выбран.');
+        return;
+      }
 
-          const dataOut: ChatType.ChatsUsersToggleType = this.chatUsersConverse(data, chatSelect.id);
-          console.log('formUserData data=', dataOut);
+      const dataOut: ChatType.ChatsUsersToggleType = this.chatUsersConverse(data, chatSelect.id);
+      console.log('formUserData data=', dataOut);
 
-          await this.api.chatUsersDelete(dataOut);
-          await this.UsersList(chatSelect.id);
-          modal.close();
+      await this.api.chatUsersDelete(dataOut);
+      await this.UsersList(chatSelect.id);
+      modal.close();
 
-      } catch (error) {
+    } catch (error) {
       const reason = (error as ResponseError).reason || 'Неизвестная ошибка удаления пользователя из чата';
       this.store.set({ responseError: reason });
     }

@@ -14,36 +14,37 @@ type BlockConstructor<T extends BlockProps> = new (props: T) => Block;
 type ExpectedStoreConstructorProps = BlockProps & StoreType;
 
 export function wrapProtected<TBlockProps extends BlockProps>(
-    WrappedBlock: BlockConstructor<TBlockProps>
+  WrappedBlock: BlockConstructor<TBlockProps>,
 ) {
-    class Protected extends (WrappedBlock as unknown as BlockConstructor<ProtectedProps>) {
-        protected user: UserDTO | null;
-        protected router: RouterFullInterface;
+  class Protected extends (WrappedBlock as unknown as BlockConstructor<ProtectedProps>) {
+    protected user: UserDTO | null;
 
-        constructor(props: ProtectedProps) {
-            super(props);
-            this.user = props.user as UserDTO | null;
-            this.router = props.router as RouterFullInterface;
-        }
+    protected router: RouterFullInterface;
 
-        componentDidMount() {
-            const currentPath = window.location.pathname;
-
-            if (!this.user) {
-                if (currentPath !== ROUTER.login && currentPath !== ROUTER.registration) {
-                    this.router.go(ROUTER.login);
-                }
-            } else if (this.user) {
-                if (currentPath === ROUTER.login || currentPath === ROUTER.registration) {
-                    this.router.go(ROUTER.profile);
-                }
-            }
-        }
+    constructor(props: ProtectedProps) {
+      super(props);
+      this.user = props.user;
+      this.router = props.router as RouterFullInterface;
     }
 
-    const storeMapper = (state: { user: UserDTO | null }) => ({ user: state.user });
+    componentDidMount() {
+      const currentPath = window.location.pathname;
 
-    return wrapRouter(
-        wrapStore(storeMapper)(Protected as unknown as BlockConstructor<ExpectedStoreConstructorProps>)
-    );
+      if (!this.user) {
+        if (currentPath !== (ROUTER.login as string) && currentPath !== (ROUTER.registration as string)) {
+          this.router.go(ROUTER.login);
+        }
+      } else if (this.user) {
+        if (currentPath === (ROUTER.login as string) || currentPath === (ROUTER.registration as string)) {
+          this.router.go(ROUTER.profile);
+        }
+      }
+    }
+  }
+
+  const storeMapper = (state: { user: UserDTO | null }) => ({ user: state.user });
+
+  return wrapRouter(
+    wrapStore(storeMapper)(Protected as unknown as BlockConstructor<ExpectedStoreConstructorProps>),
+  );
 }
