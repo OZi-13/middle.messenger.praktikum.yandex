@@ -19,6 +19,20 @@ export default class ChatService {
     this.store.set({
       responseError: null,
     });
+
+    const chats = this.store.get('chats') as ChatType.ChatsListMappedType;
+    const chatData = chats[chatId];
+    if (chatData) {
+      this.store.set({
+        selectedChat: {
+          id: chatId,
+          header: '[ ' + chatData.title + ' ] : :  Загрузка участников...',
+          admin: chatData.admin,
+          usersCount: 0
+        }
+      });
+    }
+
     try {
       await this.UsersList(chatId);
 
@@ -36,17 +50,23 @@ export default class ChatService {
     const title: string = chatData.title;
 
     let usersNameString = '';
-    if (Array.isArray(chatUsers) && chatUsers.length > 0) {
-      const usersTmp = chatUsers.map(user => {
-        return `${user.display_name || user.first_name} (ID: ${user.id})`;
-      });
-      usersNameString = usersTmp.join(', ');
+    let usersCount = 0;
+
+    if (Array.isArray(chatUsers)) {
+      usersCount = chatUsers.length;
+      if (usersCount > 0) {
+        const usersTmp = chatUsers.map(user => {
+          return `${user.display_name || user.first_name} (ID: ${user.id})`;
+        });
+        usersNameString = usersTmp.join(', ');
+      }
     }
 
     const chatSelected: ChatType.ChatSelectedType = {
       id: chatId,
       header: '[ ' + title + ' ] : :  Участники: ' + usersNameString,
       admin: chatData.admin,
+      usersCount: usersCount
     };
     this.store.set({ selectedChat: chatSelected });
   }
@@ -169,7 +189,7 @@ export default class ChatService {
           console.log('formUserData data=', dataOut);
 
           await this.api.chatUsersAdd(dataOut);
-          await this.UsersList(chatSelect.id); // Строка 167
+          await this.UsersList(chatSelect.id);
           modal.close();
 
       } catch (error) {

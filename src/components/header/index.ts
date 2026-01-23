@@ -1,12 +1,12 @@
 import Block, { BlockProps } from '../../framework/Block';
-import template from './header.hbs.ts';
+import template from './header.hbs';
 import './header.pcss';
 
-import { ROUTER } from '../../utils/links.ts';
+import { ROUTER } from '../../utils/links';
 import { wrapRouter } from '../../utils/wrapRouter';
 
 import { Link } from '../link';
-import {RouterInterface} from '../../types/routerType';
+import {RouterInterface} from "../../types/routerType.ts";
 
 interface HeaderProps extends BlockProps {
   isLoginPage?: string;
@@ -17,8 +17,10 @@ interface HeaderProps extends BlockProps {
   isNoServerPage?: string;
 }
 
+interface HeaderAddProps extends HeaderProps, RouterInterface {}
+
 class Header extends Block {
-  constructor(props: HeaderProps) {
+  constructor(props: HeaderAddProps) {
     super({
       ...props,
       LinkLoginPage: new Link({

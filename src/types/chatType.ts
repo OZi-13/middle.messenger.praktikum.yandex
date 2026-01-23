@@ -84,9 +84,9 @@ export type ChatsUsersAddType = {
   users: string
 };
 
-export type ChatTokenResponseType = [
-  { token: string },
-];
+export type ChatTokenResponseType = {
+  token: string
+};
 
 export type ChatUserResponseType = Omit<apiType.UserDTO, 'phone' | 'email'>  & {
   role: string
@@ -96,4 +96,5 @@ export type ChatSelectedType = {
   id: number
   header: string
   admin: number
+  usersCount: number
 };

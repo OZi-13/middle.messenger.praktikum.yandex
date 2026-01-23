@@ -80,7 +80,6 @@ export default class HTTPTransport {
   public delete: MethodWrapper;
 
   constructor(baseUrl: string = '') {
-    //this.baseUrl = `https://ya-praktikum.tech/api/v2/${baseUrl}`;
     this.baseUrl = `${apiUrl}${baseUrl}`;
 
     this.get = this.createMethod(METHODS.GET);
@@ -120,7 +119,6 @@ export default class HTTPTransport {
 
       xhr.open(method, finalUrl);
 
-      // Установка заголовка Content-Type для JSON-запросов
       if (data && !isGet && !(data instanceof FormData)) {
         xhr.setRequestHeader('Content-Type', 'application/json');
       }
@@ -129,7 +127,6 @@ export default class HTTPTransport {
         xhr.setRequestHeader(key, headers[key]);
       });
 
-      // Важно для аутентификации: отправка куки
       xhr.withCredentials = true;
 
       xhr.onload = function () {
@@ -157,18 +154,16 @@ export default class HTTPTransport {
       };
 
       xhr.onabort = () => reject(new Error('Request aborted'));
-      xhr.onerror = () => reject(new Error('Network error')); // Ошибки сети
+      xhr.onerror = () => reject(new Error('Network error'));
 
       xhr.timeout = timeout;
       xhr.ontimeout = () => reject(new Error(`Request timed out after ${timeout}ms`));
 
-      // Отправка данных
       if (isGet || !data) {
         xhr.send();
       } else if (data instanceof FormData) {
         xhr.send(data);
       } else {
-        // Для POST/PUT/DELETE с телом отправляем JSON-строку
         xhr.send(JSON.stringify(data));
       }
     });

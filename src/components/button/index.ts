@@ -24,7 +24,7 @@ export class Button extends Block {
 
     super({
       ...props,
-      ...eventObject, // Объект events добавится ТОЛЬКО, если props.onClick есть
+      ...eventObject,
     });
   }
 

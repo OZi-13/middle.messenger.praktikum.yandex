@@ -123,22 +123,19 @@ export default class Block {
     this._render();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected componentDidUpdate(_oldProps: BlockProps, _newProps: BlockProps): boolean {
     return true;
   }
 
-  // Тут добавляем универсальный слот 'children' в lists
   private _getChildrenPropsAndProps(propsAndChildren: BlockProps): {
     children: Record<string, Block>,
     props: BlockProps,
     lists: Record<string, unknown[]>
   } {
-    const children: Record<string, Block> = {}; // Именованные блоки
-    const props: BlockProps = {}; // Обычные пропсы
-    const lists: Record<string, unknown[]> = {}; // Списки (для коллекций)
+    const children: Record<string, Block> = {};
+    const props: BlockProps = {};
+    const lists: Record<string, unknown[]> = {};
 
-    // Тут универсальный слот 'children'
     if (Array.isArray(propsAndChildren.children)) {
       const universalChildren = propsAndChildren.children.filter(item => item instanceof Block);
       if (universalChildren.length > 0) {
@@ -149,11 +146,11 @@ export default class Block {
 
     Object.entries(propsAndChildren).forEach(([key, value]) => {
       if (value instanceof Block) {
-        children[key] = value; // Именованные дочерние блоки
+        children[key] = value;
       } else if (Array.isArray(value)) {
-        lists[key] = value as unknown[]; // Именованные списки
+        lists[key] = value as unknown[];
       } else {
-        props[key] = value; // Обычные пропсы
+        props[key] = value;
       }
     });
 
@@ -185,40 +182,27 @@ export default class Block {
 
     const oldProps = { ...this.props };
 
-    // --- 1. ОЧИСТКА: Удаление дочерних компонентов и вызов жизненного цикла ---
     Object.keys(this.children).forEach(key => {
-      // Проверяем, если ключ присутствует в nextProps,
-      // И его новое значение НЕ является экземпляром Block (то есть null, undefined, строка и т.д.)
 
       const nextValue = nextProps[key];
 
-      // ВАЖНО: Мы удаляем, если в nextProps есть ключ, и он не является Блоком.
       if (nextValue !== undefined && !(nextValue instanceof Block)) {
 
-        // Вызываем жизненный цикл уничтожения (Component Will Unmount)
         this.children[key].dispatchComponentWillUnmount();
 
-        // Удаляем ссылку из хранилища дочерних элементов
         delete this.children[key];
       }
     });
 
-    // --- 2. ОБНОВЛЕНИЕ: Парсинг и назначение новых/оставшихся компонентов ---
 
-    // Получаем корректные новые Children, Props и Lists.
-    // Здесь newChildren уже не содержит удаленных компонентов.
     const { children: newChildren, props: newProps, lists: newLists } =
             this._getChildrenPropsAndProps(nextProps);
 
-    // Добавляем новые/оставшиеся children и lists
     Object.assign(this.children, newChildren);
     Object.assign(this.lists, newLists);
 
-    // Обновляем props, включая Chat: null или NavLineRight: null,
-    // что понадобится для Handlebars, чтобы не рендерить стабы.
     Object.assign(this.props, newProps);
 
-    // 3. Вызываем событие FLOW_CDU
     this.eventBus().emit(Block.EVENTS.FLOW_CDU, oldProps, this.props);
   };
 
@@ -240,7 +224,6 @@ export default class Block {
       this._removeEvents();
     }
 
-    //console.log('Render');
     const propsAndStubs = { ...this.props };
     const tmpId =  Math.floor(100000 + Math.random() * 900000);
 
@@ -322,7 +305,6 @@ export default class Block {
         this.eventBus().emit(Block.EVENTS.FLOW_CDU, oldTarget, target);
         return true;
       },
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       deleteProperty(_target: BlockProps, _prop: string): boolean {
         throw new Error('Не разрешено');
       },

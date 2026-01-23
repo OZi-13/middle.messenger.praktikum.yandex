@@ -12,7 +12,7 @@ export enum StoreEvents {
 }
 
 export interface Action {
-  type: 'ADD_OLD_MESSAGES' | 'ADD_NEW_MESSAGE' | string; // Определяем типы действий
+  type: 'ADD_OLD_MESSAGES' | 'ADD_NEW_MESSAGE' | string;
   payload?: unknown;
 }
 

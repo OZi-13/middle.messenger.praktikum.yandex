@@ -8,7 +8,6 @@ export enum WSEvents {
   Close = 'close',
 }
 
-//const socket = new WebSocket('wss://ya-praktikum.tech/ws/chats/<USER_ID>/<CHAT_ID>/<TOKEN_VALUE>');
 export interface WSData {
   type: string;
   content?: string;
@@ -41,7 +40,6 @@ export default class WSTransport extends EventBus {
   }
 
   private setupPing(): void {
-    // Устанавливаем интервал для пинга каждые 30 секунд
     this.interval = setInterval(() => {
       this.send({ type: 'ping' });
     }, 30000);
@@ -57,7 +55,6 @@ export default class WSTransport extends EventBus {
       this.emit(WSEvents.Close, event);
       this.clearInterval();
       if (!event.wasClean) {
-        // Здесь можно реализовать логику реконнекта
         console.error('Обрыв соединения WS');
       }
     });

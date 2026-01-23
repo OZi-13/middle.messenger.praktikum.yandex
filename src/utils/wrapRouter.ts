@@ -2,7 +2,7 @@ import Block, { BlockProps } from '../framework/Block';
 import { RouterInterface } from '../types/routerType';
 
 type WrappedBlockConstructor = new (props: BlockProps) => Block;
-type RouterWrapperProps = BlockProps & RouterInterface;
+type RouterWrapperProps = BlockProps;
 
 export function wrapRouter(WrappedBlock: WrappedBlockConstructor) {
 
@@ -11,7 +11,7 @@ export function wrapRouter(WrappedBlock: WrappedBlockConstructor) {
             super({
                 ...props,
                 router: window.router
-            });
+            } as BlockProps & RouterInterface);
         }
     };
 }

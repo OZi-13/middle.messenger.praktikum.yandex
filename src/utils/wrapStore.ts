@@ -14,19 +14,20 @@ export function wrapStore<TStoreState extends BlockProps, TBlockProps extends Bl
 ) {
   return function <TBlock extends { new(props: TBlockProps): Block }>(Component: TBlock) {
 
-    return class extends Component {
+    return class extends (Component as unknown as typeof Block) {
       private onChangeStoreCallback: (prevState: AppStateType, newState: AppStateType) => void;
 
-      constructor(props: Omit<TBlockProps, keyof TStoreState>) {
+      constructor(...args: unknown[]) {
+        const props = args[0] as Omit<TBlockProps, keyof TStoreState>;
         const store = window.store;
         let state = mapStateToProps(store.getState());
         super({ ...(props as TBlockProps), ...state });
 
-        this.onChangeStoreCallback = (prevState: AppStateType, newState: AppStateType) => {
+        this.onChangeStoreCallback = (_prevState: AppStateType, newState: AppStateType) => {
           const newComponentState = mapStateToProps(newState);
 
           if (!isEqual(state, newComponentState)) {
-            (this as Block).setProps({ ...newComponentState } as Partial<TBlockProps>);
+            (this as Block).setProps({ ...newComponentState } as unknown as Partial<TBlockProps>);
           }
           state = newComponentState;
         };
@@ -36,6 +37,7 @@ export function wrapStore<TStoreState extends BlockProps, TBlockProps extends Bl
 
       protected componentWillUnmount(): void {
         window.store.off(StoreEvents.Updated, this.onChangeStoreCallback);
+        super.componentWillUnmount();
       }
     } as unknown as { new(props: Omit<TBlockProps, keyof TStoreState>): Block };
   };

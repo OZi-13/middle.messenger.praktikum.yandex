@@ -40,7 +40,11 @@ const createNavLineRight = (selectedChatHeader: string | null, isChatAdmin = tru
     '';
 };
 
-const createChatForm = (selectedChatId: number | null): Form | null | '' => {
+const createChatForm = (selectedChatId: number | null, usersCount: number = 0): Block | null | string => {
+
+  if (selectedChatId !== null && usersCount < 2) {
+      return '<div class="chat-notification">Необходимо добавить пользователя, чтобы начать чат</div>';
+  }
 
   const message = new Input({
     id: 'message',
@@ -70,6 +74,13 @@ const createChatForm = (selectedChatId: number | null): Form | null | '' => {
         if (currentChatId && messageContent) {
           messageServiceInit.sendMessage(currentChatId, messageContent);
           message.setProps({ value: '' });
+          
+          setTimeout(() => {
+            const inputElement = document.getElementById('message');
+            if (inputElement) {
+              inputElement.focus();
+            }
+          }, 100);
         }
       },
     }) :
@@ -81,6 +92,7 @@ interface ChatsPageProps extends BlockProps, RouterInterface, StoreType {}
 
 class ChatsPage extends Block {
   constructor(props: ChatsPageProps) {
+    window.store.set({ selectedChat: null, messages: [] });
 
     const chatServiceInit = new ChatService(window.store);
 
@@ -160,13 +172,19 @@ class ChatsPage extends Block {
       }),
     });
 
-    chatServiceInit.chatList(); // получаем в стор объект с чатами
+    chatServiceInit.chatList();
+    
+    const selectedId = props.selectedChat?.id;
     const ChatsListItems = Object.values(props.chats as Type.ChatsListMappedType).map(
-      (chat: Type.ChatMappedType) => new ChatsListItem(chat),
+      (chat: Type.ChatMappedType) => new ChatsListItem({
+          ...chat,
+          isSelected: chat.id === selectedId
+      }),
     );
 
     const UserName: string = props.user?.display_name || props.user?.login || '';
     const isChatAdmin: boolean = props.user?.id == props.selectedChat?.admin;
+    const usersCount = props.selectedChat?.usersCount || 0;
 
     super({
       ...props,
@@ -193,24 +211,27 @@ class ChatsPage extends Block {
       ChatsListItem: ChatsListItems,
       ModalBox: modalBoxInstance,
 
-      ChatForm: createChatForm(props.selectedChat?.id || null),
+      ChatForm: createChatForm(props.selectedChat?.id || null, usersCount),
       Chat: createChat(props.selectedChat?.id || null as number | null),
     });
   }
 
   protected override componentDidUpdate(oldProps: ChatsPageProps, newProps: ChatsPageProps): boolean {
 
-    if (oldProps.chats !== newProps.chats) {
+    const selectedId = newProps.selectedChat?.id;
+
+    if (oldProps.chats !== newProps.chats || oldProps.selectedChat?.id !== newProps.selectedChat?.id) {
 
       const ChatsListItems = Object.values(newProps.chats as Type.ChatsListMappedType).map(
-        (chat: Type.ChatMappedType) => new ChatsListItem(chat),
+        (chat: Type.ChatMappedType) => new ChatsListItem({
+            ...chat,
+            isSelected: chat.id === selectedId
+        }),
       );
 
       (this as Block).setProps({
         ChatsListItem: ChatsListItems,
       } as Partial<ChatsPageProps>);
-
-      return false;
     }
 
     if (oldProps.selectedChat !== newProps.selectedChat) {
@@ -218,7 +239,10 @@ class ChatsPage extends Block {
       const newChat = createChat(newProps.selectedChat?.id || 0 as number);
       const isChatAdmin: boolean = newProps.user?.id == newProps.selectedChat?.admin;
       const newNavLineRight = createNavLineRight(newProps.selectedChat?.header || null, isChatAdmin);
-      const newChatForm = createChatForm(newProps.selectedChat?.id || null as number | null);
+      
+      const usersCount = newProps.selectedChat?.usersCount || 0;
+      const newChatForm = createChatForm(newProps.selectedChat?.id || null as number | null, usersCount);
+      
       const oldChatId = oldProps.selectedChat?.id;
       const newChatId = newProps.selectedChat?.id;
 
@@ -227,7 +251,7 @@ class ChatsPage extends Block {
         window.store.set('messages', []);
       }
 
-      if (newChatId) {
+      if (newChatId && newChatId !== oldChatId) {
         messageServiceInit.connectToChat(newChatId).catch(console.error);
       }
 
@@ -241,6 +265,16 @@ class ChatsPage extends Block {
     }
 
     return super.componentDidUpdate(oldProps, newProps);
+  }
+
+  protected override componentWillUnmount(): void {
+    const currentChatId = (this.props as ChatsPageProps).selectedChat?.id;
+    if (currentChatId) {
+      messageServiceInit.disconnectFromChat(currentChatId);
+    }
+    window.store.set({ selectedChat: null, messages: [] });
+    
+    super.componentWillUnmount();
   }
 
   override render() {

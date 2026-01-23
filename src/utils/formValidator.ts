@@ -15,28 +15,21 @@ class FormValidatorClass {
     if (rule) {
       const [validator, errorMessage] = rule;
 
-      // 1. Проверка, является ли поле файлом
       if (typeof validator === 'function') {
-        const files = (element as HTMLInputElement).files; // Получаем FileList
+        const files = (element as HTMLInputElement).files;
 
-        // Если это валидатор-функция (для файлов)
         if (!validator(files)) {
           return errorMessage;
         }
-        // 💡 Валидация файлов не требует дополнительной проверки на 'required',
-        // так как это обрабатывается внутри validateAvatarFile (проверка на files.length === 0)
       }
 
-      // 2. Проверка, является ли поле строкой (через RegExp)
       else if (validator instanceof RegExp) {
         const value = element.value;
 
-        // Проверка по шаблону (если значение есть)
         if (value && !validator.test(value)) {
           return errorMessage;
         }
 
-        // Проверка на обязательность (если это строка)
         if (mode === 'submit' && !value) {
           return 'Поле обязательно для заполнения';
         }
@@ -68,14 +61,14 @@ class FormValidatorClass {
     } else return true;
   }
 
-  public submitForm(e: Event): FormResult | null { // 🔑 ИЗМЕНЕН ВОЗВРАЩАЕМЫЙ ТИП
+  public submitForm(e: Event): FormResult | null {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
 
     const inputElements: NodeListOf<HTMLInputElement | HTMLTextAreaElement> =
             form.querySelectorAll('.form-validate');
 
-    const formValues: FormResult = {}; // 🔑 ИСПОЛЬЗУЕМ НОВЫЙ ТИП
+    const formValues: FormResult = {};
     let isFormValid = true;
 
     inputElements.forEach(input => {
