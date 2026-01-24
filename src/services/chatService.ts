@@ -30,6 +30,7 @@ export default class ChatService {
           header: '[ ' + chatData.title + ' ] : :  Загрузка участников...',
           admin: chatData.admin,
           usersCount: 0,
+          users: [],
         },
       });
     }
@@ -45,6 +46,7 @@ export default class ChatService {
 
   private async UsersList(chatId: number): Promise<void> {
     const chatUsers: ChatType.ChatsUsersListResponseType = await this.api.chatUsersList(chatId);
+    console.log('ChatService UsersList chatUsers:', chatUsers);
 
     const chats = this.store.get('chats') as ChatType.ChatsListMappedType;
     const chatData: ChatType.ChatMappedType = chats[chatId];
@@ -68,7 +70,9 @@ export default class ChatService {
       header: '[ ' + title + ' ] : :  Участники: ' + usersNameString,
       admin: chatData.admin,
       usersCount: usersCount,
+      users: chatUsers,
     };
+    console.log('ChatService UsersList setting selectedChat:', chatSelected);
     this.store.set({ selectedChat: chatSelected });
   }
 

@@ -83,4 +83,13 @@ export default class UserService {
       });
     }
   }
+
+  public async searchUsers(login: string): Promise<ApiType.UserDTO[]> {
+    try {
+      return await this.api.search({ login });
+    } catch (error) {
+      console.error('Ошибка поиска пользователей:', error);
+      return [];
+    }
+  }
 }

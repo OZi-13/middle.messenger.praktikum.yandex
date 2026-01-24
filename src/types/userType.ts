@@ -15,6 +15,10 @@ export type GetUserAvatarType = {
   avatar: FileList;
 };
 
+export type UserSearchType = {
+  login: string;
+};
+
 export const profileInfoConst:  { header: string, name: keyof apiType.UserDTO }[] = [
   { header: 'Имя', name: 'first_name' },
   { header: 'Фамилия', name: 'second_name' },

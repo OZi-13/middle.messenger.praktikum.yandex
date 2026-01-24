@@ -19,6 +19,7 @@ import AuthService from '../../services/authService';
 import { LoginType } from '../../types/authType';
 import { AppStateType } from '../../types/appType';
 import { RouterInterface } from '../../types/routerType';
+import { FormResult } from '../../types/validatorType';
 
 type StoreType = Pick<AppStateType, 'responseError'>;
 interface LoginPageProps extends BlockProps, RouterInterface, StoreType {}
@@ -83,8 +84,8 @@ class LoginPage extends Block {
         id: 'form',
         class: 'info-box_content',
         children: formChildren,
-        onFormSubmit: (data: Record<string, string>) => {
-          authServiceInit.login(data as LoginType).catch(console.error);
+        onFormSubmit: (data: FormResult) => {
+          authServiceInit.login(data as unknown as LoginType).catch(console.error);
         },
       }),
       ErrorBox:  new ErrorBox({ text: props.responseError }),

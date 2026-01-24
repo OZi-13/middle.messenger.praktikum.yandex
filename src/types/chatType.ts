@@ -97,4 +97,5 @@ export type ChatSelectedType = {
   header: string
   admin: number
   usersCount: number
+  users: ChatsUsersListResponseType
 };

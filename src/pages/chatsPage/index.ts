@@ -24,8 +24,9 @@ import MessageService from '../../services/messageService';
 import { AppStateType } from '../../types/appType';
 import * as Type from '../../types/chatType';
 import { RouterInterface } from '../../types/routerType';
-import { Label } from '../../components/label';
 import * as ChatType from '../../types/chatType';
+import { UserSearch } from '../../components/userSearch';
+import { ChatUserDeleteConnected } from '../../components/chatUserDelete';
 
 const messageServiceInit = new MessageService();
 
@@ -96,76 +97,23 @@ class ChatsPage extends Block {
 
     const chatServiceInit = new ChatService(window.store);
 
-    const formAddUserCld = [
-      new Label({
-        forAttr: 'form_newuser_id',
-        text: 'Добавить пользователя по ID',
-      }),
-      new Input({
-        id: 'form_newuser_id',
-        class: 'form-validate',
-        name: 'users',
-        type: 'text',
-      }),
-      new Button({
-        tag: 'button',
-        type: 'submit',
-        text: 'Добавить',
-      }),
-    ];
-
-    const formDelUserCld = [
-      new Label({
-        forAttr: 'form_olduser_id',
-        text: 'Удалить пользователя по ID',
-      }),
-      new Input({
-        id: 'form_olduser_id',
-        class: 'form-validate',
-        name: 'users',
-        type: 'text',
-      }),
-      new Button({
-        tag: 'button',
-        type: 'submit',
-        text: 'Удалить',
-      }),
-    ];
-
-    const formDeleteCld = [
-      new Button({
-        tag: 'button',
-        type: 'submit',
-        text: 'Удалить чат',
-      }),
-    ];
-
     const modalBoxInstance = new ModalBox({
       id1: 'add_chat',
       id2: 'chat_user_add',
       id3: 'chat_user_del',
       id4: 'chat_delete',
       modalContent1: new ChatAddForm(),
-      modalContent2: new Form({
-        id: 'form-adduser',
-        class: 'info-box_content',
-        children: formAddUserCld,
-        onFormSubmit: (data: Record<string, string>) => {
-          chatServiceInit.chatUserAdd(data as ChatType.ChatsUsersAddType).catch(console.error);
+      modalContent2: new UserSearch({
+        onUserSelect: (userId: number) => {
+          const data: ChatType.ChatsUsersAddType = { users: String(userId) };
+          chatServiceInit.chatUserAdd(data).catch(console.error);
         },
       }),
-      modalContent3: new Form({
-        id: 'form-deluser',
-        class: 'info-box_content',
-        children: formDelUserCld,
-        onFormSubmit: (data: Record<string, string>) => {
-          chatServiceInit.chatUserDelete(data as ChatType.ChatsUsersAddType).catch(console.error);
-        },
-      }),
+      modalContent3: new ChatUserDeleteConnected({}),
       modalContent4: new Form({
         id: 'form-chat_delete',
         class: 'info-box_content',
-        children: formDeleteCld,
+        children: [new Button({ tag: 'button', type: 'submit', text: 'Удалить чат' })],
         onFormSubmit: () => {
           chatServiceInit.chatDelete().catch(console.error);
         },

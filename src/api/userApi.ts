@@ -16,4 +16,8 @@ export default class UserApi {
   async editAvatar(data: FormData): Promise<UserDTO> {
     return userApi.put<UserDTO>('/profile/avatar', { data });
   }
+
+  async search(data: Type.UserSearchType): Promise<UserDTO[]> {
+    return userApi.post<UserDTO[]>('/search', { data });
+  }
 }
