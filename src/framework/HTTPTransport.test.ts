@@ -47,7 +47,7 @@ describe('HTTPTransport', () => {
       setRequestHeader() {}
     }
 
-    // @ts-expect-error
+    // @ts-expect-error Mocking global XMLHttpRequest
     global.XMLHttpRequest = MockXMLHttpRequest;
 
     instance = new HTTPTransport('/auth');

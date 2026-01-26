@@ -25,7 +25,7 @@ describe('Router', () => {
     content.id = 'app';
     document.body.appendChild(content);
 
-    // @ts-expect-error
+    // @ts-expect-error Mocking global store for testing
     global.window.store = {
       set: sinon.fake(),
       get: sinon.fake(),
@@ -42,7 +42,7 @@ describe('Router', () => {
   afterEach(() => {
     sandbox.restore();
     document.body.removeChild(content);
-    // @ts-expect-error
+    // @ts-expect-error Cleaning up global store
     delete global.window.store;
   });
 
