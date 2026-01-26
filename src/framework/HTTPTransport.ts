@@ -1,4 +1,4 @@
-import { apiUrl } from '../config';
+import { apiUrl } from '../config.ts';
 
 type HTTPMethodType = 'GET' | 'POST' | 'PUT' | 'DELETE';
 type DataPayload = Record<string, unknown> | FormData | string | null;

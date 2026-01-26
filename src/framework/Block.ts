@@ -1,4 +1,4 @@
-import EventBus, { EventCallback } from './EventBus';
+import EventBus, { type EventCallback } from './EventBus.ts';
 import Handlebars from 'handlebars';
 
 type Nullable<T> = T | null;
