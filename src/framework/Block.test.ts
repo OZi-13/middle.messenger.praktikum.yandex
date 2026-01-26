@@ -14,14 +14,14 @@ describe('Block', () => {
     BlockClass = MockBlock;
   });
 
-  it('должен создавать компонент с пропсами', () => {
+  it('соззаёт компонент с пропсами', () => {
     const text = 'Hello';
     const component = new BlockClass({ text });
 
     expect((component as any).props.text).to.eq(text);
   });
 
-  it('должен быть реактивным', () => {
+  it('реактивный', () => {
     const text = 'Hello';
     const component = new BlockClass({ text });
 
@@ -30,7 +30,7 @@ describe('Block', () => {
     expect((component as any).props.text).to.eq('World');
   });
 
-  it('должен устанавливать события', () => {
+  it('и устанавливает события', () => {
     const handler = sinon.fake();
     const component = new BlockClass({
       events: {
@@ -41,6 +41,7 @@ describe('Block', () => {
     const event = new MouseEvent('click');
     component.getContent().dispatchEvent(event);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(handler.called).to.be.true;
   });
 });

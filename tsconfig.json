@@ -14,6 +14,7 @@
   },
   "include": [
     "src/**/*.ts",
-    ".eslintrc.cjs"
+    ".eslintrc.cjs",
+    "mochaSetup.ts"
   ]
 }

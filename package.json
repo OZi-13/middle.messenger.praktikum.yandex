@@ -18,7 +18,8 @@
     "lint:style": "stylelint \"**/*.pcss\"",
     "lint:style:fix": "stylelint \"**/*.pcss\" --fix",
     "typecheck:watch": "tsc --noEmit --watch",
-    "test": "cross-env NODE_OPTIONS=\"--import tsx\" mocha src/**/*.test.ts --file mochaSetup.ts"
+    "test": "cross-env NODE_OPTIONS=\"--import tsx\" mocha src/**/*.test.ts --file mochaSetup.ts",
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
@@ -46,7 +47,7 @@
     "eslint-config-airbnb-typescript": "^18.0.0",
     "husky": "^9.1.7",
     "jsdom": "^27.4.0",
-    "mocha": "^11.7.5",
+    "mocha": "^11.3.0",
     "nodemon": "^3.1.11",
     "postcss": "^8.5.6",
     "postcss-preset-env": "^10.2.4",
@@ -61,6 +62,6 @@
   },
   "dependencies": {
     "express": "^5.1.0",
-    "vite-plugin-handlebars": "^2.0.0"
+    "vite-plugin-handlebars": "^1.5.0"
   }
 }

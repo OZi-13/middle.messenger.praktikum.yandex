@@ -8,22 +8,23 @@ describe('Router', () => {
   let content: HTMLDivElement;
   let sandbox: sinon.SinonSandbox;
 
-  // Мок для Block
   const BlockMock = class {
     getContent = () => document.createElement('div');
+
     dispatchComponentDidMount = () => {};
+
     dispatchComponentWillUnmount = () => {};
+
     show = sinon.fake();
+
     hide = sinon.fake();
   } as unknown as typeof Block;
 
   beforeEach(() => {
-    // Создаем контейнер для роутера
     content = document.createElement('div');
     content.id = 'app';
     document.body.appendChild(content);
 
-    // Мокаем window.store
     // @ts-ignore
     global.window.store = {
       set: sinon.fake(),
@@ -41,17 +42,16 @@ describe('Router', () => {
   afterEach(() => {
     sandbox.restore();
     document.body.removeChild(content);
-    // Очищаем мок window.store
     // @ts-ignore
     delete global.window.store;
   });
 
-  it('use() должен возвращать экземпляр роутера', () => {
+  it('use() взвращает нам экземпляр роутера', () => {
     const result = router.use('/', BlockMock);
     expect(result).to.eq(router);
   });
 
-  it('должен переходить на новую страницу при вызове go()', () => {
+  it('переходит на новую страницу, когда вызываем go()', () => {
     router.use('/', BlockMock);
     router.start();
 
@@ -60,9 +60,10 @@ describe('Router', () => {
     expect(window.location.pathname).to.eq('/');
   });
 
-  it('должен рендерить страницу при старте', () => {
+  it('и рендерит страницу при старте', () => {
     router.use('/', BlockMock).start();
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(router.getRoute('/')).to.not.be.undefined;
   });
 });

@@ -8,19 +8,36 @@ describe('HTTPTransport', () => {
   beforeEach(() => {
     requests = [];
 
-    // Создаем простой мок для XMLHttpRequest
     class MockXMLHttpRequest {
-      open(method: string, url: string) {
-        requests.push({ method, url });
-      }
-      send() {}
-      setRequestHeader() {}
+      method: string;
+      url: string;
+      status: number;
+      response: string;
+      onload: () => void;
+      onerror: () => void;
       withCredentials = false;
       responseType = '';
-      onload = () => {};
-      onerror = () => {};
-      status = 200;
-      response = '{}';
+
+      constructor() {
+        this.method = '';
+        this.url = '';
+        this.status = 200;
+        this.response = '{}';
+        this.onload = () => {};
+        this.onerror = () => {};
+      }
+
+      open(method: string, url: string) {
+        this.method = method;
+        this.url = url;
+        requests.push(this);
+      }
+
+      send() {
+        this.onload();
+      }
+
+      setRequestHeader() {}
     }
 
     // @ts-ignore
@@ -30,13 +47,10 @@ describe('HTTPTransport', () => {
   });
 
   afterEach(() => {
-    // Восстанавливаем оригинальный XMLHttpRequest (если он был)
-    // Но в JSDom окружении мы можем просто оставить его или вернуть JSDom'овский
-    // (global as any).XMLHttpRequest = jsdom.window.XMLHttpRequest; // Если бы у нас был доступ к jsdom здесь
   });
 
-  it('должен отправлять GET запрос', () => {
-    instance.get('/user');
+  it('отправляет GET запрос', async () => {
+    await instance.get('/user');
 
     const [request] = requests;
 
