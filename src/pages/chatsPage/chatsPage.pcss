@@ -34,7 +34,7 @@
                 grid-template-columns: 70px auto 25px;
                 padding: 10px;
 
-                &:hover {
+                &:hover, &.active_chat {
                     background-color: var(--color-light-light);
                     cursor: pointer;
                 }
@@ -74,6 +74,17 @@
 
             & .top_avatar {
                 background-color: var(--color-light);
+            }
+
+            & .nav-btn {
+                border-radius: 40px;
+                height: 40px;
+                text-align: center;
+                width: 40px;
+
+                &:hover {
+                    background-color: var(--color-blue-dark);
+                }
             }
         }
 
@@ -155,7 +166,8 @@
                 }
 
                 & .chat_message_text {
-                    padding: 5px 8px 9px ;
+                    min-width: 300px;
+                    padding: 5px 8px 9px;
                 }
 
                 & img {
@@ -221,4 +233,10 @@
         font-size: 24px;
         line-height: 40px;
     }
+}
+
+.chat-notification {
+    background-color: var(--color-red);
+    padding: 4px;
+    text-align: center;
 }

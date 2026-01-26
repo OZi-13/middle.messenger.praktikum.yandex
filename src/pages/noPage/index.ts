@@ -1,15 +1,16 @@
 import Block, { BlockProps } from '../../framework/Block';
-import { PageName } from '../../App';
 import template from './noPage.hbs.ts';
+
+import { wrapRouter } from '../../utils/wrapRouter';
+import { ROUTER } from '../../utils/links';
+import { RouterInterface } from '../../types/routerType';
 
 import { Header } from '../../components/header';
 import { Button } from '../../components/button';
 
-interface NoPageProps extends BlockProps {
-  changePage: (page: PageName) => void;
-}
+interface NoPageProps extends BlockProps, RouterInterface {}
 
-export class NoPage extends Block {
+class NoPage extends Block {
   constructor(props: NoPageProps) {
     super({
       Header: new Header({
@@ -20,10 +21,9 @@ export class NoPage extends Block {
         tag: 'button',
         class: 'nav-btn btn btn-red',
         text: 'Назад к чатам',
-        dataPage: 'chatsPage',
         onClick: (event: Event) => {
           event.preventDefault();
-          props.changePage('chatsPage');
+          props.router.go(ROUTER.chats);
         },
       }),
     });
@@ -33,3 +33,6 @@ export class NoPage extends Block {
     return template;
   }
 }
+
+const NoPageRouter = wrapRouter(NoPage);
+export { NoPageRouter as NoPage };

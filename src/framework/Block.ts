@@ -7,6 +7,8 @@ export interface BlockProps {
   [key: string]: unknown;
   events?: Record<string, (e: Event) => void>;
   attr?: Record<string, string | number | boolean>;
+  changePage?: (page: string) => void;
+  routerLink?: string;
 }
 
 export default class Block {
@@ -15,6 +17,7 @@ export default class Block {
     FLOW_CDM: 'flow:component-did-mount',
     FLOW_CDU: 'flow:component-did-update',
     FLOW_RENDER: 'flow:render',
+    FLOW_CWU: 'flow:component-will-unmount',
   } as const;
 
   protected _element: Nullable<HTMLElement> = null;
@@ -67,6 +70,7 @@ export default class Block {
     eventBus.on(Block.EVENTS.FLOW_CDM, this._componentDidMount.bind(this) as EventCallback);
     eventBus.on(Block.EVENTS.FLOW_CDU, this._componentDidUpdate.bind(this) as EventCallback);
     eventBus.on(Block.EVENTS.FLOW_RENDER, this._render.bind(this) as EventCallback);
+    eventBus.on(Block.EVENTS.FLOW_CWU, this._componentWillUnmount.bind(this) as EventCallback);
   }
 
   protected init(): void {
@@ -90,6 +94,27 @@ export default class Block {
     this.eventBus().emit(Block.EVENTS.FLOW_CDM);
   }
 
+  private _componentWillUnmount(): void {
+    this.componentWillUnmount();
+    this._removeEvents();
+
+    Object.values(this.children).forEach(child => {
+      child.dispatchComponentWillUnmount();
+    });
+    const universalChildren = this.lists.__children__;
+    if (Array.isArray(universalChildren)) {
+      universalChildren.filter(item => item instanceof Block).forEach(child => {
+        (child).dispatchComponentWillUnmount();
+      });
+    }
+  }
+
+  protected componentWillUnmount(): void {}
+
+  public dispatchComponentWillUnmount(): void {
+    this.eventBus().emit(Block.EVENTS.FLOW_CWU);
+  }
+
   private _componentDidUpdate(oldProps: BlockProps, newProps: BlockProps): void {
     const response = this.componentDidUpdate(oldProps, newProps);
     if (!response) {
@@ -98,22 +123,19 @@ export default class Block {
     this._render();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected componentDidUpdate(_oldProps: BlockProps, _newProps: BlockProps): boolean {
     return true;
   }
 
-  // Тут добавляем универсальный слот 'children' в lists
   private _getChildrenPropsAndProps(propsAndChildren: BlockProps): {
     children: Record<string, Block>,
     props: BlockProps,
     lists: Record<string, unknown[]>
   } {
-    const children: Record<string, Block> = {}; // Именованные блоки
-    const props: BlockProps = {}; // Обычные пропсы
-    const lists: Record<string, unknown[]> = {}; // Списки (для коллекций)
+    const children: Record<string, Block> = {};
+    const props: BlockProps = {};
+    const lists: Record<string, unknown[]> = {};
 
-    // Тут универсальный слот 'children'
     if (Array.isArray(propsAndChildren.children)) {
       const universalChildren = propsAndChildren.children.filter(item => item instanceof Block);
       if (universalChildren.length > 0) {
@@ -124,11 +146,11 @@ export default class Block {
 
     Object.entries(propsAndChildren).forEach(([key, value]) => {
       if (value instanceof Block) {
-        children[key] = value; // Именованные дочерние блоки
+        children[key] = value;
       } else if (Array.isArray(value)) {
-        lists[key] = value as unknown[]; // Именованные списки
+        lists[key] = value as unknown[];
       } else {
-        props[key] = value; // Обычные пропсы
+        props[key] = value;
       }
     });
 
@@ -158,7 +180,30 @@ export default class Block {
       return;
     }
 
-    Object.assign(this.props, nextProps);
+    const oldProps = { ...this.props };
+
+    Object.keys(this.children).forEach(key => {
+
+      const nextValue = nextProps[key];
+
+      if (nextValue !== undefined && !(nextValue instanceof Block)) {
+
+        this.children[key].dispatchComponentWillUnmount();
+
+        delete this.children[key];
+      }
+    });
+
+
+    const { children: newChildren, props: newProps, lists: newLists } =
+            this._getChildrenPropsAndProps(nextProps);
+
+    Object.assign(this.children, newChildren);
+    Object.assign(this.lists, newLists);
+
+    Object.assign(this.props, newProps);
+
+    this.eventBus().emit(Block.EVENTS.FLOW_CDU, oldProps, this.props);
   };
 
   public setLists = (nextList: Record<string, unknown[]>): void => {
@@ -179,7 +224,6 @@ export default class Block {
       this._removeEvents();
     }
 
-    //console.log('Render');
     const propsAndStubs = { ...this.props };
     const tmpId =  Math.floor(100000 + Math.random() * 900000);
 
@@ -261,7 +305,6 @@ export default class Block {
         this.eventBus().emit(Block.EVENTS.FLOW_CDU, oldTarget, target);
         return true;
       },
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       deleteProperty(_target: BlockProps, _prop: string): boolean {
         throw new Error('Не разрешено');
       },

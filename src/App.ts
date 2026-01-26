@@ -1,97 +1,64 @@
+import { rootElement } from './config';
 import * as Pages from './pages';
+import { Store, StoreEvents } from './framework/Store';
+import Router from './framework/Router';
+import { ROUTER } from './utils/links';
+import AuthService from './services/authService';
+import { StoreInterface } from './types/appType';
 
-type Nullable<T> = T | null;
-
-export type PageName =
-    | 'loginPage'
-    | 'registrationPage'
-    | 'chatsPage'
-    | 'profilePage'
-    | 'profileEditPage'
-    | 'profileEditPassPage'
-    | 'noPage'
-    | 'noServerPage';
+declare global {
+  interface Window {
+    store: StoreInterface;
+    router: Router;
+  }
+}
 
 export default class App {
-  private state: Record<string, PageName>;
+  private readonly ROOT_ELEMENT: string = rootElement;
 
-  private appElement: Nullable<HTMLElement>;
+  private initStore(): Store {
+    const store = Store.getInstance();
+    window.store = store;
 
-  constructor() {
-    this.state = {
-      currentPage: 'loginPage',
-    };
-    this.appElement = document.getElementById('app');
+    window.store.on(StoreEvents.Updated, (prevState, nextState) => {
+      console.groupCollapsed('Store Updated');
+      console.log('Prev State:', prevState);
+      console.log('Next State:', nextState);
+      console.groupEnd();
+    });
+    return store;
   }
 
-  render(): void {
-    const appContainer = this.appElement;
-    if (!appContainer) {
-      console.error('Корневой элемент #app не найден!');
-      return;
+  private initRouter(): Router {
+    const router = new Router(this.ROOT_ELEMENT);
+
+    if (!document.querySelector(this.ROOT_ELEMENT)) {
+      console.error(`Элемент ${this.ROOT_ELEMENT} не найден!`);
+      throw new Error(`Элемент ${this.ROOT_ELEMENT} не найден!`);
     }
+    window.router = router;
 
-    let newPageElement: HTMLElement | undefined;
+    router
+      .use(ROUTER.login, Pages.LoginPage)
+      .use(ROUTER.registration, Pages.RegistrationPage)
+      .use(ROUTER.chats, Pages.ChatsPage)
+      .use(ROUTER.profile, Pages.ProfilePage)
+      .use(ROUTER.profileEdit, Pages.ProfileEditPage)
+      .use(ROUTER.profileEditPass, Pages.ProfileEditPassPage)
+      .use(ROUTER.noPage, Pages.NoPage)
+      .use(ROUTER.noServer, Pages.NoServerPage);
 
-    if (this.state.currentPage === 'loginPage') {
-      const loginPage = new Pages.LoginPage({
-        changePage: this.changePage,
-      });
-      newPageElement = loginPage.getContent();
-
-    } else if (this.state.currentPage === 'registrationPage') {
-      const registrationPage = new Pages.RegistrationPage({
-        changePage: this.changePage,
-      });
-      newPageElement = registrationPage.getContent();
-
-    } else if (this.state.currentPage === 'chatsPage') {
-      const chatsPage = new Pages.ChatsPage({
-        changePage: this.changePage,
-      });
-      newPageElement = chatsPage.getContent();
-
-    } else if (this.state.currentPage === 'profilePage') {
-      const profilePage = new Pages.ProfilePage({
-        changePage: this.changePage,
-      });
-      newPageElement = profilePage.getContent();
-
-    } else if (this.state.currentPage === 'profileEditPage') {
-      const profileEditPage = new Pages.ProfileEditPage({
-        changePage: this.changePage,
-      });
-      newPageElement = profileEditPage.getContent();
-
-    } else if (this.state.currentPage === 'profileEditPassPage') {
-      const profileEditPassPage = new Pages.ProfileEditPassPage({
-        changePage: this.changePage,
-      });
-      newPageElement = profileEditPassPage.getContent();
-
-    } else if (this.state.currentPage === 'noServerPage') {
-      const noServerPage = new Pages.NoServerPage({
-        changePage: this.changePage,
-      });
-      newPageElement = noServerPage.getContent();
-
-    } else if (this.state.currentPage === 'noPage') {
-      const noPage = new Pages.NoPage({
-        changePage: this.changePage,
-      });
-      newPageElement = noPage.getContent();
-    }
-
-    if (newPageElement) {
-      appContainer.innerHTML = '';
-      appContainer.appendChild(newPageElement);
-    }
+    return router;
   }
 
-  public changePage = (page: PageName): void =>  {
-    if (this.state.currentPage != page) {
-      this.state.currentPage = page;
-      this.render();
-    }
-  };
+  public async render(): Promise<void> {
+    const store = this.initStore();
+    const router = this.initRouter();
+
+    const authService = new AuthService({ store, router });
+    await authService.checkLoginUser();
+
+    router.start();
+    console.log('Приложение запущено.');
+  }
 }

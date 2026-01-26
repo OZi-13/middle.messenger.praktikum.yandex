@@ -1,6 +1,6 @@
 import Block, { BlockProps } from '../../framework/Block';
 import template from './input.hbs.ts';
-import { FormValidator } from '../../modules/formValidator';
+import { FormValidator } from '../../utils/formValidator.ts';
 
 interface InputProps extends BlockProps {
   id?: string,
@@ -15,6 +15,7 @@ export class Input extends Block {
   constructor(props: InputProps) {
     super({
       ...props,
+      value: props.value || '',
       events: {
         blur: (e: Event) => {
           e.preventDefault();

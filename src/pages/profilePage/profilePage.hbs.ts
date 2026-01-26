@@ -4,8 +4,8 @@ export default `
 <main>
     <div class="info-box info-box_600 info-box_white">
         <div class="info-box_header">
-            {{{ ModalBtn }}}
-            <h1>Ольга</h1>
+            {{{ Avatar }}}
+            <h1>{{ UserName }}</h1>
         </div>
         <div class="info-box_content">
             <div class="info-list">

@@ -1,21 +1,27 @@
 export type EventCallback = (...args: unknown[]) => void;
 
-export default class EventBus {
+export interface EmittingEventBus {
+  on<T extends EventCallback = EventCallback>(event: string, callback: T): void;
+
+  off<T extends EventCallback = EventCallback>(event: string, callback: T): void;
+  emit(event: string, ...args: unknown[]): void;
+}
+
+export default class EventBus implements EmittingEventBus {
   private listeners: Record<string, EventCallback[]>;
 
   constructor() {
     this.listeners = {};
   }
 
-  public on(event: string, callback: EventCallback): void {
+  public on<T extends EventCallback = EventCallback>(event: string, callback: T): void {
     if (!this.listeners[event]) {
       this.listeners[event] = [];
     }
-
-    this.listeners[event].push(callback);
+    this.listeners[event].push(callback as EventCallback);
   }
 
-  public off(event: string, callback: EventCallback): void {
+  public off<T extends EventCallback = EventCallback>(event: string, callback: T): void {
     if (!this.listeners[event]) {
       throw new Error(`No event: ${event}`);
     }
@@ -26,8 +32,8 @@ export default class EventBus {
   }
 
   public emit(event: string, ...args: unknown[]): void {
-    if (!this.listeners[event]) {
-      throw new Error(`No event: ${event}`);
+    if (!this.listeners[event] || this.listeners[event].length === 0) {
+      return;
     }
 
     this.listeners[event].forEach(listener => {

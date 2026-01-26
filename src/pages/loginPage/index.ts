@@ -1,6 +1,5 @@
 import Block, { BlockProps } from '../../framework/Block';
-import { PageName } from '../../App';
-import template from './loginPage.hbs.ts';
+import template from './loginPage.hbs';
 
 import { Header } from '../../components/header';
 import { BoxHeader } from '../../components/boxHeader';
@@ -9,13 +8,29 @@ import { Input } from '../../components/input';
 import { Button } from '../../components/button';
 import { Link } from '../../components/link';
 import { Form } from '../../components/form';
+import { ErrorBox } from '../../components/errorBox';
 
-interface LoginPageProps extends BlockProps {
-  changePage: (page: PageName) => void;
-}
+import { ROUTER } from '../../utils/links.ts';
+import { wrapRouter } from '../../utils/wrapRouter';
+import { wrapStore } from '../../utils/wrapStore';
+import { wrapProtected } from '../../utils/wrapProtected';
+import AuthService from '../../services/authService';
 
-export class LoginPage extends Block {
+import { LoginType } from '../../types/authType';
+import { AppStateType } from '../../types/appType';
+import { RouterInterface } from '../../types/routerType';
+import { FormResult } from '../../types/validatorType';
+
+type StoreType = Pick<AppStateType, 'responseError'>;
+interface LoginPageProps extends BlockProps, RouterInterface, StoreType {}
+
+class LoginPage extends Block {
   constructor(props: LoginPageProps) {
+
+    const authServiceInit = new AuthService({
+      store: window.store,
+      router: window.router,
+    });
 
     const formChildren = [
       new Label({
@@ -42,21 +57,21 @@ export class LoginPage extends Block {
         tag: 'button',
         type: 'submit',
         id: 'form-btn',
-        text: 'Авторизоваться',
+        text: 'Войти',
       }),
       new Link({
         class: 'nav-btn',
-        href: '#',
-        dataPage: 'registrationPage',
+        href: ROUTER.registration,
         text: 'Нет аккаунта?',
         onClick: (event: Event) => {
           event.preventDefault();
-          props.changePage('registrationPage');
+          props.router.go(ROUTER.registration);
         },
       }),
     ];
 
     super({
+      ...props,
       Header: new Header({
         isLoginPage: '1',
         changePage: props.changePage,
@@ -69,11 +84,37 @@ export class LoginPage extends Block {
         id: 'form',
         class: 'info-box_content',
         children: formChildren,
+        onFormSubmit: (data: FormResult) => {
+          authServiceInit.login(data as unknown as LoginType).catch(console.error);
+        },
       }),
+      ErrorBox:  new ErrorBox({ text: props.responseError }),
     });
+  }
+
+  protected override componentDidUpdate(oldProps: LoginPageProps, newProps: LoginPageProps): boolean {
+
+    if (oldProps.responseError !== newProps.responseError && newProps.responseError !== null) {
+
+      (this as Block).setProps({
+        ErrorBox: new ErrorBox({ text: newProps.responseError }),
+      } as Partial<LoginPageProps>);
+
+      return false;
+    }
+    return super.componentDidUpdate(oldProps, newProps);
   }
 
   override render() {
     return template;
   }
 }
+
+const mapStateToProps = (state: AppStateType): StoreType =>  {
+  return {
+    responseError: state.responseError,
+  };
+};
+
+const LoginPageRouter = wrapRouter(wrapProtected(wrapStore(mapStateToProps)(LoginPage)));
+export { LoginPageRouter as LoginPage };

@@ -1,5 +1,5 @@
 import Block, { BlockProps } from '../../framework/Block';
-import template from './boxHeader.hbs.ts';
+import template from './boxHeader.hbs';
 import './boxHeader.pcss';
 
 interface BoxHeaderProps extends BlockProps {

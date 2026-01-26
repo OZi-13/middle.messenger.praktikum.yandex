@@ -5,7 +5,7 @@ export default `
         <div class="main-box_left">
             {{{ NavLineLeft }}}
             <div class="chats_content">
-                {{{ InputSearch }}}
+                {{{ AddChatBtn }}}
                 <div class="content_box">
                     {{{ ChatsListItem }}}
                 </div>
@@ -16,8 +16,9 @@ export default `
             <div class="chats_content">
                 {{{ Chat }}}
             </div>
-            {{{ Form }}}
+            {{{ ChatForm }}}
         </div>
     </main>
+    {{{ ModalBox }}}
 </div>
 `;

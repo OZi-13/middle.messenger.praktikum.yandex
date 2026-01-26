@@ -1,5 +1,5 @@
 import Block, { BlockProps } from '../../framework/Block';
-import template from './button.hbs.ts';
+import template from './button.hbs';
 
 interface ButtonProps extends BlockProps {
   tag: string,
@@ -24,7 +24,7 @@ export class Button extends Block {
 
     super({
       ...props,
-      ...eventObject, // Объект events добавится ТОЛЬКО, если props.onClick есть
+      ...eventObject,
     });
   }
 
