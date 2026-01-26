@@ -10,12 +10,19 @@ describe('HTTPTransport', () => {
 
     class MockXMLHttpRequest {
       method: string;
+
       url: string;
+
       status: number;
+
       response: string;
+
       onload: () => void;
+
       onerror: () => void;
+
       withCredentials = false;
+
       responseType = '';
 
       constructor() {
