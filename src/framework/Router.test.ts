@@ -25,7 +25,7 @@ describe('Router', () => {
     content.id = 'app';
     document.body.appendChild(content);
 
-    // @ts-ignore
+    // @ts-expect-error
     global.window.store = {
       set: sinon.fake(),
       get: sinon.fake(),
@@ -42,7 +42,7 @@ describe('Router', () => {
   afterEach(() => {
     sandbox.restore();
     document.body.removeChild(content);
-    // @ts-ignore
+    // @ts-expect-error
     delete global.window.store;
   });
 

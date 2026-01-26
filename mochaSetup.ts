@@ -1,7 +1,7 @@
 import { JSDOM } from 'jsdom';
 
 const jsdom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
-  url: 'http://localhost:3000'
+  url: 'http://localhost:3000',
 });
 
 (global as any).window = jsdom.window;
