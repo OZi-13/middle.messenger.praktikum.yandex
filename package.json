@@ -17,8 +17,9 @@
     "lint:fix": "eslint . --ext .ts --fix",
     "lint:style": "stylelint \"**/*.pcss\"",
     "lint:style:fix": "stylelint \"**/*.pcss\" --fix",
-
-    "typecheck:watch": "tsc --noEmit --watch"
+    "typecheck:watch": "tsc --noEmit --watch",
+    "test": "cross-env NODE_OPTIONS=\"--import tsx\" mocha src/**/*.test.ts --file mochaSetup.ts",
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
@@ -32,23 +33,35 @@
   },
   "homepage": "https://github.com/OZi-13/middle.messenger.praktikum.yandex#readme",
   "devDependencies": {
+    "@types/chai": "^5.2.3",
     "@types/express": "^5.0.3",
+    "@types/jsdom": "^27.0.0",
+    "@types/mocha": "^10.0.10",
+    "@types/sinon": "^21.0.0",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "autoprefixer": "^10.4.21",
+    "chai": "^6.2.2",
+    "cross-env": "^10.1.0",
     "eslint": "^8.57.1",
     "eslint-config-airbnb-typescript": "^18.0.0",
+    "husky": "^9.1.7",
+    "jsdom": "^27.4.0",
+    "mocha": "^11.3.0",
     "nodemon": "^3.1.11",
     "postcss": "^8.5.6",
     "postcss-preset-env": "^10.2.4",
+    "sinon": "^21.0.1",
     "stylelint": "^16.9.0",
     "stylelint-config-standard": "^36.0.1",
     "stylelint-order": "^6.0.4",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "5.5",
     "vite": "^7.1.5"
   },
   "dependencies": {
     "express": "^5.1.0",
-    "vite-plugin-handlebars": "^2.0.0"
+    "vite-plugin-handlebars": "^1.5.0"
   }
 }

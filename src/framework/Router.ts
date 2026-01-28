@@ -1,6 +1,6 @@
-import Route from '../framework/Route';
-import Block from '../framework/Block';
-import { ROUTER } from '../utils/links';
+import Route from '../framework/Route.ts';
+import Block from '../framework/Block.ts';
+import { ROUTER } from '../utils/links.ts';
 
 export interface RouterInterface {
   go(pathname: string): void;

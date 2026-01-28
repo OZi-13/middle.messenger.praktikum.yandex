@@ -1,9 +1,8 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
-import handlebars from 'vite-plugin-handlebars';
 
 export default defineConfig({
-    plugins: [handlebars()],
+    plugins: [],
     build: {
         outDir: resolve(__dirname, 'dist'),
         rollupOptions: {

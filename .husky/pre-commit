@@ -1,0 +1,3 @@
+npx stylelint "**/*.pcss"
+npx eslint "src/**/*.{ts,tsx}"
+npm test
